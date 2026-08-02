@@ -77,18 +77,9 @@ export interface RoleConfig {
   location: string;
   badge: string;
   type?: string;
-  hasCertificate: boolean;
+  hasCertificate?: boolean;
   responsibilities: string[];
   tech: string[];
-}
-
-export interface CertificateConfig {
-  title: string;
-  issuedBy: string;
-  recipient: string;
-  period: string;
-  ceo: string;
-  imagePath: string;
 }
 
 export interface ProjectConfig {
@@ -123,7 +114,7 @@ export interface PortfolioConfig {
   skills: SkillsConfig;
   experience: {
     roles: RoleConfig[];
-    certificate: CertificateConfig;
+    certificate?: any;
   };
   projects: ProjectConfig[];
   education: EducationConfig[];

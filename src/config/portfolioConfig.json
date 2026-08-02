@@ -362,7 +362,6 @@
         "location": "India",
         "badge": "Leadership Role",
         "type": "current",
-        "hasCertificate": true,
         "responsibilities": [
           "Led the design and development of a multi-tenant e-commerce platform using Next.js with RBAC.",
           "Built an enterprise Office Management System with HR, leave management, expense tracking, and task management.",
@@ -386,7 +385,6 @@
         "location": "India",
         "badge": "Full Stack Role",
         "type": "past",
-        "hasCertificate": true,
         "responsibilities": [
           "Developed a Snowflake and Python-based data platform supporting ETL pipelines, reporting, and analytics.",
           "Designed workflow automation applications supporting configurable business processes.",
@@ -400,15 +398,7 @@
           "HTML5/CSS3"
         ]
       }
-    ],
-    "certificate": {
-      "title": "Experience Certificate & Relieving Letter",
-      "issuedBy": "eDge Wrapper Technology Pvt. Ltd.",
-      "recipient": "Hrishi Bhattacharya",
-      "period": "01-Mar-2022 to 29-Jun-2026",
-      "ceo": "Pritam Nandi (Founder & CEO)",
-      "imagePath": "/certificates/experience-certificate.png"
-    }
+    ]
   },
   "projects": [
     {

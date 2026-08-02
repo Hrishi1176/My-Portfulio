@@ -65,7 +65,7 @@ export const metadata: Metadata = {
     siteName: "Hrishi Bhattacharya Portfolio",
     images: [
       {
-        url: "/certificates/experience-certificate.png",
+        url: "/Hrishi.Bhattacharyya.jpg",
         width: 1200,
         height: 630,
         alt: "Hrishi Bhattacharya Developer Portfolio",
@@ -78,7 +78,7 @@ export const metadata: Metadata = {
     description:
       "Senior Full Stack Developer with 4.5+ years experience building Next.js apps, SaaS platforms, and cloud solutions.",
     creator: "@Hrishi1176",
-    images: ["/certificates/experience-certificate.png"],
+    images: ["/Hrishi.Bhattacharyya.jpg"],
   },
   alternates: {
     canonical: "https://github.com/Hrishi1176",
