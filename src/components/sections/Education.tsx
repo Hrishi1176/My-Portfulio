@@ -47,7 +47,7 @@ export function Education() {
       >
         {/* Label */}
         <div className="mb-3 flex items-center gap-2">
-          <span className="section-num text-base">05.</span>
+          <span className="section-num text-base">06.</span>
           <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
             Academic Background
           </span>
@@ -67,7 +67,8 @@ export function Education() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.12, duration: 0.55 }}
-                className={`card group relative overflow-hidden ${item.border}`}
+                whileHover={{ y: -6 }}
+                className={`card group relative overflow-hidden transition-all duration-300 ${item.border}`}
               >
                 {/* Gradient background */}
                 <div
