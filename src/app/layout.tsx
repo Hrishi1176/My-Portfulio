@@ -90,7 +90,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "Person",
   name: "Hrishi Bhattacharya",
-  jobTitle: "Senior Software Developer & Manager",
+  jobTitle: "Senior Software Developer ",
   worksFor: {
     "@type": "Organization",
     name: "eDge Wrapper Technology Pvt. Ltd.",

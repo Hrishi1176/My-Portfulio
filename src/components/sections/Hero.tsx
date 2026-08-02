@@ -73,7 +73,7 @@ export function Hero() {
 
               {/* Role */}
               <p className="mt-4 text-lg font-semibold text-purple-600 dark:text-purple-400 tracking-wide sm:text-xl flex items-center justify-center lg:justify-start gap-2">
-                Senior Software Developer & Manager
+                Senior Software Developer
                 <Sparkles className="h-4 w-4 text-amber-400" />
               </p>
 
@@ -152,7 +152,7 @@ export function Hero() {
             >
               <div className="relative flex h-72 w-72 items-center justify-center sm:h-96 sm:w-96 lg:h-[440px] lg:w-[440px]">
                 {/* Glowing radial ambient glow behind avatar */}
-                <div 
+                <div
                   className="absolute inset-4 rounded-full bg-gradient-to-tr from-purple-600/30 via-violet-500/25 to-cyan-500/30 blur-3xl pointer-events-none"
                   style={{ animation: "pulse 6s ease-in-out infinite" }}
                 />
@@ -336,9 +336,8 @@ export function Hero() {
                       <button
                         key={s.name}
                         onClick={() => setActiveStreamIdx(idx)}
-                        className={`h-2.5 rounded-full transition-all duration-300 ${
-                          activeStreamIdx === idx ? "w-8 bg-purple-500" : "w-2.5 bg-slate-700 hover:bg-slate-500"
-                        }`}
+                        className={`h-2.5 rounded-full transition-all duration-300 ${activeStreamIdx === idx ? "w-8 bg-purple-500" : "w-2.5 bg-slate-700 hover:bg-slate-500"
+                          }`}
                       />
                     ))}
                   </div>
