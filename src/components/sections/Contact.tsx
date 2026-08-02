@@ -1,8 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Mail, Phone, MessageCircle, Send, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Mail, Phone, MessageCircle, Send, CheckCircle2, AlertCircle, Loader2, Sparkles, X, ShieldCheck } from "lucide-react";
+import { useState, useEffect } from "react";
 import { GithubIcon, LinkedinIcon, InstagramIcon, FacebookIcon } from "@/components/SocialIcons";
 
 const socialLinks = [
@@ -56,11 +56,22 @@ const contactMethods = [
   },
 ];
 
+const SUBJECT_OPTIONS = [
+  "Multi-Tenant SaaS & E-Commerce Platform",
+  "Enterprise Office & HR Management System",
+  "Cloud Data Engineering & Snowflake ETL",
+  "Workflow Automation Suite",
+  "Full Stack Next.js / React / Python App",
+  "AI Agent & LLM Integration",
+  "Custom Subject (Specify Below)",
+];
+
 export function Contact() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    subject: "",
+    subject: "Multi-Tenant SaaS & E-Commerce Platform",
+    customSubject: "",
     requirements: "",
     budget: "$5k - $15k",
   });
@@ -75,15 +86,70 @@ export function Contact() {
     message: "",
   });
 
+  const [isRefining, setIsRefining] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+
+  // Auto-dismiss floating toast after 6 seconds
+  useEffect(() => {
+    if (status.message && status.success !== null) {
+      setShowToast(true);
+      const timer = setTimeout(() => {
+        setShowToast(false);
+      }, 6000);
+      return () => clearTimeout(timer);
+    }
+  }, [status.message, status.success]);
+
+  const handleRefineRequirements = async () => {
+    if (!formData.requirements.trim() || isRefining) return;
+    setIsRefining(true);
+
+    const finalSubject =
+      formData.subject === "Custom Subject (Specify Below)"
+        ? formData.customSubject || "Custom Inquiry"
+        : formData.subject;
+
+    try {
+      const res = await fetch("/api/refine-requirements", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          draftRequirements: formData.requirements,
+          subject: finalSubject,
+          budget: formData.budget,
+        }),
+      });
+      const data = await res.json();
+      if (data.refinedRequirements) {
+        setFormData((prev) => ({ ...prev, requirements: data.refinedRequirements }));
+      }
+    } catch (err) {
+      console.error("Refinement error:", err);
+    } finally {
+      setIsRefining(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus({ submitting: true, success: null, message: "" });
+
+    const finalSubject =
+      formData.subject === "Custom Subject (Specify Below)"
+        ? formData.customSubject || "Custom Inquiry"
+        : formData.subject;
 
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          subject: finalSubject,
+          requirements: formData.requirements,
+          budget: formData.budget,
+        }),
       });
 
       const data = await res.json();
@@ -92,12 +158,13 @@ export function Contact() {
         setStatus({
           submitting: false,
           success: true,
-          message: "Thank you! Your query & requirements have been saved successfully to MongoDB.",
+          message: "Thank you! Your requirements have been received. A confirmation email has been dispatched to your inbox.",
         });
         setFormData({
           name: "",
           email: "",
-          subject: "",
+          subject: "Multi-Tenant SaaS & E-Commerce Platform",
+          customSubject: "",
           requirements: "",
           budget: "$5k - $15k",
         });
@@ -105,7 +172,7 @@ export function Contact() {
         setStatus({
           submitting: false,
           success: false,
-          message: data.error || "Failed to submit form. Please check your details and try again.",
+          message: data.error || "Failed to process your request. Please check your details and try again.",
         });
       }
     } catch (err) {
@@ -113,13 +180,70 @@ export function Contact() {
       setStatus({
         submitting: false,
         success: false,
-        message: "Network error submitting form. Please try emailing directly.",
+        message: "Network connection error. Please try emailing directly at hrishisgp97@gmail.com.",
       });
     }
   };
 
   return (
-    <section id="contact" className="scroll-mt-24 py-16 sm:py-20">
+    <section id="contact" className="scroll-mt-24 py-16 sm:py-20 relative">
+      {/* ── Sleek Floating Toast Notification ── */}
+      <AnimatePresence>
+        {showToast && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            className="fixed top-24 right-4 sm:right-8 z-[70] max-w-md w-[calc(100vw-2rem)]"
+          >
+            <div
+              className={`glass-raised p-4 rounded-2xl border shadow-2xl backdrop-blur-2xl flex items-start gap-3.5 relative overflow-hidden ${
+                status.success
+                  ? "border-emerald-500/40 bg-emerald-950/80 text-emerald-100"
+                  : "border-rose-500/40 bg-rose-950/80 text-rose-100"
+              }`}
+            >
+              {/* Icon */}
+              <div
+                className={`p-2 rounded-xl shrink-0 ${
+                  status.success ? "bg-emerald-500/20 text-emerald-400" : "bg-rose-500/20 text-rose-400"
+                }`}
+              >
+                {status.success ? <CheckCircle2 className="h-5 w-5" /> : <AlertCircle className="h-5 w-5" />}
+              </div>
+
+              {/* Message Content */}
+              <div className="flex-1 pr-4">
+                <h4 className="font-extrabold text-sm flex items-center gap-1.5">
+                  {status.success ? "Inquiry Submitted Successfully!" : "Submission Alert"}
+                  {status.success && <ShieldCheck className="h-4 w-4 text-emerald-400" />}
+                </h4>
+                <p className="text-xs leading-relaxed opacity-90 mt-0.5">{status.message}</p>
+              </div>
+
+              {/* Close Button */}
+              <button
+                onClick={() => setShowToast(false)}
+                className="text-slate-400 hover:text-white transition-colors p-1 rounded-lg"
+              >
+                <X className="h-4 w-4" />
+              </button>
+
+              {/* Progress Bar Animation */}
+              <motion.div
+                initial={{ width: "100%" }}
+                animate={{ width: "0%" }}
+                transition={{ duration: 6, ease: "linear" }}
+                className={`absolute bottom-0 left-0 h-1 ${
+                  status.success ? "bg-emerald-400" : "bg-rose-400"
+                }`}
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <motion.div
         initial={{ opacity: 0, y: 28 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -135,79 +259,91 @@ export function Contact() {
         </div>
 
         <h2 className="mb-4 text-center text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-          Let&apos;s Build Something <span className="gradient-text">Great Together</span>
+          Let&apos;s Build Something <span className="gradient-text">Exceptional</span>
         </h2>
 
-        <p className="mx-auto mb-10 max-w-xl text-center text-base leading-relaxed text-slate-600 dark:text-slate-400 sm:text-lg">
-          Have a project in mind, need custom software development, or want to explore collaboration? Fill in your query & requirements below.
+        <p className="mx-auto mb-12 max-w-xl text-center text-base text-slate-600 dark:text-slate-400">
+          Whether you need a multi-tenant SaaS platform, workflow automation, custom full-stack application, or cloud data engineering — I&apos;m here to help.
         </p>
 
-        <div className="mx-auto max-w-4xl grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Quick Contact & Social Links Info (Left Column) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Left Column: Direct Contact Info & Socials */}
           <div className="lg:col-span-5 space-y-6">
             <div className="glass p-6 sm:p-8 space-y-6">
-              <h3 className="font-bold text-lg text-slate-900 dark:text-white border-b border-[var(--border)] pb-3">
-                Contact Channels
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+                Direct Contact Channels
               </h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                Reach out directly via email, WhatsApp, or phone. I typically respond within a few hours.
+              </p>
 
-              <div className="space-y-3">
-                {contactMethods.map(({ icon: Icon, label, value, href, style }) => (
-                  <a
-                    key={label}
-                    href={href}
-                    target={href.startsWith("http") ? "_blank" : undefined}
-                    rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
-                    className={`flex items-center gap-3.5 rounded-2xl border p-3.5 text-sm font-medium transition-all duration-200 ${
-                      style === "btn-primary"
-                        ? "btn-primary border-transparent justify-center"
-                        : style === "whatsapp"
-                        ? "border-[#25D366]/40 bg-[#25D366]/08 dark:bg-[#25D366]/10 text-[#128C7E] dark:text-[#25D366] hover:bg-[#25D366]/15 hover:border-[#25D366]/60"
-                        : "border-[var(--border)] bg-white/60 dark:bg-white/[0.04] text-slate-700 dark:text-slate-300 hover:border-purple-400/40 hover:bg-purple-50/50 dark:hover:bg-purple-900/15"
-                    }`}
-                  >
-                    <Icon className="h-5 w-5 shrink-0" />
-                    <div>
-                      <div className="font-bold">{label}</div>
-                      <div className="text-xs opacity-80">{value}</div>
-                    </div>
-                  </a>
-                ))}
+              <div className="space-y-3.5">
+                {contactMethods.map((method) => {
+                  const Icon = method.icon;
+                  return (
+                    <a
+                      key={method.label}
+                      href={method.href}
+                      target={method.href.startsWith("http") ? "_blank" : undefined}
+                      rel={method.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                      className="flex items-center justify-between p-4 rounded-2xl border border-[var(--border)] bg-white/50 dark:bg-white/[0.03] hover:border-purple-500/40 hover:bg-purple-500/5 transition-all group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <Icon className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                            {method.label}
+                          </div>
+                          <div className="text-sm font-bold text-slate-900 dark:text-white">
+                            {method.value}
+                          </div>
+                        </div>
+                      </div>
+                      <Send className="h-4 w-4 text-slate-400 group-hover:text-purple-500 group-hover:translate-x-1 transition-all" />
+                    </a>
+                  );
+                })}
               </div>
 
-              <div className="pt-2 border-t border-[var(--border)]">
-                <div className="text-xs text-slate-400 dark:text-slate-500 font-semibold uppercase tracking-wider mb-3">
-                  Follow & Connect
+              {/* Social Links */}
+              <div className="pt-4 border-t border-[var(--border)]">
+                <div className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+                  Connect Across Web
                 </div>
-                <div className="flex gap-3">
-                  {socialLinks.map(({ name, url, icon: Icon, color }) => (
-                    <a
-                      key={name}
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title={name}
-                      className={`flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-white/60 dark:bg-white/[0.04] text-slate-500 dark:text-slate-500 transition-all duration-200 hover:scale-110 ${color}`}
-                    >
-                      <Icon className="h-4 w-4" />
-                    </a>
-                  ))}
+                <div className="flex items-center gap-3">
+                  {socialLinks.map((s) => {
+                    const Icon = s.icon;
+                    return (
+                      <a
+                        key={s.name}
+                        href={s.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={s.name}
+                        className={`flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--border)] bg-white/50 dark:bg-white/[0.03] text-slate-600 dark:text-slate-400 transition-all hover:scale-110 shadow-sm ${s.color}`}
+                      >
+                        <Icon className="h-5 w-5" />
+                      </a>
+                    );
+                  })}
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Interactive Requirement & Query Form (Right Column) */}
+          {/* Right Column: Project Requirements Submission Form */}
           <div className="lg:col-span-7">
-            <div className="glass p-6 sm:p-8">
-              <h3 className="font-bold text-xl text-slate-900 dark:text-white mb-2">
+            <div className="glass-raised p-6 sm:p-8 lg:p-10 relative overflow-hidden">
+              <h3 className="text-xl font-extrabold text-slate-900 dark:text-white mb-2">
                 Submit Your Project Requirements
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">
-                All submissions are securely saved in database for direct follow-up.
+                All inquiries are received securely for direct follow-up and instant email confirmation.
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Name & Email Row */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
@@ -242,15 +378,37 @@ export function Contact() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
-                      Subject / Topic
+                      Subject / Expertise Topic
                     </label>
-                    <input
-                      type="text"
-                      placeholder="SaaS Development / Web App"
+                    <select
                       value={formData.subject}
                       onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                      className="w-full rounded-xl border border-[var(--border)] bg-white/70 dark:bg-slate-950/50 px-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
-                    />
+                      className="w-full rounded-xl border border-[var(--border)] bg-white/70 dark:bg-slate-950/50 px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
+                    >
+                      {SUBJECT_OPTIONS.map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* Conditional Input for Custom Subject */}
+                    {formData.subject === "Custom Subject (Specify Below)" && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-2.5"
+                      >
+                        <input
+                          type="text"
+                          required
+                          placeholder="Enter your custom subject..."
+                          value={formData.customSubject}
+                          onChange={(e) => setFormData({ ...formData, customSubject: e.target.value })}
+                          className="w-full rounded-xl border border-purple-500/40 bg-purple-500/5 px-4 py-2 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
+                        />
+                      </motion.div>
+                    )}
                   </div>
 
                   <div>
@@ -272,9 +430,31 @@ export function Contact() {
 
                 {/* Requirements & Message */}
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
-                    Project Requirements & Query *
-                  </label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                      Project Requirements & Query *
+                    </label>
+
+                    <button
+                      type="button"
+                      onClick={handleRefineRequirements}
+                      disabled={!formData.requirements.trim() || isRefining}
+                      className="inline-flex items-center gap-1 text-xs font-bold text-purple-600 dark:text-purple-400 hover:text-purple-500 disabled:opacity-40 transition-colors"
+                      title="Polishes & formats draft requirements into professional specification using Google Gemini AI"
+                    >
+                      {isRefining ? (
+                        <>
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          Refining with Gemini...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+                          Refine with Gemini AI
+                        </>
+                      )}
+                    </button>
+                  </div>
                   <textarea
                     required
                     rows={4}
@@ -285,36 +465,16 @@ export function Contact() {
                   />
                 </div>
 
-                {/* Status Alert Notification */}
-                {status.message && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={`flex items-center gap-2 p-3.5 rounded-xl text-xs font-semibold ${
-                      status.success
-                        ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30"
-                        : "bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/30"
-                    }`}
-                  >
-                    {status.success ? (
-                      <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-500" />
-                    ) : (
-                      <AlertCircle className="h-4 w-4 shrink-0 text-rose-500" />
-                    )}
-                    <span>{status.message}</span>
-                  </motion.div>
-                )}
-
                 {/* Submit Button */}
                 <button
                   type="submit"
                   disabled={status.submitting}
-                  className="btn-primary w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 disabled:opacity-60"
+                  className="btn-primary w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg hover:shadow-purple-500/25 transition-all"
                 >
                   {status.submitting ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      Saving to MongoDB...
+                      Dispatching Requirements...
                     </>
                   ) : (
                     <>
