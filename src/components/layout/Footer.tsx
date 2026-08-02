@@ -1,18 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { Heart, ArrowUp, ShieldCheck, Mail, Phone, MapPin } from "lucide-react";
+import { Heart, ArrowUp, ShieldCheck, Mail, Phone, MapPin, ExternalLink, Sparkles } from "lucide-react";
 import { GithubIcon, LinkedinIcon, InstagramIcon, FacebookIcon } from "@/components/SocialIcons";
 import { portfolioConfig } from "@/config/portfolioConfig";
 
 const dev = portfolioConfig.developer;
 const navLinks = portfolioConfig.navigation;
+const projects = portfolioConfig.projects;
 
 const socialMap = [
-  { name: "GitHub", url: dev.github, icon: GithubIcon },
-  { name: "LinkedIn", url: dev.linkedin, icon: LinkedinIcon },
-  { name: "Instagram", url: dev.instagram, icon: InstagramIcon },
-  { name: "Facebook", url: dev.facebook, icon: FacebookIcon },
+  { name: "GitHub", url: dev.github, icon: GithubIcon, hoverColor: "hover:text-slate-900 dark:hover:text-white hover:border-slate-400/60" },
+  { name: "LinkedIn", url: dev.linkedin, icon: LinkedinIcon, hoverColor: "hover:text-[#0A66C2] hover:border-[#0A66C2]/40" },
+  { name: "Instagram", url: dev.instagram, icon: InstagramIcon, hoverColor: "hover:text-[#E1306C] hover:border-[#E1306C]/40" },
+  { name: "Facebook", url: dev.facebook, icon: FacebookIcon, hoverColor: "hover:text-[#1877F2] hover:border-[#1877F2]/40" },
 ];
 
 export function Footer() {
@@ -20,26 +21,34 @@ export function Footer() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const featuredApps = projects.filter((p) => p.featured || p.live);
+
   return (
-    <footer className="mt-16 border-t border-[var(--border)] bg-gradient-to-b from-transparent via-purple-950/5 to-purple-950/20 pt-14 pb-8 relative overflow-hidden">
+    <footer className="mt-20 border-t border-[var(--border)] bg-gradient-to-b from-transparent via-purple-950/5 to-purple-950/25 pt-16 pb-8 relative overflow-hidden">
       {/* Background Ambient Glow */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-purple-500/10 blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-40 bg-purple-500/10 blur-3xl pointer-events-none" />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10 space-y-12">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
-          {/* Brand & Bio */}
-          <div className="md:col-span-5 space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-10 items-start">
+          
+          {/* ── Brand & Bio Column ── */}
+          <div className="md:col-span-4 space-y-4">
             <div className="flex items-center gap-2.5">
-              <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-purple-600 to-blue-500 flex items-center justify-center text-white text-sm font-black shadow-md">
+              <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-blue-500 flex items-center justify-center text-white text-sm font-black shadow-md">
                 {dev.initials}
               </div>
-              <span className="text-xl font-extrabold text-slate-900 dark:text-white">
-                {dev.name}
-              </span>
+              <div>
+                <span className="text-xl font-extrabold text-slate-900 dark:text-white block leading-none">
+                  {dev.name}
+                </span>
+                <span className="text-xs font-bold text-purple-600 dark:text-purple-400 mt-1 block">
+                  {dev.role}
+                </span>
+              </div>
             </div>
 
-            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm leading-relaxed">
-              {dev.title} with {dev.experienceYears} years of experience designing scalable SaaS platforms, automated pipelines, and cloud data architecture.
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-sm leading-relaxed font-medium">
+              {dev.title} with {dev.experienceYears} years of experience architecting scalable multi-tenant SaaS platforms, workflow automation engines, and cloud data pipelines.
             </p>
 
             <div className="flex items-center gap-2 pt-1">
@@ -53,69 +62,103 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Quick Navigation Links */}
-          <div className="md:col-span-4 space-y-3">
-            <h4 className="text-xs font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500">
+          {/* ── Navigation Index Column ── */}
+          <div className="md:col-span-3 space-y-3">
+            <h4 className="text-xs font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-purple-500" />
               Navigation Index
             </h4>
-            <div className="grid grid-cols-2 gap-2 text-xs font-semibold">
+            <div className="grid grid-cols-2 gap-2 text-xs sm:text-sm font-bold">
               {navLinks.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors py-1 flex items-center gap-1.5"
+                  className="text-slate-700 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-300 transition-colors py-1 flex items-center gap-1.5 group"
                 >
-                  <span className="h-1 w-1 rounded-full bg-purple-500/40" />
+                  <span className="h-1 w-1 rounded-full bg-purple-500/40 group-hover:bg-purple-500 group-hover:scale-125 transition-all" />
                   {item.name}
                 </Link>
               ))}
             </div>
           </div>
 
-          {/* Social Channels & Contact */}
+          {/* ── Featured Apps Quick Links Column ── */}
+          <div className="md:col-span-2 space-y-3">
+            <h4 className="text-xs font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
+              <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+              Featured Apps
+            </h4>
+            <div className="space-y-2 text-xs sm:text-sm font-bold">
+              {featuredApps.map((proj) => (
+                <a
+                  key={proj.title}
+                  href={proj.live || proj.github || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-slate-700 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-300 transition-colors py-1 flex items-center justify-between group"
+                >
+                  <span className="truncate max-w-[130px]">{proj.title.split("—")[0]}</span>
+                  <ExternalLink className="h-3 w-3 text-slate-400 group-hover:text-purple-500 group-hover:translate-x-0.5 transition-all shrink-0" />
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Social Channels & Direct Contact Column ── */}
           <div className="md:col-span-3 space-y-3">
-            <h4 className="text-xs font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500">
+            <h4 className="text-xs font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
               Connect Across Web
             </h4>
+            
             <div className="flex items-center gap-2">
-              {socialMap.map(({ name, url, icon: Icon }) => (
+              {socialMap.map(({ name, url, icon: Icon, hoverColor }) => (
                 <a
                   key={name}
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={name}
-                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--border)] bg-white/50 dark:bg-white/[0.04] text-slate-500 dark:text-slate-400 hover:text-purple-500 hover:border-purple-500/40 transition-all shadow-sm"
+                  className={`flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-white/70 dark:bg-white/[0.04] text-slate-600 dark:text-slate-400 transition-all hover:scale-110 shadow-sm ${hoverColor}`}
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon className="h-4.5 w-4.5" />
                 </a>
               ))}
             </div>
 
-            <div className="text-xs text-slate-500 space-y-1 pt-2">
-              <div className="flex items-center gap-1.5">
-                <Mail className="h-3.5 w-3.5 text-purple-400" /> {dev.email}
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Phone className="h-3.5 w-3.5 text-purple-400" /> {dev.phone}
-              </div>
+            <div className="text-xs font-bold text-slate-600 dark:text-slate-400 space-y-1.5 pt-2">
+              <a
+                href={`mailto:${dev.email}`}
+                className="flex items-center gap-1.5 hover:text-purple-600 dark:hover:text-purple-300 transition-colors"
+              >
+                <Mail className="h-3.5 w-3.5 text-purple-500" /> {dev.email}
+              </a>
+              <a
+                href={`https://wa.me/${dev.whatsapp.replace(/[^0-9]/g, "")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+              >
+                <Phone className="h-3.5 w-3.5 text-emerald-500" /> {dev.phone}
+              </a>
             </div>
           </div>
+
         </div>
 
-        {/* Bottom Bar & Scroll to Top */}
+        {/* ── Bottom Bar & Scroll to Top ── */}
         <div className="pt-8 border-t border-[var(--border)] flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-slate-500 dark:text-slate-400 text-center sm:text-left">
+          <p className="text-xs text-slate-600 dark:text-slate-400 text-center sm:text-left font-medium">
             © {new Date().getFullYear()} {dev.name}. Designed & Engineered with{" "}
             <Heart className="inline h-3.5 w-3.5 text-rose-500 fill-rose-500" /> using Next.js 16 & TypeScript.
           </p>
 
           <button
             onClick={scrollToTop}
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 text-xs font-bold text-purple-600 dark:text-purple-400 hover:bg-purple-500/20 transition-all group"
+            className="flex items-center gap-2 px-4 py-2 rounded-full border border-purple-500/30 bg-purple-500/10 text-xs font-bold text-purple-600 dark:text-purple-300 hover:bg-purple-500/20 transition-all shadow-sm group"
           >
             Back to top
-            <ArrowUp className="h-3.5 w-3.5 group-hover:-translate-y-0.5 transition-transform" />
+            <ArrowUp className="h-3.5 w-3.5 group-hover:-translate-y-1 transition-transform" />
           </button>
         </div>
       </div>

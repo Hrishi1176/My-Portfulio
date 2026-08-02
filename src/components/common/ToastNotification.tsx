@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, AlertCircle, X, ShieldCheck } from "lucide-react";
+import { CheckCircle2, AlertCircle, Info, X, ShieldCheck } from "lucide-react";
 import { useEffect } from "react";
 
 export interface ToastProps {
@@ -31,46 +31,59 @@ export function ToastNotification({
   }, [show, message, duration, onClose]);
 
   const isSuccess = type === "success";
+  const isError = type === "error";
 
   return (
     <AnimatePresence>
       {show && message && (
         <motion.div
-          initial={{ opacity: 0, y: -24, scale: 0.92 }}
+          initial={{ opacity: 0, y: -20, scale: 0.94 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -24, scale: 0.92 }}
-          transition={{ type: "spring", stiffness: 400, damping: 28 }}
-          className="fixed top-24 right-4 sm:right-8 z-[100] max-w-md w-[calc(100vw-2rem)]"
+          exit={{ opacity: 0, y: -20, scale: 0.94 }}
+          transition={{ type: "spring", stiffness: 420, damping: 28 }}
+          className="fixed top-20 sm:top-24 right-4 sm:right-8 z-[100] max-w-md w-[calc(100vw-2rem)] sm:w-auto"
         >
           <div
-            className={`glass-raised p-4 rounded-2xl border shadow-2xl backdrop-blur-2xl flex items-start gap-3.5 relative overflow-hidden ${
+            className={`glass-raised p-4 sm:p-4.5 rounded-2xl border shadow-2xl backdrop-blur-2xl flex items-start gap-3.5 relative overflow-hidden transition-colors ${
               isSuccess
-                ? "border-emerald-500/40 bg-emerald-950/85 text-emerald-100"
-                : "border-rose-500/40 bg-rose-950/85 text-rose-100"
+                ? "border-emerald-500/40 bg-white/95 dark:bg-slate-950/95 text-slate-900 dark:text-slate-100"
+                : isError
+                ? "border-rose-500/40 bg-white/95 dark:bg-slate-950/95 text-slate-900 dark:text-slate-100"
+                : "border-purple-500/40 bg-white/95 dark:bg-slate-950/95 text-slate-900 dark:text-slate-100"
             }`}
           >
             {/* Icon Badge */}
             <div
-              className={`p-2 rounded-xl shrink-0 ${
-                isSuccess ? "bg-emerald-500/20 text-emerald-400" : "bg-rose-500/20 text-rose-400"
+              className={`p-2.5 rounded-xl shrink-0 ${
+                isSuccess
+                  ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25"
+                  : isError
+                  ? "bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/25"
+                  : "bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/25"
               }`}
             >
-              {isSuccess ? <CheckCircle2 className="h-5 w-5" /> : <AlertCircle className="h-5 w-5" />}
+              {isSuccess ? (
+                <CheckCircle2 className="h-5 w-5" />
+              ) : isError ? (
+                <AlertCircle className="h-5 w-5" />
+              ) : (
+                <Info className="h-5 w-5" />
+              )}
             </div>
 
             {/* Message Content */}
-            <div className="flex-1 pr-4">
-              <h4 className="font-extrabold text-sm flex items-center gap-1.5">
-                {title || (isSuccess ? "Action Successful!" : "Notification Alert")}
-                {isSuccess && <ShieldCheck className="h-4 w-4 text-emerald-400" />}
+            <div className="flex-1 pr-3">
+              <h4 className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-1.5 leading-snug">
+                {title || (isSuccess ? "Action Successful!" : isError ? "Notification Alert" : "Information")}
+                {isSuccess && <ShieldCheck className="h-4 w-4 text-emerald-500" />}
               </h4>
-              <p className="text-xs leading-relaxed opacity-90 mt-0.5">{message}</p>
+              <p className="text-xs leading-relaxed text-slate-600 dark:text-slate-300 mt-1 font-medium">{message}</p>
             </div>
 
             {/* Close Button */}
             <button
               onClick={onClose}
-              className="text-slate-400 hover:text-white transition-colors p-1 rounded-lg"
+              className="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10"
               aria-label="Close notification"
             >
               <X className="h-4 w-4" />
@@ -82,7 +95,7 @@ export function ToastNotification({
               animate={{ width: "0%" }}
               transition={{ duration: duration / 1000, ease: "linear" }}
               className={`absolute bottom-0 left-0 h-1 ${
-                isSuccess ? "bg-emerald-400" : "bg-rose-400"
+                isSuccess ? "bg-emerald-500" : isError ? "bg-rose-500" : "bg-purple-500"
               }`}
             />
           </div>

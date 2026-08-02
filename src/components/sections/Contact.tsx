@@ -7,28 +7,32 @@ import Cookies from "js-cookie";
 import { ToastNotification } from "@/components/common/ToastNotification";
 import { GithubIcon, LinkedinIcon, InstagramIcon, FacebookIcon } from "@/components/SocialIcons";
 
+import { portfolioConfig } from "@/config/portfolioConfig";
+
+const dev = portfolioConfig.developer;
+
 const socialLinks = [
   {
     name: "LinkedIn",
-    url: "https://www.linkedin.com/in/hrishi-bhattacharyya-b78332204/",
+    url: dev.linkedin,
     icon: LinkedinIcon,
     color: "hover:text-[#0A66C2] hover:border-[#0A66C2]/40",
   },
   {
     name: "GitHub",
-    url: "https://github.com/Hrishi1176",
+    url: dev.github,
     icon: GithubIcon,
     color: "hover:text-slate-900 dark:hover:text-white hover:border-slate-400/60",
   },
   {
     name: "Instagram",
-    url: "https://instagram.com/invisible_hovercraft_king",
+    url: dev.instagram,
     icon: InstagramIcon,
     color: "hover:text-[#E1306C] hover:border-[#E1306C]/40",
   },
   {
     name: "Facebook",
-    url: "https://www.facebook.com/share/1DRH2U5YCw/",
+    url: dev.facebook,
     icon: FacebookIcon,
     color: "hover:text-[#1877F2] hover:border-[#1877F2]/40",
   },
@@ -38,27 +42,25 @@ const contactMethods = [
   {
     icon: Mail,
     label: "Email Me",
-    value: "hrishisgp97@gmail.com",
-    href: "mailto:hrishisgp97@gmail.com",
+    value: dev.email,
+    href: `mailto:${dev.email}`,
     style: "btn-primary",
   },
   {
     icon: MessageCircle,
     label: "WhatsApp",
-    value: "+91 62946 60141",
-    href: "https://wa.me/916294660141",
+    value: dev.whatsapp,
+    href: `https://wa.me/${dev.whatsapp.replace(/[^0-9]/g, "")}`,
     style: "whatsapp",
   },
   {
     icon: Phone,
     label: "Call Me",
-    value: "+91 62946 60141",
-    href: "tel:+916294660141",
+    value: dev.phone,
+    href: `tel:${dev.phone.replace(/[^0-9+]/g, "")}`,
     style: "outline",
   },
 ];
-
-import { portfolioConfig } from "@/config/portfolioConfig";
 
 const SUBJECT_OPTIONS = portfolioConfig.contactOptions.subjectOptions;
 const MAX_DAILY_REFINEMENTS = portfolioConfig.aiChat.maxDailyRefinements;
@@ -270,10 +272,10 @@ export function Contact() {
                           <Icon className="h-5 w-5" />
                         </div>
                         <div>
-                          <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                          <div className="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                             {method.label}
                           </div>
-                          <div className="text-sm font-bold text-slate-900 dark:text-white">
+                          <div className="text-sm font-extrabold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors">
                             {method.value}
                           </div>
                         </div>
