@@ -1,8 +1,9 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Star, ChevronLeft, ChevronRight, Quote, Plus, X, ShieldCheck, MessageSquare, Loader2, CheckCircle2, Sparkles } from "lucide-react";
+import { Star, ChevronLeft, ChevronRight, Quote, Plus, X, ShieldCheck, MessageSquare, Loader2, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
+import { ToastNotification } from "@/components/common/ToastNotification";
 
 interface Review {
   _id: string;
@@ -20,6 +21,7 @@ export function Reviews() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showToast, setShowToast] = useState(false);
 
   // Form State
   const [newReview, setNewReview] = useState({
@@ -44,6 +46,13 @@ export function Reviews() {
   useEffect(() => {
     fetchReviews();
   }, []);
+
+  // Trigger floating toast notification
+  useEffect(() => {
+    if (submitStatus.message && submitStatus.success !== null) {
+      setShowToast(true);
+    }
+  }, [submitStatus.message, submitStatus.success]);
 
   const fetchReviews = async () => {
     try {
@@ -93,7 +102,7 @@ export function Reviews() {
         setSubmitStatus({
           submitting: false,
           success: true,
-          message: "Thank you! Your review has been saved to MongoDB.",
+          message: "Thank you! Your testimonial has been published successfully.",
         });
 
         // Add new review dynamically to state and display it
@@ -104,7 +113,6 @@ export function Reviews() {
 
         setTimeout(() => {
           setIsModalOpen(false);
-          setSubmitStatus({ submitting: false, success: null, message: "" });
           setNewReview({
             clientName: "",
             clientRole: "",
@@ -112,7 +120,7 @@ export function Reviews() {
             rating: 5,
             reviewText: "",
           });
-        }, 1500);
+        }, 1200);
       } else {
         setSubmitStatus({
           submitting: false,
@@ -133,7 +141,16 @@ export function Reviews() {
   const currentReview = reviews[currentIndex];
 
   return (
-    <section id="reviews" className="scroll-mt-24 py-16 sm:py-20">
+    <section id="reviews" className="scroll-mt-24 py-16 sm:py-20 relative">
+      {/* ── Reusable Toast Notification Component ── */}
+      <ToastNotification
+        show={showToast}
+        type={submitStatus.success ? "success" : "error"}
+        title={submitStatus.success ? "Review Published!" : "Submission Alert"}
+        message={submitStatus.message}
+        onClose={() => setShowToast(false)}
+      />
+
       <motion.div
         initial={{ opacity: 0, y: 28 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -170,10 +187,10 @@ export function Reviews() {
           {loading ? (
             <div className="flex flex-col items-center justify-center py-16">
               <Loader2 className="h-8 w-8 animate-spin text-purple-500 mb-3" />
-              <p className="text-xs text-slate-500">Fetching reviews from MongoDB...</p>
+              <p className="text-xs text-slate-500">Fetching reviews from database...</p>
             </div>
           ) : reviews.length === 0 ? (
-            /* Empty State — No static hardcoded fake reviews */
+            /* Empty State */
             <div className="flex flex-col items-center justify-center text-center py-12 px-4 space-y-4">
               <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-purple-500/10 text-purple-500 border border-purple-500/20">
                 <Sparkles className="h-7 w-7" />
@@ -417,20 +434,6 @@ export function Reviews() {
                   />
                 </div>
 
-                {/* Status message */}
-                {submitStatus.message && (
-                  <div
-                    className={`flex items-center gap-2 p-3 rounded-xl text-xs font-semibold ${
-                      submitStatus.success
-                        ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30"
-                        : "bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/30"
-                    }`}
-                  >
-                    {submitStatus.success && <CheckCircle2 className="h-4 w-4 text-emerald-500" />}
-                    <span>{submitStatus.message}</span>
-                  </div>
-                )}
-
                 {/* Submit button */}
                 <button
                   type="submit"
@@ -440,7 +443,7 @@ export function Reviews() {
                   {submitStatus.submitting ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      Saving to MongoDB...
+                      Publishing Review...
                     </>
                   ) : (
                     "Publish Testimonial"
