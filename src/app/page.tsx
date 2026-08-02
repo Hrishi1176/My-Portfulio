@@ -12,6 +12,7 @@ import { LiveAnalytics } from "@/components/sections/LiveAnalytics";
 import { Education } from "@/components/sections/Education";
 import { Contact } from "@/components/sections/Contact";
 import { ParticleBackground } from "@/components/ParticleBackground";
+import { AIChatbot } from "@/components/AIChatbot";
 
 export default function Home() {
   return (
@@ -75,6 +76,9 @@ export default function Home() {
         <Contact />
         <Footer />
       </div>
+
+      {/* Floating AI Assistant Chatbot */}
+      <AIChatbot />
     </main>
   );
 }
