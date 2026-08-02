@@ -75,48 +75,6 @@ const projects = [
     accentBorder: "border-violet-500/35 dark:border-violet-400/30 shadow-[0_0_20px_rgba(139,92,246,0.12)]",
     tagColor: "text-violet-600 dark:text-violet-400 border-violet-500/30 bg-violet-500/10",
   },
-  {
-    number: "06",
-    title: "Multi-Tenant E-Commerce SaaS Platform",
-    description:
-      "Scalable SaaS e-commerce solution using Next.js featuring Role-Based Access Control (RBAC), multi-tenant storefront routing, robust product catalog management, and high-volume order processing.",
-    tech: ["Next.js", "React", "TypeScript", "Node.js", "PostgreSQL"],
-    github: null,
-    live: null,
-    isPrivate: true,
-    featured: false,
-    gradient: "from-indigo-500/15 via-blue-500/10 to-transparent",
-    accentBorder: "border-indigo-500/35 dark:border-indigo-400/30 shadow-[0_0_20px_rgba(99,102,241,0.12)]",
-    tagColor: "text-indigo-600 dark:text-indigo-400 border-indigo-500/30 bg-indigo-500/10",
-  },
-  {
-    number: "07",
-    title: "Enterprise Office & HR Management System",
-    description:
-      "Comprehensive internal management suite incorporating HR approval workflows, leave management, expense tracking, and advanced task delegation for corporate operations.",
-    tech: ["React", "Node.js", "PostgreSQL", "REST APIs", "Python"],
-    github: null,
-    live: null,
-    isPrivate: true,
-    featured: false,
-    gradient: "from-rose-500/15 via-pink-500/10 to-transparent",
-    accentBorder: "border-rose-500/35 dark:border-rose-400/30 shadow-[0_0_20px_rgba(244,63,94,0.12)]",
-    tagColor: "text-rose-600 dark:text-rose-400 border-rose-500/30 bg-rose-500/10",
-  },
-  {
-    number: "08",
-    title: "Snowflake Cloud Data & Analytics Platform",
-    description:
-      "Cloud-native data platform supporting automated ETL pipelines, scheduled analytical reporting, and business intelligence dashboards for data-driven organization decisions.",
-    tech: ["Python", "Snowflake", "SQL", "ETL Pipelines", "Data Analytics"],
-    github: null,
-    live: null,
-    isPrivate: true,
-    featured: false,
-    gradient: "from-amber-500/15 via-orange-500/10 to-transparent",
-    accentBorder: "border-amber-500/35 dark:border-amber-400/30 shadow-[0_0_20px_rgba(245,158,11,0.12)]",
-    tagColor: "text-amber-600 dark:text-amber-400 border-amber-500/30 bg-amber-500/10",
-  },
 ];
 
 export function Projects() {
