@@ -1,13 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Terminal, Cpu, Database, Layers } from "lucide-react";
 
 const FOCUS_AREAS = [
-  { label: "Scalable systems",     emoji: "🏗️" },
-  { label: "Team leadership",      emoji: "🤝" },
-  { label: "Cloud data platforms", emoji: "☁️" },
-  { label: "Product thinking",     emoji: "💡" },
+  { label: "Scalable SaaS Architecture", icon: Cpu, color: "text-purple-500 bg-purple-500/10 border-purple-500/20" },
+  { label: "Engineering Team Leadership", icon: Layers, color: "text-blue-500 bg-blue-500/10 border-blue-500/20" },
+  { label: "Cloud Data Platforms & ETL", icon: Database, color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" },
+  { label: "Product & System Design", icon: Terminal, color: "text-amber-500 bg-amber-500/10 border-amber-500/20" },
 ];
 
 export function About() {
@@ -32,48 +32,61 @@ export function About() {
           <span className="gradient-text">that scale & endure</span>
         </h2>
 
-        <div className="glass p-6 sm:p-8 lg:p-10">
-          <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-14">
+        <div className="glass p-6 sm:p-8 lg:p-10 relative overflow-hidden">
+          <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-14 items-center">
             {/* ── Bio ── */}
             <div className="space-y-5">
               <p className="text-base leading-[1.85] text-slate-700 dark:text-slate-300 sm:text-lg">
                 I&apos;m a <strong className="font-semibold text-slate-900 dark:text-white">Senior Full Stack Developer</strong> with over{" "}
                 <strong className="font-semibold text-slate-900 dark:text-white">4.5 years</strong> of experience designing and delivering
-                scalable web applications, multi-tenant SaaS platforms, workflow automation systems, and data engineering solutions.
+                scalable web applications, multi-tenant SaaS platforms, workflow automation systems, and cloud data engineering solutions.
               </p>
               <p className="text-base leading-[1.85] text-slate-700 dark:text-slate-300 sm:text-lg">
-                My journey involves leading teams, architecting enterprise applications, and building robust end-to-end solutions.
-                I have strong expertise in software architecture, REST APIs, database design, and cloud-based data solutions — always
-                aiming to deliver high-quality, performant software that makes a real difference.
+                My journey involves leading developer teams, architecting enterprise software, and building robust end-to-end applications.
+                I have strong expertise in full-stack architecture, REST/WebSocket APIs, database optimization, and cloud solutions — always
+                aiming to deliver high-quality, performant software.
               </p>
 
               {/* Trait chips */}
-              <div className="flex flex-wrap gap-2 pt-1">
-                {["Problem Solver", "Tech Lead", "Full-Stack", "Open Source Contributor"].map((t) => (
-                  <span key={t} className="tag">{t}</span>
+              <div className="flex flex-wrap gap-2 pt-2">
+                {["Problem Solver", "Tech Lead", "Full-Stack Engineer", "System Architect", "Open Source Contributor"].map((t) => (
+                  <motion.span
+                    key={t}
+                    whileHover={{ scale: 1.08 }}
+                    className="tag text-xs font-bold shadow-sm cursor-default"
+                  >
+                    {t}
+                  </motion.span>
                 ))}
               </div>
             </div>
 
-            {/* ── Focus Areas ── */}
+            {/* ── Focus Areas Cards ── */}
             <div>
               <div className="mb-4 flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-purple-500 dark:text-purple-400" />
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-purple-600 dark:text-purple-400">
-                  Focus areas
+                  Core Focus Areas
                 </p>
               </div>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-2">
-                {FOCUS_AREAS.map(({ label, emoji }) => (
-                  <div
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                {FOCUS_AREAS.map(({ label, icon: Icon, color }, idx) => (
+                  <motion.div
                     key={label}
-                    className="card flex flex-col gap-2 p-4"
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.1, duration: 0.45 }}
+                    whileHover={{ y: -6, scale: 1.02 }}
+                    className="card flex flex-col gap-3 p-5 group transition-all duration-300 cursor-default"
                   >
-                    <span className="text-2xl">{emoji}</span>
-                    <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 leading-snug">
+                    <div className={`h-10 w-10 rounded-xl flex items-center justify-center border ${color} shadow-sm group-hover:scale-110 transition-transform`}>
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200 leading-snug group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
                       {label}
                     </span>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </div>

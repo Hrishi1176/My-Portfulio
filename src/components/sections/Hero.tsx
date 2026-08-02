@@ -9,16 +9,16 @@ import { ResumeModal } from "./ResumeModal";
 import { GithubIcon, LinkedinIcon } from "@/components/SocialIcons";
 
 const FLOAT_BADGES = [
-  { label: "React & Next.js",    color: "from-cyan-500/20 to-blue-500/20",    border: "border-cyan-400/30",    text: "text-cyan-700 dark:text-cyan-300",    top: "top-6",    left: "-left-2", delay: 0 },
-  { label: "Data Engineering",   color: "from-blue-500/20 to-indigo-500/20",  border: "border-blue-400/30",    text: "text-blue-700 dark:text-blue-300",    top: "top-20",   left: "right-0",delay: 1 },
-  { label: "System Design",      color: "from-pink-500/20 to-rose-500/20",    border: "border-pink-400/30",    text: "text-pink-700 dark:text-pink-300",    top: "bottom-20",left: "-left-4",delay: 2 },
-  { label: "Python & Node.js",   color: "from-teal-500/20 to-green-500/20",   border: "border-teal-400/30",    text: "text-teal-700 dark:text-teal-300",    top: "bottom-8", left: "right-0",delay: 0.5 },
+  { label: "React & Next.js", color: "from-cyan-500/20 to-blue-500/20", border: "border-cyan-400/30", text: "text-cyan-700 dark:text-cyan-300", top: "top-6", left: "-left-2", delay: 0 },
+  { label: "Data Engineering", color: "from-blue-500/20 to-indigo-500/20", border: "border-blue-400/30", text: "text-blue-700 dark:text-blue-300", top: "top-20", left: "right-0", delay: 1 },
+  { label: "System Design", color: "from-pink-500/20 to-rose-500/20", border: "border-pink-400/30", text: "text-pink-700 dark:text-pink-300", top: "bottom-20", left: "-left-4", delay: 2 },
+  { label: "Python & Node.js", color: "from-teal-500/20 to-green-500/20", border: "border-teal-400/30", text: "text-teal-700 dark:text-teal-300", top: "bottom-8", left: "right-0", delay: 0.5 },
 ];
 
 const STATS = [
-  { value: "4.5+", label: "Years Exp." },
-  { value: "10+",  label: "Projects"   },
-  { value: "30+",  label: "Skills"     },
+  { value: "4.4+", label: "Years Exp." },
+  { value: "10+", label: "Projects" },
+  { value: "30+", label: "Skills" },
 ];
 
 export function Hero() {
@@ -135,60 +135,90 @@ export function Hero() {
               </motion.div>
             </motion.div>
 
-            {/* ── Right column — avatar ── */}
+            {/* ── Right column — avatar & animated floating elements ── */}
             <motion.div
               initial={{ opacity: 0, scale: 0.88 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.75, ease: "easeOut" }}
-              className="relative flex justify-center"
+              className="relative flex justify-center py-6"
             >
-              <div className="relative flex h-64 w-64 items-center justify-center sm:h-80 sm:w-80 lg:h-[400px] lg:w-[400px]">
-                {/* Spinning rings */}
-                <div
-                  className="absolute inset-0 rounded-full border-2 border-dashed border-purple-400/30 dark:border-purple-500/25"
-                  style={{ animation: "spin-slow 22s linear infinite" }}
-                />
-                <div
-                  className="absolute inset-5 rounded-full border border-dashed border-blue-400/20 dark:border-blue-500/18"
-                  style={{ animation: "spin-slow 32s linear infinite reverse" }}
+              <div className="relative flex h-72 w-72 items-center justify-center sm:h-96 sm:w-96 lg:h-[440px] lg:w-[440px]">
+                {/* Glowing radial ambient glow behind avatar */}
+                <div 
+                  className="absolute inset-4 rounded-full bg-gradient-to-tr from-purple-600/30 via-violet-500/25 to-cyan-500/30 blur-3xl pointer-events-none"
+                  style={{ animation: "pulse 6s ease-in-out infinite" }}
                 />
 
-                {/* Glow ring */}
+                {/* Outer Orbit Ring 1 - Counter Clockwise */}
                 <div
-                  className="absolute inset-8 rounded-full"
-                  style={{ animation: "pulse-glow 4s ease-in-out infinite" }}
+                  className="absolute inset-0 rounded-full border-2 border-dashed border-purple-500/35 dark:border-purple-400/30 shadow-[0_0_20px_rgba(168,85,247,0.15)]"
+                  style={{ animation: "spin-slow 24s linear infinite reverse" }}
+                >
+                  <span className="absolute -top-1.5 left-1/2 h-3 w-3 -translate-x-1/2 rounded-full bg-purple-400 shadow-[0_0_12px_#a855f7]" />
+                  <span className="absolute -bottom-1.5 left-1/2 h-3 w-3 -translate-x-1/2 rounded-full bg-cyan-400 shadow-[0_0_12px_#22d3ee]" />
+                </div>
+
+                {/* Middle Orbit Ring 2 - Clockwise */}
+                <div
+                  className="absolute inset-6 rounded-full border-2 border-dashed border-cyan-500/30 dark:border-cyan-400/25 shadow-[0_0_20px_rgba(34,211,238,0.12)]"
+                  style={{ animation: "spin-slow 16s linear infinite" }}
+                >
+                  <span className="absolute top-1/2 -right-1.5 h-3 w-3 -translate-y-1/2 rounded-full bg-blue-400 shadow-[0_0_12px_#60a5fa]" />
+                  <span className="absolute top-1/2 -left-1.5 h-3 w-3 -translate-y-1/2 rounded-full bg-rose-400 shadow-[0_0_12px_#fb7185]" />
+                </div>
+
+                {/* Inner Glowing Accent Ring */}
+                <div
+                  className="absolute inset-12 rounded-full border border-purple-400/20 dark:border-purple-500/20"
+                  style={{ animation: "spin-slow 30s linear infinite" }}
                 />
 
-                {/* Avatar frame */}
-                <div className="relative z-10 h-52 w-52 sm:h-64 sm:w-64 lg:h-80 lg:w-80">
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-purple-600 via-violet-500 to-blue-500 p-[3px]">
-                    <div className="relative h-full w-full overflow-hidden rounded-full bg-white dark:bg-[#0d0b1e]">
+                {/* Pulsing Neon Aura */}
+                <div
+                  className="absolute inset-14 rounded-full bg-gradient-to-tr from-purple-500/15 via-indigo-500/10 to-cyan-500/15 blur-xl"
+                  style={{ animation: "pulse-glow 3s ease-in-out infinite" }}
+                />
+
+                {/* Avatar Frame with Gradient Border & Glow */}
+                <div className="relative z-10 h-56 w-56 sm:h-72 sm:w-72 lg:h-84 lg:w-84 group">
+                  <div className="absolute -inset-1.5 rounded-full bg-gradient-to-r from-purple-600 via-pink-500 to-cyan-500 p-[3.5px] shadow-[0_0_35px_rgba(168,85,247,0.4)] transition-all duration-500 group-hover:shadow-[0_0_50px_rgba(168,85,247,0.6)]">
+                    <div className="relative h-full w-full overflow-hidden rounded-full bg-slate-950">
                       <Image
                         src="/Hrishi.Bhattacharyya.jpg"
                         alt="Hrishi Bhattacharya — Senior Software Developer"
                         fill
-                        sizes="(max-width: 640px) 13rem, (max-width: 1024px) 16rem, 20rem"
+                        sizes="(max-width: 640px) 14rem, (max-width: 1024px) 18rem, 22rem"
                         priority
-                        className="object-cover"
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     </div>
                   </div>
                 </div>
 
-                {/* Floating skill badges */}
+                {/* Animated Floating Skill Badges */}
                 {FLOAT_BADGES.map(({ label, color, border, text, top, left, delay }) => (
                   <motion.div
                     key={label}
-                    animate={{ y: [0, -10, 0] }}
-                    transition={{ duration: 4 + delay * 0.5, repeat: Infinity, ease: "easeInOut", delay }}
-                    className={`absolute ${top} ${left} hidden sm:block`}
+                    animate={{ y: [0, -12, 0] }}
+                    transition={{
+                      duration: 4.5,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay,
+                    }}
+                    whileHover={{ scale: 1.12, rotate: [-1, 1, 0] }}
+                    className={`absolute ${top} ${left} z-20 cursor-pointer`}
                   >
                     <div
-                      className={`flex items-center gap-1.5 rounded-full border ${border} bg-gradient-to-r ${color}
-                        backdrop-blur-md px-3.5 py-1.5 text-xs font-semibold ${text}
-                        shadow-lg dark:bg-black/40`}
+                      className={`flex items-center gap-2 rounded-full border ${border} bg-gradient-to-r ${color}
+                        backdrop-blur-xl px-4 py-2 text-xs sm:text-sm font-bold ${text}
+                        shadow-[0_8px_25px_rgba(0,0,0,0.15)] dark:shadow-[0_8px_25px_rgba(0,0,0,0.4)]
+                        dark:bg-slate-950/80 transition-all duration-300 hover:shadow-lg`}
                     >
-                      <span className="h-1.5 w-1.5 rounded-full bg-current opacity-75" />
+                      <span className="relative flex h-2 w-2">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-current opacity-75" />
+                        <span className="relative inline-flex h-2 w-2 rounded-full bg-current" />
+                      </span>
                       {label}
                     </div>
                   </motion.div>
