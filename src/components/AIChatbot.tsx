@@ -1,8 +1,9 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Bot, X, Send, Sparkles, MessageSquare, AlertCircle, Loader2, RefreshCw } from "lucide-react";
+import { Bot, X, Send, Sparkles, AlertCircle, Loader2 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import Cookies from "js-cookie";
 
 interface ChatMessage {
   id: string;
@@ -11,14 +12,10 @@ interface ChatMessage {
   timestamp: string;
 }
 
-const MAX_DAILY_REQUESTS = 10;
+import { portfolioConfig } from "@/config/portfolioConfig";
 
-const SUGGESTED_PROMPTS = [
-  "Tell me about Hrishi's experience",
-  "What projects has he built?",
-  "What is his tech stack?",
-  "How can I contact Hrishi?",
-];
+const MAX_DAILY_REQUESTS = portfolioConfig.aiChat.maxDailyChats;
+const SUGGESTED_PROMPTS = portfolioConfig.aiChat.suggestedPrompts;
 
 export function AIChatbot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,16 +25,16 @@ export function AIChatbot() {
   const [requestsToday, setRequestsToday] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Get today's date string format: YYYY-MM-DD
-  const getTodayKey = () => {
+  // Get today's cookie key name format: YYYY-MM-DD
+  const getTodayCookieKey = () => {
     const d = new Date();
     return `chat_req_${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
   };
 
-  // Load request count and initial message
+  // Load request count from secure browser cookie
   useEffect(() => {
-    const key = getTodayKey();
-    const count = localStorage.getItem(key);
+    const key = getTodayCookieKey();
+    const count = Cookies.get(key);
     setRequestsToday(count ? parseInt(count, 10) : 0);
 
     setMessages([
@@ -61,9 +58,9 @@ export function AIChatbot() {
     const query = textToSend || input.trim();
     if (!query || loading) return;
 
-    // Check Daily Rate Limit (Max 10 per day)
-    const key = getTodayKey();
-    const currentCount = parseInt(localStorage.getItem(key) || "0", 10);
+    // Check Cookie Rate Limit (Max 10 per day)
+    const key = getTodayCookieKey();
+    const currentCount = parseInt(Cookies.get(key) || "0", 10);
 
     if (currentCount >= MAX_DAILY_REQUESTS) {
       setMessages((prev) => [
@@ -85,9 +82,9 @@ export function AIChatbot() {
       return;
     }
 
-    // Increment request count
+    // Increment request count in cookie (expires in 1 day, SameSite=Lax)
     const newCount = currentCount + 1;
-    localStorage.setItem(key, String(newCount));
+    Cookies.set(key, String(newCount), { expires: 1, sameSite: "lax" });
     setRequestsToday(newCount);
 
     // Add user message

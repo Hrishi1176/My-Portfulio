@@ -7,6 +7,19 @@ import { SiNextdotjs, SiJavascript, SiTypescript, SiMongodb, SiMysql, SiPostgres
 import { BiNetworkChart, BiCheckShield, BiChalkboard } from "react-icons/bi";
 import { TbApi } from "react-icons/tb";
 
+const MARQUEE_SKILLS = [
+  { name: "React.js", icon: <FaReact className="w-5 h-5 text-[#61DAFB]" /> },
+  { name: "Next.js 16", icon: <SiNextdotjs className="w-5 h-5 text-slate-900 dark:text-white" /> },
+  { name: "TypeScript", icon: <SiTypescript className="w-5 h-5 text-[#3178C6]" /> },
+  { name: "Python", icon: <FaPython className="w-5 h-5 text-[#3776AB]" /> },
+  { name: "Node.js", icon: <FaNodeJs className="w-5 h-5 text-[#339933]" /> },
+  { name: "PostgreSQL", icon: <SiPostgresql className="w-5 h-5 text-[#4169E1]" /> },
+  { name: "MongoDB", icon: <SiMongodb className="w-5 h-5 text-[#47A248]" /> },
+  { name: "Snowflake", icon: <SiSnowflake className="w-5 h-5 text-[#29B5E8]" /> },
+  { name: "AI Agents", icon: <FaRobot className="w-5 h-5 text-purple-500" /> },
+  { name: "Git & GitHub", icon: <FaGitAlt className="w-5 h-5 text-[#F05032]" /> },
+];
+
 const skillCategories = [
   {
     title: "Frontend",
@@ -16,7 +29,7 @@ const skillCategories = [
     border: "border-blue-500/30 dark:border-blue-500/25",
     skills: [
       { name: "React.js", icon: <FaReact className="w-5 h-5 text-[#61DAFB]" /> },
-      { name: "Next.js 16", icon: <SiNextdotjs className="w-5 h-5 text-black dark:text-white" /> },
+      { name: "Next.js 16", icon: <SiNextdotjs className="w-5 h-5 text-slate-900 dark:text-white" /> },
       { name: "TypeScript", icon: <SiTypescript className="w-5 h-5 text-[#3178C6]" /> },
       { name: "JavaScript", icon: <SiJavascript className="w-5 h-5 text-[#F7DF1E]" /> },
       { name: "HTML5", icon: <FaHtml5 className="w-5 h-5 text-[#E34F26]" /> },
@@ -81,10 +94,26 @@ export function Skills() {
           </span>
         </div>
 
-        <h2 className="mb-10 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-          My <span className="gradient-text">Core Skills & Stack</span>
+        <h2 className="mb-8 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+          My <span className="gradient-text">Core Skills & Tech Stack</span>
         </h2>
 
+        {/* ── Live Infinite Marquee Skill Banner Slider ── */}
+        <div className="mb-10 overflow-hidden py-3 glass rounded-2xl border border-purple-500/20 relative">
+          <div className="flex gap-8 whitespace-nowrap animate-scroll">
+            {[...MARQUEE_SKILLS, ...MARQUEE_SKILLS].map((item, idx) => (
+              <div
+                key={`${item.name}-${idx}`}
+                className="inline-flex items-center gap-2.5 px-4 py-2 rounded-xl border border-[var(--border)] bg-white/70 dark:bg-white/[0.04] text-xs font-bold text-slate-800 dark:text-slate-200 shadow-sm shrink-0"
+              >
+                {item.icon}
+                <span>{item.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Category Cards */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
           {skillCategories.map((cat, idx) => {
             const Icon = cat.icon;
@@ -98,18 +127,15 @@ export function Skills() {
                 whileHover={{ y: -6 }}
                 className={`card group relative overflow-hidden p-6 transition-all duration-300 ${cat.border}`}
               >
-                {/* Accent gradient overlay */}
                 <div
                   className={`absolute inset-0 rounded-[1.25rem] bg-gradient-to-br ${cat.accent} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`}
                 />
 
-                {/* Header */}
                 <div className={`relative mb-5 flex items-center gap-3 rounded-xl border ${cat.border} bg-white/70 dark:bg-white/[0.05] px-3.5 py-2.5 backdrop-blur-md`}>
                   <Icon className={`w-5 h-5 ${cat.iconColor}`} />
                   <h3 className="font-bold text-slate-800 dark:text-slate-100">{cat.title}</h3>
                 </div>
 
-                {/* Skills list */}
                 <ul className="relative space-y-3">
                   {cat.skills.map((skill) => (
                     <motion.li

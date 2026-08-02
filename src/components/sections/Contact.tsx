@@ -1,8 +1,10 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
-import { Mail, Phone, MessageCircle, Send, CheckCircle2, AlertCircle, Loader2, Sparkles, X, ShieldCheck } from "lucide-react";
+import { motion } from "framer-motion";
+import { Mail, Phone, MessageCircle, Send, Loader2, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
+import Cookies from "js-cookie";
+import { ToastNotification } from "@/components/common/ToastNotification";
 import { GithubIcon, LinkedinIcon, InstagramIcon, FacebookIcon } from "@/components/SocialIcons";
 
 const socialLinks = [
@@ -56,15 +58,10 @@ const contactMethods = [
   },
 ];
 
-const SUBJECT_OPTIONS = [
-  "Multi-Tenant SaaS & E-Commerce Platform",
-  "Enterprise Office & HR Management System",
-  "Cloud Data Engineering & Snowflake ETL",
-  "Workflow Automation Suite",
-  "Full Stack Next.js / React / Python App",
-  "AI Agent & LLM Integration",
-  "Custom Subject (Specify Below)",
-];
+import { portfolioConfig } from "@/config/portfolioConfig";
+
+const SUBJECT_OPTIONS = portfolioConfig.contactOptions.subjectOptions;
+const MAX_DAILY_REFINEMENTS = portfolioConfig.aiChat.maxDailyRefinements;
 
 export function Contact() {
   const [formData, setFormData] = useState({
@@ -88,20 +85,42 @@ export function Contact() {
 
   const [isRefining, setIsRefining] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [aiProvider, setAiProvider] = useState<"gemini" | "groq">("gemini");
+  const [refinementCountToday, setRefinementCountToday] = useState(0);
 
-  // Auto-dismiss floating toast after 6 seconds
+  const getRefineTodayCookieKey = () => {
+    const d = new Date();
+    return `refine_req_${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  };
+
+  useEffect(() => {
+    const key = getRefineTodayCookieKey();
+    const count = Cookies.get(key);
+    setRefinementCountToday(count ? parseInt(count, 10) : 0);
+  }, []);
+
+  // Trigger floating toast when status message changes
   useEffect(() => {
     if (status.message && status.success !== null) {
       setShowToast(true);
-      const timer = setTimeout(() => {
-        setShowToast(false);
-      }, 6000);
-      return () => clearTimeout(timer);
     }
   }, [status.message, status.success]);
 
   const handleRefineRequirements = async () => {
     if (!formData.requirements.trim() || isRefining) return;
+
+    const key = getRefineTodayCookieKey();
+    const currentCount = parseInt(Cookies.get(key) || "0", 10);
+
+    if (currentCount >= MAX_DAILY_REFINEMENTS) {
+      setStatus({
+        submitting: false,
+        success: false,
+        message: "Daily free AI refinement limit reached (5/5 for today). You can submit your requirements as is!",
+      });
+      return;
+    }
+
     setIsRefining(true);
 
     const finalSubject =
@@ -117,11 +136,15 @@ export function Contact() {
           draftRequirements: formData.requirements,
           subject: finalSubject,
           budget: formData.budget,
+          provider: aiProvider,
         }),
       });
       const data = await res.json();
       if (data.refinedRequirements) {
         setFormData((prev) => ({ ...prev, requirements: data.refinedRequirements }));
+        const newCount = currentCount + 1;
+        Cookies.set(key, String(newCount), { expires: 1, sameSite: "lax" });
+        setRefinementCountToday(newCount);
       }
     } catch (err) {
       console.error("Refinement error:", err);
@@ -185,64 +208,18 @@ export function Contact() {
     }
   };
 
+  const remainingRefinements = Math.max(0, MAX_DAILY_REFINEMENTS - refinementCountToday);
+
   return (
     <section id="contact" className="scroll-mt-24 py-16 sm:py-20 relative">
-      {/* ── Sleek Floating Toast Notification ── */}
-      <AnimatePresence>
-        {showToast && (
-          <motion.div
-            initial={{ opacity: 0, y: -20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="fixed top-24 right-4 sm:right-8 z-[70] max-w-md w-[calc(100vw-2rem)]"
-          >
-            <div
-              className={`glass-raised p-4 rounded-2xl border shadow-2xl backdrop-blur-2xl flex items-start gap-3.5 relative overflow-hidden ${
-                status.success
-                  ? "border-emerald-500/40 bg-emerald-950/80 text-emerald-100"
-                  : "border-rose-500/40 bg-rose-950/80 text-rose-100"
-              }`}
-            >
-              {/* Icon */}
-              <div
-                className={`p-2 rounded-xl shrink-0 ${
-                  status.success ? "bg-emerald-500/20 text-emerald-400" : "bg-rose-500/20 text-rose-400"
-                }`}
-              >
-                {status.success ? <CheckCircle2 className="h-5 w-5" /> : <AlertCircle className="h-5 w-5" />}
-              </div>
-
-              {/* Message Content */}
-              <div className="flex-1 pr-4">
-                <h4 className="font-extrabold text-sm flex items-center gap-1.5">
-                  {status.success ? "Inquiry Submitted Successfully!" : "Submission Alert"}
-                  {status.success && <ShieldCheck className="h-4 w-4 text-emerald-400" />}
-                </h4>
-                <p className="text-xs leading-relaxed opacity-90 mt-0.5">{status.message}</p>
-              </div>
-
-              {/* Close Button */}
-              <button
-                onClick={() => setShowToast(false)}
-                className="text-slate-400 hover:text-white transition-colors p-1 rounded-lg"
-              >
-                <X className="h-4 w-4" />
-              </button>
-
-              {/* Progress Bar Animation */}
-              <motion.div
-                initial={{ width: "100%" }}
-                animate={{ width: "0%" }}
-                transition={{ duration: 6, ease: "linear" }}
-                className={`absolute bottom-0 left-0 h-1 ${
-                  status.success ? "bg-emerald-400" : "bg-rose-400"
-                }`}
-              />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* ── Reusable Toast Notification Component ── */}
+      <ToastNotification
+        show={showToast}
+        type={status.success ? "success" : "error"}
+        title={status.success ? "Inquiry Submitted Successfully!" : "Submission Alert"}
+        message={status.message}
+        onClose={() => setShowToast(false)}
+      />
 
       <motion.div
         initial={{ opacity: 0, y: 28 }}
@@ -430,31 +407,45 @@ export function Contact() {
 
                 {/* Requirements & Message */}
                 <div>
-                  <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                       Project Requirements & Query *
                     </label>
 
-                    <button
-                      type="button"
-                      onClick={handleRefineRequirements}
-                      disabled={!formData.requirements.trim() || isRefining}
-                      className="inline-flex items-center gap-1 text-xs font-bold text-purple-600 dark:text-purple-400 hover:text-purple-500 disabled:opacity-40 transition-colors"
-                      title="Polishes & formats draft requirements into professional specification using Google Gemini AI"
-                    >
-                      {isRefining ? (
-                        <>
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                          Refining with Gemini...
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="h-3.5 w-3.5 text-amber-400" />
-                          Refine with Gemini AI
-                        </>
-                      )}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      {/* AI Provider & Model Selector */}
+                      <select
+                        value={aiProvider}
+                        onChange={(e) => setAiProvider(e.target.value as "gemini" | "groq")}
+                        className="text-[11px] font-bold rounded-lg border border-purple-500/30 bg-purple-500/10 px-2 py-1 text-purple-600 dark:text-purple-300 focus:outline-none"
+                      >
+                        <option value="gemini" className="bg-slate-900 text-white">Google Gemini 1.5</option>
+                        <option value="groq" className="bg-slate-900 text-white">Groq Llama 3.3 (70B)</option>
+                      </select>
+
+                      {/* AI Refine Button */}
+                      <button
+                        type="button"
+                        onClick={handleRefineRequirements}
+                        disabled={!formData.requirements.trim() || isRefining || remainingRefinements <= 0}
+                        className="inline-flex items-center gap-1 text-xs font-bold text-purple-600 dark:text-purple-400 hover:text-purple-500 disabled:opacity-40 transition-colors"
+                        title="Polishes & formats draft requirements into professional specification using your chosen AI model"
+                      >
+                        {isRefining ? (
+                          <>
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            Refining...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+                            Refine ({remainingRefinements}/5 left)
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
+
                   <textarea
                     required
                     rows={4}

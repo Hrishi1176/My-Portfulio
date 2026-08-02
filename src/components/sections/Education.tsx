@@ -2,41 +2,16 @@
 
 import { motion } from "framer-motion";
 import { GraduationCap, Award, School } from "lucide-react";
+import { portfolioConfig } from "@/config/portfolioConfig";
 
-const educationItems = [
-  {
-    title: "Bachelor of Engineering",
-    field: "Information Technology",
-    school: "University Institute of Technology, The University of Burdwan",
-    icon: GraduationCap,
-    gradient: "from-purple-500/15 to-violet-500/10",
-    iconBg: "bg-purple-100 dark:bg-purple-500/15",
-    iconColor: "text-purple-600 dark:text-purple-400",
-    border: "border-purple-400/25 dark:border-purple-500/20",
-  },
-  {
-    title: "Diploma in Engineering",
-    field: "Computer Science & Technology",
-    school: "Siliguri Government Polytechnic",
-    icon: Award,
-    gradient: "from-blue-500/15 to-indigo-500/10",
-    iconBg: "bg-blue-100 dark:bg-blue-500/15",
-    iconColor: "text-blue-600 dark:text-blue-400",
-    border: "border-blue-400/25 dark:border-blue-500/20",
-  },
-  {
-    title: "Secondary Education",
-    field: "Madhyamik",
-    school: "CoochBehar Rambhola High School",
-    icon: School,
-    gradient: "from-emerald-500/15 to-teal-500/10",
-    iconBg: "bg-emerald-100 dark:bg-emerald-500/15",
-    iconColor: "text-emerald-600 dark:text-emerald-400",
-    border: "border-emerald-400/25 dark:border-emerald-500/20",
-  },
-];
+const ICONS = [GraduationCap, Award, School];
 
 export function Education() {
+  const educationItems = portfolioConfig.education.map((item, index) => ({
+    ...item,
+    icon: ICONS[index % ICONS.length],
+  }));
+
   return (
     <section id="education" className="scroll-mt-24 py-16 sm:py-20">
       <motion.div

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
+import { sanitizeInput } from "@/lib/security";
 
 export async function GET() {
   try {
@@ -24,7 +25,13 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { clientName, clientRole, company, rating, reviewText } = body;
 
-    if (!clientName || !reviewText) {
+    const cleanName = sanitizeInput(clientName);
+    const cleanRole = sanitizeInput(clientRole) || "Client";
+    const cleanCompany = sanitizeInput(company);
+    const cleanText = sanitizeInput(reviewText);
+    const numRating = Math.min(5, Math.max(1, Number(rating) || 5));
+
+    if (!cleanName || !cleanText) {
       return NextResponse.json(
         { error: "Client Name and Review Text are required." },
         { status: 400 }
@@ -36,11 +43,11 @@ export async function POST(request: Request) {
     const collection = db.collection("reviews");
 
     const newReview = {
-      clientName: clientName.trim(),
-      clientRole: clientRole ? clientRole.trim() : "Client",
-      company: company ? company.trim() : "",
-      rating: Number(rating) || 5,
-      reviewText: reviewText.trim(),
+      clientName: cleanName,
+      clientRole: cleanRole,
+      company: cleanCompany,
+      rating: numRating,
+      reviewText: cleanText,
       createdAt: new Date(),
       isVerified: true,
     };
@@ -58,7 +65,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("POST /api/reviews error:", error);
     return NextResponse.json(
-      { error: "Failed to submit review. Please check database connection." },
+      { error: "Failed to submit review." },
       { status: 500 }
     );
   }

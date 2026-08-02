@@ -1,33 +1,29 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Mail, FileText, ArrowDown } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Mail, FileText, ArrowDown, Play, Pause, Cpu, Layers, Sparkles, X, CheckCircle2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { ResumeModal } from "./ResumeModal";
 import { GithubIcon, LinkedinIcon } from "@/components/SocialIcons";
 
-const FLOAT_BADGES = [
-  { label: "React & Next.js", color: "from-cyan-500/20 to-blue-500/20", border: "border-cyan-400/30", text: "text-cyan-700 dark:text-cyan-300", top: "top-6", left: "-left-2", delay: 0 },
-  { label: "Data Engineering", color: "from-blue-500/20 to-indigo-500/20", border: "border-blue-400/30", text: "text-blue-700 dark:text-blue-300", top: "top-20", left: "right-0", delay: 1 },
-  { label: "System Design", color: "from-pink-500/20 to-rose-500/20", border: "border-pink-400/30", text: "text-pink-700 dark:text-pink-300", top: "bottom-20", left: "-left-4", delay: 2 },
-  { label: "Python & Node.js", color: "from-teal-500/20 to-green-500/20", border: "border-teal-400/30", text: "text-teal-700 dark:text-teal-300", top: "bottom-8", left: "right-0", delay: 0.5 },
-];
+import { portfolioConfig } from "@/config/portfolioConfig";
 
-const STATS = [
-  { value: "4.4+", label: "Years Exp." },
-  { value: "10+", label: "Projects" },
-  { value: "30+", label: "Skills" },
-];
+const FLOAT_BADGES = portfolioConfig.hero.floatingBadges;
+const STATS = portfolioConfig.hero.stats;
+const TECH_VIDEO_STREAMS = portfolioConfig.hero.techStreams;
 
 export function Hero() {
   const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [activeStreamIdx, setActiveStreamIdx] = useState(0);
 
   return (
     <>
       <section id="hero" className="scroll-mt-20 py-4 sm:py-6">
-        <div className="glass-raised p-6 sm:p-10 lg:p-14 xl:p-16">
+        <div className="glass-raised p-6 sm:p-10 lg:p-14 xl:p-16 relative overflow-hidden">
           {/* Inner radial tint */}
           <div className="absolute inset-0 rounded-[1.5rem] pointer-events-none
             bg-[radial-gradient(ellipse_70%_60%_at_0%_0%,rgba(124,58,237,0.10),transparent_60%),
@@ -43,18 +39,29 @@ export function Hero() {
               className="flex flex-col items-center text-center lg:items-start lg:text-left"
             >
               {/* Status badge */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.85 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2 }}
-                className="mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-300/50 bg-emerald-50 dark:border-emerald-500/25 dark:bg-emerald-500/10 px-4 py-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400 tracking-wide"
-              >
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-                </span>
-                Available for new opportunities
-              </motion.div>
+              <div className="flex flex-wrap items-center gap-2 mb-5">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.85 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="inline-flex items-center gap-2 rounded-full border border-emerald-300/50 bg-emerald-50 dark:border-emerald-500/25 dark:bg-emerald-500/10 px-4 py-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400 tracking-wide"
+                >
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+                  </span>
+                  Available for new opportunities
+                </motion.div>
+
+                {/* Tech Reel Video Showcase Badge */}
+                <button
+                  onClick={() => setIsVideoModalOpen(true)}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 px-3.5 py-1.5 text-xs font-bold text-purple-600 dark:text-purple-300 hover:bg-purple-500/20 transition-all shadow-sm group"
+                >
+                  <Play className="h-3.5 w-3.5 text-purple-500 fill-purple-500 group-hover:scale-110 transition-transform" />
+                  Tech Stack Reel
+                </button>
+              </div>
 
               {/* Heading */}
               <h1 className="text-4xl font-extrabold leading-[1.1] tracking-tight text-slate-900 dark:text-white sm:text-5xl md:text-6xl lg:text-[4.25rem]">
@@ -65,13 +72,14 @@ export function Hero() {
               </h1>
 
               {/* Role */}
-              <p className="mt-4 text-lg font-semibold text-purple-600 dark:text-purple-400 tracking-wide sm:text-xl">
-                Senior Software Developer
+              <p className="mt-4 text-lg font-semibold text-purple-600 dark:text-purple-400 tracking-wide sm:text-xl flex items-center justify-center lg:justify-start gap-2">
+                Senior Software Developer & Manager
+                <Sparkles className="h-4 w-4 text-amber-400" />
               </p>
 
               {/* Tagline */}
               <p className="mt-4 max-w-xl text-base leading-relaxed text-slate-600 dark:text-slate-400 sm:text-lg">
-                Full Stack Engineer specialising in scalable web applications, multi-tenant SaaS platforms, and data engineering solutions.
+                Full Stack Engineer specialising in scalable web applications, multi-tenant SaaS platforms, workflow automation, and cloud data solutions.
               </p>
 
               {/* CTA buttons */}
@@ -229,9 +237,117 @@ export function Hero() {
         </div>
       </section>
 
+      {/* Resume Modal */}
       {isResumeModalOpen && (
         <ResumeModal onClose={() => setIsResumeModalOpen(false)} />
       )}
+
+      {/* ── Interactive Technology Stack Video Showcase Modal ── */}
+      <AnimatePresence>
+        {isVideoModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+            onClick={() => setIsVideoModalOpen(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="glass-raised w-full max-w-3xl rounded-3xl overflow-hidden shadow-2xl border border-purple-500/30 bg-slate-950"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Video Player Header */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/60">
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center">
+                    <Cpu className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h3 className="font-extrabold text-white text-base flex items-center gap-2">
+                      Technology Stack Video Reel
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        4K 60FPS
+                      </span>
+                    </h3>
+                    <p className="text-xs text-slate-400">Interactive Technical Architecture Stream</p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setIsVideoModalOpen(false)}
+                  className="rounded-full p-2 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* Video Reel Display Canvas Area */}
+              <div className="relative h-72 sm:h-96 w-full bg-slate-950 flex flex-col justify-between p-6 sm:p-8 overflow-hidden">
+                {/* Background Tech Stream Animation */}
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${TECH_VIDEO_STREAMS[activeStreamIdx].color} opacity-15 blur-2xl transition-all duration-700 pointer-events-none`}
+                />
+
+                <div className="relative z-10 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="relative flex h-2.5 w-2.5">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                      <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                    </span>
+                    <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest">
+                      LIVE ARCHITECTURE STREAM
+                    </span>
+                  </div>
+
+                  <span className="text-xs font-mono text-purple-400 bg-purple-500/10 border border-purple-500/20 px-3 py-1 rounded-full">
+                    {TECH_VIDEO_STREAMS[activeStreamIdx].speed}
+                  </span>
+                </div>
+
+                {/* Active Tech Video Card Info */}
+                <div className="relative z-10 space-y-3">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                    {TECH_VIDEO_STREAMS[activeStreamIdx].tag}
+                  </span>
+                  <h2 className="text-3xl sm:text-4xl font-black text-white gradient-text">
+                    {TECH_VIDEO_STREAMS[activeStreamIdx].name}
+                  </h2>
+                  <p className="text-sm text-slate-300 max-w-lg leading-relaxed">
+                    Designed for high-throughput enterprise performance, multi-tenant RBAC security, and scalable cloud deployment.
+                  </p>
+                </div>
+
+                {/* Player Controls Bar */}
+                <div className="relative z-10 flex items-center justify-between pt-4 border-t border-slate-800/80">
+                  <button
+                    onClick={() => setIsPlaying(!isPlaying)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition-colors shadow-lg"
+                  >
+                    {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                    {isPlaying ? "Pause Stream" : "Play Stream"}
+                  </button>
+
+                  {/* Channel Stream Selectors */}
+                  <div className="flex items-center gap-2">
+                    {TECH_VIDEO_STREAMS.map((s, idx) => (
+                      <button
+                        key={s.name}
+                        onClick={() => setActiveStreamIdx(idx)}
+                        className={`h-2.5 rounded-full transition-all duration-300 ${
+                          activeStreamIdx === idx ? "w-8 bg-purple-500" : "w-2.5 bg-slate-700 hover:bg-slate-500"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

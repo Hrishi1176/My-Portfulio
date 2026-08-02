@@ -1,25 +1,33 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 import { sendThankYouEmail } from "@/lib/email";
+import { sanitizeInput, validateEmail } from "@/lib/security";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { name, email, subject, requirements, budget } = body;
 
-    // Validation
-    if (!name || !email || !requirements) {
+    // Sanitize & Validate Inputs
+    const cleanName = sanitizeInput(name);
+    const cleanEmail = sanitizeInput(email).toLowerCase();
+    const cleanSubject = sanitizeInput(subject) || "General Inquiry";
+    const cleanRequirements = sanitizeInput(requirements);
+    const cleanBudget = sanitizeInput(budget) || "Flexible";
+
+    if (!cleanName || !cleanEmail || !cleanRequirements) {
       return NextResponse.json(
-        { error: "Please fill in all required fields (Name, Email, Requirements)." },
+        { error: "Please fill in all required fields with valid text." },
         { status: 400 }
       );
     }
 
-    const trimmedName = name.trim();
-    const trimmedEmail = email.trim().toLowerCase();
-    const trimmedSubject = subject ? subject.trim() : "General Inquiry";
-    const trimmedRequirements = requirements.trim();
-    const selectedBudget = budget || "Flexible";
+    if (!validateEmail(cleanEmail)) {
+      return NextResponse.json(
+        { error: "Please provide a valid email address format." },
+        { status: 400 }
+      );
+    }
 
     // Connect to MongoDB
     const client = await clientPromise;
@@ -28,29 +36,29 @@ export async function POST(request: Request) {
 
     // Insert submission into MongoDB
     const result = await collection.insertOne({
-      name: trimmedName,
-      email: trimmedEmail,
-      subject: trimmedSubject,
-      requirements: trimmedRequirements,
-      budget: selectedBudget,
+      name: cleanName,
+      email: cleanEmail,
+      subject: cleanSubject,
+      requirements: cleanRequirements,
+      budget: cleanBudget,
       createdAt: new Date(),
       status: "new",
-      userAgent: request.headers.get("user-agent") || "unknown",
+      userAgent: sanitizeInput(request.headers.get("user-agent") || "unknown"),
     });
 
     // Send thank you confirmation email to the user
     await sendThankYouEmail({
-      toEmail: trimmedEmail,
-      userName: trimmedName,
-      subject: trimmedSubject,
-      requirements: trimmedRequirements,
-      budget: selectedBudget,
+      toEmail: cleanEmail,
+      userName: cleanName,
+      subject: cleanSubject,
+      requirements: cleanRequirements,
+      budget: cleanBudget,
     });
 
     return NextResponse.json(
       {
         success: true,
-        message: "Your message & requirements have been successfully submitted! A confirmation email has been sent to your inbox.",
+        message: "Your requirements have been successfully received! A confirmation email has been dispatched to your inbox.",
         insertedId: result.insertedId,
       },
       { status: 201 }
@@ -59,9 +67,7 @@ export async function POST(request: Request) {
     console.error("MongoDB Contact Submission Error:", error);
     return NextResponse.json(
       {
-        error:
-          "Unable to store inquiry in database. Please check MongoDB connection or try emailing directly.",
-        details: error instanceof Error ? error.message : "Unknown database error",
+        error: "Unable to process inquiry. Please try emailing directly.",
       },
       { status: 500 }
     );

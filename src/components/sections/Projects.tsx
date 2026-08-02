@@ -1,203 +1,274 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { ExternalLink, Code2, Sparkles, FolderGit2, Lock, Globe } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ExternalLink, Sparkles, Lock, Globe, ChevronLeft, ChevronRight, LayoutGrid, Sliders } from "lucide-react";
+import { useState, useEffect } from "react";
 import { GithubIcon } from "@/components/SocialIcons";
+import { portfolioConfig } from "@/config/portfolioConfig";
 
-const projects = [
-  {
-    number: "01",
-    title: "CloudLedger — Financial Ledger & Analytics Platform",
-    description:
-      "Cloud-native financial management and double-entry ledger platform. Built with Next.js 16 and TypeScript, featuring multi-currency accounting, automated transaction auditing, real-time analytics dashboards, and invoice processing.",
-    tech: ["Next.js 16", "TypeScript", "React", "TailwindCSS", "Financial API"],
-    github: "https://github.com/Hrishi1176/CloudLedger",
-    live: "https://cloud-ledger-coral.vercel.app",
-    isPrivate: false,
-    featured: true,
-    gradient: "from-cyan-500/15 via-blue-500/10 to-transparent",
-    accentBorder: "border-cyan-500/35 dark:border-cyan-400/30 shadow-[0_0_20px_rgba(34,211,238,0.12)]",
-    tagColor: "text-cyan-600 dark:text-cyan-400 border-cyan-500/30 bg-cyan-500/10",
-  },
-  {
-    number: "02",
-    title: "Developer Portfolio & Interactive Experience Portal",
-    description:
-      "High-performance interactive developer portfolio showcasing professional work history, verified experience certificates, skills matrix, and GitHub projects. Built with glassmorphic UI, Framer Motion, particle background canvas, and theme controls.",
-    tech: ["Next.js 16", "TypeScript", "TailwindCSS", "Framer Motion", "Vercel"],
-    github: "https://github.com/Hrishi1176/My-Portfulio",
-    live: "https://my-portfulio-ten.vercel.app",
-    isPrivate: false,
-    featured: true,
-    gradient: "from-purple-500/15 via-violet-500/10 to-transparent",
-    accentBorder: "border-purple-500/35 dark:border-purple-400/30 shadow-[0_0_20px_rgba(168,85,247,0.12)]",
-    tagColor: "text-purple-600 dark:text-purple-400 border-purple-500/30 bg-purple-500/10",
-  },
-  {
-    number: "03",
-    title: "WorkPilot-AI — AI Workspace & Workflow Automation",
-    description:
-      "Intelligent workspace & task automation platform built with AI agents, automated workflow orchestration, LLM integration, real-time activity tracking, and enterprise team collaboration.",
-    tech: ["TypeScript (97.5%)", "Next.js", "React", "CSS3", "Vercel"],
-    github: "https://github.com/Hrishi1176/WorkPilot-AI",
-    live: "https://work-pilot-ai.vercel.app",
-    isPrivate: true,
-    featured: true,
-    gradient: "from-blue-500/15 via-indigo-500/10 to-transparent",
-    accentBorder: "border-blue-500/35 dark:border-blue-400/30 shadow-[0_0_20px_rgba(59,130,246,0.12)]",
-    tagColor: "text-blue-600 dark:text-blue-400 border-blue-500/30 bg-blue-500/10",
-  },
-  {
-    number: "04",
-    title: "OpenConnect — API Integration & Gateway Service",
-    description:
-      "Event-driven API integration gateway and messaging distribution service engineered for high-throughput multi-service connectivity, webhook routing, and secure real-time data sync.",
-    tech: ["JavaScript (55.5%)", "Python (12.7%)", "HTML5/CSS3", "Dockerfile", "Render"],
-    github: "https://github.com/Hrishi1176/OpenConnect",
-    live: "https://openconnect-95uc.onrender.com",
-    isPrivate: true,
-    featured: true,
-    gradient: "from-emerald-500/15 via-teal-500/10 to-transparent",
-    accentBorder: "border-emerald-500/35 dark:border-emerald-400/30 shadow-[0_0_20px_rgba(16,185,129,0.12)]",
-    tagColor: "text-emerald-600 dark:text-emerald-400 border-emerald-500/30 bg-emerald-500/10",
-  },
-  {
-    number: "05",
-    title: "Music Library & Audio Catalog System",
-    description:
-      "Full-stack music management application designed to organize audio tracks, custom playlists, artists, and album metadata with dynamic search and relational database schema design.",
-    tech: ["PHP", "MySQL", "JavaScript", "CSS3", "HTML5"],
-    github: "https://github.com/Hrishi1176/music_library",
-    live: null,
-    isPrivate: false,
-    featured: false,
-    gradient: "from-violet-500/15 via-purple-500/10 to-transparent",
-    accentBorder: "border-violet-500/35 dark:border-violet-400/30 shadow-[0_0_20px_rgba(139,92,246,0.12)]",
-    tagColor: "text-violet-600 dark:text-violet-400 border-violet-500/30 bg-violet-500/10",
-  },
-];
+const projects = portfolioConfig.projects;
 
 export function Projects() {
+  const [viewMode, setViewMode] = useState<"slider" | "grid">("slider");
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Auto-play slider in slider mode
+  useEffect(() => {
+    if (viewMode !== "slider") return;
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % projects.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [viewMode]);
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % projects.length);
+  };
+
+  const handlePrev = () => {
+    setCurrentIndex((prev) => (prev - 1 + projects.length) % projects.length);
+  };
+
+  const activeProject = projects[currentIndex];
+
   return (
     <section id="projects" className="scroll-mt-24 py-16 sm:py-20">
       <motion.div
         initial={{ opacity: 0, y: 28 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.1 }}
+        viewport={{ once: true, amount: 0.15 }}
         transition={{ duration: 0.65 }}
       >
-        {/* Label */}
+        {/* Header with Slider / Grid Toggle */}
         <div className="mb-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="section-num text-base">04.</span>
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
-              Portfolio
+              Featured Work
             </span>
           </div>
 
-          <a
-            href="https://github.com/Hrishi1176"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-full border border-purple-500/30 bg-purple-50 dark:bg-purple-500/10 px-3.5 py-1.5 text-xs font-semibold text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-500/20 transition-all shadow-sm"
-          >
-            <FolderGit2 className="h-4 w-4 text-purple-500" />
-            View GitHub Profile
-          </a>
+          {/* View Mode Toggle Controls */}
+          <div className="flex items-center gap-1 rounded-full border border-[var(--border)] bg-white/70 dark:bg-white/[0.04] p-1 backdrop-blur-md">
+            <button
+              onClick={() => setViewMode("slider")}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all ${
+                viewMode === "slider"
+                  ? "bg-purple-600 text-white shadow-sm"
+                  : "text-slate-600 dark:text-slate-400 hover:text-purple-500"
+              }`}
+            >
+              <Sliders className="h-3.5 w-3.5" />
+              Slider View
+            </button>
+            <button
+              onClick={() => setViewMode("grid")}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all ${
+                viewMode === "grid"
+                  ? "bg-purple-600 text-white shadow-sm"
+                  : "text-slate-600 dark:text-slate-400 hover:text-purple-500"
+              }`}
+            >
+              <LayoutGrid className="h-3.5 w-3.5" />
+              Grid View
+            </button>
+          </div>
         </div>
 
         <h2 className="mb-10 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-          Featured <span className="gradient-text">GitHub Projects</span>
+          Featured <span className="gradient-text">Projects & Systems</span>
         </h2>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          {projects.map((proj, idx) => (
-            <motion.div
-              key={proj.title}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.08, duration: 0.55 }}
-              whileHover={{ y: -6 }}
-              className={`card group relative flex flex-col overflow-hidden transition-all duration-300 ${proj.accentBorder}`}
-            >
-              {/* Gradient tint */}
-              <div
-                className={`absolute inset-0 rounded-[1.25rem] bg-gradient-to-br ${proj.gradient} opacity-70 pointer-events-none`}
-              />
+        {/* ── Slider Mode ── */}
+        {viewMode === "slider" ? (
+          <div className="relative glass p-6 sm:p-10 lg:p-12 rounded-3xl min-h-[380px] overflow-hidden flex flex-col justify-between border border-[var(--border)]">
+            {/* Background Glow */}
+            <div
+              className={`absolute inset-0 bg-gradient-to-br ${activeProject.gradient} opacity-40 pointer-events-none transition-all duration-700`}
+            />
 
-              <div className="relative flex flex-1 flex-col p-6 sm:p-8">
-                {/* Top row */}
-                <div className="mb-5 flex items-start justify-between gap-2">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentIndex}
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -30 }}
+                transition={{ duration: 0.4 }}
+                className="relative z-10 space-y-6"
+              >
+                {/* Project Header Badges & Actions */}
+                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-white/80 dark:bg-slate-900/60 shadow-sm">
-                      <Code2 className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-                    </div>
-                    <span className="text-3xl font-black text-slate-300 dark:text-slate-700 select-none leading-none">
-                      {proj.number}
+                    <span className="text-3xl font-black gradient-text">
+                      {activeProject.number}
                     </span>
+                    {activeProject.featured && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-bold text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                        <Sparkles className="h-3.5 w-3.5" /> Featured Architecture
+                      </span>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-2">
-                    {/* Badge Indicator */}
-                    {proj.isPrivate ? (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-600 dark:text-amber-400">
-                        <Lock className="h-3 w-3 text-amber-500" /> Private Repo
+                    {activeProject.isPrivate ? (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-slate-500/10 px-2.5 py-1 text-xs font-semibold text-slate-500 border border-slate-500/20">
+                        <Lock className="h-3 w-3" /> Private Repo
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                         <Globe className="h-3 w-3" /> Public Repo
                       </span>
                     )}
 
-                    {proj.github && (
+                    {activeProject.github && (
                       <a
-                        href={proj.github}
+                        href={activeProject.github}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--border)] bg-white/70 dark:bg-white/[0.06] text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
-                        title="View GitHub Repository"
+                        className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] bg-white/80 dark:bg-white/[0.08] text-slate-700 dark:text-slate-300 hover:text-purple-500 transition-colors shadow-sm"
+                        title="GitHub Code"
                       >
-                        <GithubIcon className="h-4 w-4" />
+                        <GithubIcon className="h-4.5 w-4.5" />
                       </a>
                     )}
 
-                    {proj.live && (
+                    {activeProject.live && (
                       <a
-                        href={proj.live}
+                        href={activeProject.live}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--border)] bg-white/70 dark:bg-white/[0.06] text-slate-500 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
-                        title="Open Live Application"
+                        className="flex h-9 w-9 items-center justify-center rounded-full border border-purple-500/40 bg-purple-500/10 text-purple-600 dark:text-purple-300 hover:bg-purple-500 hover:text-white transition-all shadow-sm"
+                        title="Live Demo"
                       >
-                        <ExternalLink className="h-4 w-4" />
+                        <ExternalLink className="h-4.5 w-4.5" />
                       </a>
                     )}
                   </div>
                 </div>
 
-                {/* Title */}
-                <h3 className="mb-3 text-xl font-bold text-slate-900 dark:text-white group-hover:gradient-text transition-colors duration-300 sm:text-2xl leading-snug">
-                  {proj.title}
-                </h3>
+                {/* Title & Description */}
+                <div className="space-y-3">
+                  <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
+                    {activeProject.title}
+                  </h3>
+                  <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed max-w-3xl">
+                    {activeProject.description}
+                  </p>
+                </div>
 
-                {/* Description */}
-                <p className="flex-1 text-sm leading-relaxed text-slate-600 dark:text-slate-400 sm:text-base">
-                  {proj.description}
-                </p>
-
-                {/* Tech tags */}
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {proj.tech.map((t) => (
-                    <span key={t} className={`tag border text-xs font-semibold px-2.5 py-1 rounded-full ${proj.tagColor}`}>
+                {/* Tech Stack Tags */}
+                <div className="flex flex-wrap gap-2 pt-2">
+                  {activeProject.tech.map((t) => (
+                    <span
+                      key={t}
+                      className={`text-xs font-bold px-3 py-1 rounded-full border ${activeProject.tagColor}`}
+                    >
                       {t}
                     </span>
                   ))}
                 </div>
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Controls & Pagination Dots */}
+            <div className="relative z-10 flex items-center justify-between pt-6 border-t border-[var(--border)] mt-8">
+              {/* Pagination Dots */}
+              <div className="flex items-center gap-2">
+                {projects.map((_, dotIdx) => (
+                  <button
+                    key={dotIdx}
+                    onClick={() => setCurrentIndex(dotIdx)}
+                    className={`h-2.5 rounded-full transition-all duration-300 ${
+                      dotIdx === currentIndex
+                        ? "w-8 bg-purple-600"
+                        : "w-2.5 bg-slate-300 dark:bg-slate-700 hover:bg-purple-300"
+                    }`}
+                  />
+                ))}
               </div>
-            </motion.div>
-          ))}
-        </div>
+
+              {/* Slider Arrows */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handlePrev}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border)] bg-white/80 dark:bg-white/[0.08] text-slate-700 dark:text-slate-300 hover:bg-purple-600 hover:text-white transition-colors shadow-sm"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={handleNext}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border)] bg-white/80 dark:bg-white/[0.08] text-slate-700 dark:text-slate-300 hover:bg-purple-600 hover:text-white transition-colors shadow-sm"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* ── Grid Mode ── */
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {projects.map((proj, idx) => (
+              <motion.div
+                key={proj.title}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1, duration: 0.5 }}
+                whileHover={{ y: -6 }}
+                className={`card group relative flex flex-col justify-between overflow-hidden p-6 sm:p-7 transition-all duration-300 ${proj.accentBorder}`}
+              >
+                <div
+                  className={`absolute inset-0 rounded-[1.25rem] bg-gradient-to-br ${proj.gradient} opacity-80 pointer-events-none`}
+                />
+
+                <div className="relative z-10 flex flex-col h-full justify-between">
+                  <div>
+                    <div className="mb-4 flex items-center justify-between">
+                      <span className="text-2xl font-black gradient-text">{proj.number}</span>
+                      <div className="flex items-center gap-2">
+                        {proj.github && (
+                          <a
+                            href={proj.github}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-1.5 text-slate-400 hover:text-white transition-colors"
+                          >
+                            <GithubIcon className="h-4 w-4" />
+                          </a>
+                        )}
+                        {proj.live && (
+                          <a
+                            href={proj.live}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-1.5 text-purple-400 hover:text-purple-300 transition-colors"
+                          >
+                            <ExternalLink className="h-4 w-4" />
+                          </a>
+                        )}
+                      </div>
+                    </div>
+
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
+                      {proj.title}
+                    </h3>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                      {proj.description}
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-1.5 mt-5">
+                    {proj.tech.map((t) => (
+                      <span key={t} className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${proj.tagColor}`}>
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </motion.div>
     </section>
   );
