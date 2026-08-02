@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { Menu, X, Sparkles, Send } from "lucide-react";
+import { Menu, X, Send, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
 import { portfolioConfig } from "@/config/portfolioConfig";
 
@@ -39,41 +39,45 @@ export function Header() {
     <header
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${
         scrolled
-          ? "py-2.5 border-b border-[var(--border)] bg-white/75 dark:bg-[#080612]/80 backdrop-blur-2xl shadow-[0_4px_30px_rgba(124,58,237,0.15)]"
+          ? "py-2.5 border-b border-[var(--border)] bg-white/85 dark:bg-[#080612]/85 backdrop-blur-2xl shadow-[0_8px_32px_rgba(124,58,237,0.12)]"
           : "py-4 bg-transparent"
       }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Brand Logo & Live Status Indicator */}
+        {/* Brand Logo */}
         <Link
           href="#hero"
-          className="relative z-50 flex items-center gap-2 text-xl font-black tracking-tight gradient-text select-none group"
+          className="relative z-50 flex items-center gap-2.5 text-xl font-black tracking-tight select-none group"
         >
-          <div className="h-8 w-8 rounded-xl bg-gradient-to-tr from-purple-600 to-blue-500 flex items-center justify-center text-white text-xs font-black shadow-md group-hover:scale-110 transition-transform">
+          <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-blue-500 flex items-center justify-center text-white text-xs font-black shadow-md group-hover:scale-110 group-hover:shadow-purple-500/40 transition-all duration-300">
             {developer.initials}
           </div>
-          <span>{developer.firstName}</span>
-          <span className="text-slate-800 dark:text-white font-extrabold hidden sm:inline">{developer.lastName}</span>
+          <div className="flex items-center gap-1">
+            <span className="gradient-text font-black text-lg sm:text-xl">{developer.firstName}</span>
+            <span className="text-slate-900 dark:text-white font-extrabold text-lg sm:text-xl hidden sm:inline">
+              {developer.lastName}
+            </span>
+          </div>
         </Link>
 
-        {/* Desktop Navigation Bar */}
-        <nav className="hidden lg:flex items-center gap-1 glass px-4 py-1.5 rounded-full border border-purple-500/20 shadow-md">
+        {/* Desktop Floating Navigation Bar */}
+        <nav className="hidden lg:flex items-center gap-1.5 glass px-4 py-1.5 rounded-full border border-purple-500/25 bg-white/70 dark:bg-white/[0.05] shadow-md backdrop-blur-xl">
           {navLinks.map((link) => {
             const isActive = activeSection === link.href.substring(1);
             return (
               <Link
                 key={link.name}
                 href={link.href}
-                className={`relative px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${
+                className={`relative px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors duration-200 ${
                   isActive
                     ? "text-purple-600 dark:text-purple-300"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                    : "text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
                 {isActive && (
                   <motion.span
                     layoutId="nav-pill"
-                    className="absolute inset-0 rounded-full bg-purple-500/15 border border-purple-500/30"
+                    className="absolute inset-0 rounded-full bg-purple-500/15 border border-purple-500/35"
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
                 )}
@@ -83,24 +87,24 @@ export function Header() {
           })}
         </nav>
 
-        {/* Action Controls & Theme Picker */}
+        {/* Desktop Controls & CTA */}
         <div className="hidden lg:flex items-center gap-3">
           <ThemeToggle />
           <Link
             href="#contact"
-            className="btn-primary text-xs py-2 px-5 rounded-full font-extrabold flex items-center gap-1.5 shadow-md hover:shadow-purple-500/30 transition-all"
+            className="btn-primary text-xs py-2 px-5 rounded-full font-extrabold flex items-center gap-1.5 shadow-md hover:shadow-purple-500/35 transition-all"
           >
             <Send className="h-3.5 w-3.5" />
             Hire Me
           </Link>
         </div>
 
-        {/* Mobile menu button */}
+        {/* Mobile controls & toggle button */}
         <div className="flex items-center gap-2 lg:hidden z-50">
           <ThemeToggle />
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="p-2 rounded-xl border border-[var(--border)] bg-white/70 dark:bg-white/[0.06] backdrop-blur-md text-slate-700 dark:text-slate-200 transition-colors"
+            className="p-2 rounded-xl border border-[var(--border)] bg-white/80 dark:bg-white/[0.08] backdrop-blur-md text-slate-800 dark:text-slate-100 transition-colors shadow-sm"
             aria-label="Toggle Navigation Drawer"
           >
             {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -132,8 +136,8 @@ export function Header() {
                     onClick={() => setIsMobileMenuOpen(false)}
                     className={`block px-4 py-2.5 rounded-xl text-sm font-bold transition-colors ${
                       activeSection === link.href.substring(1)
-                        ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-500/15 border border-purple-500/20"
-                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5"
+                        ? "text-purple-600 dark:text-purple-300 bg-purple-500/10 border border-purple-500/25"
+                        : "text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5"
                     }`}
                   >
                     {link.name}
@@ -145,7 +149,7 @@ export function Header() {
                 <Link
                   href="#contact"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="btn-primary w-full py-2.5 rounded-xl text-center font-bold flex items-center justify-center gap-2"
+                  className="btn-primary w-full py-2.5 rounded-xl text-center font-bold flex items-center justify-center gap-2 shadow-md"
                 >
                   <Send className="h-4 w-4" />
                   Hire Me / Submit Inquiry

@@ -47,7 +47,27 @@ export interface HeroConfig {
 export interface AboutConfig {
   bioParagraphs: string[];
   traits: string[];
-  focusAreas: Array<{ label: string; color: string }>;
+  focusAreas: Array<{ label: string; icon?: string; color: string }>;
+}
+
+export interface SkillItemConfig {
+  name: string;
+  icon: string;
+  color?: string;
+}
+
+export interface SkillCategoryConfig {
+  title: string;
+  icon: string;
+  iconColor: string;
+  accent: string;
+  border: string;
+  skills: SkillItemConfig[];
+}
+
+export interface SkillsConfig {
+  marquee: SkillItemConfig[];
+  categories: SkillCategoryConfig[];
 }
 
 export interface RoleConfig {
@@ -56,9 +76,10 @@ export interface RoleConfig {
   company: string;
   location: string;
   badge: string;
+  type?: string;
+  hasCertificate: boolean;
   responsibilities: string[];
   tech: string[];
-  hasCertificate: boolean;
 }
 
 export interface CertificateConfig {
@@ -99,6 +120,7 @@ export interface PortfolioConfig {
   navigation: NavigationItem[];
   hero: HeroConfig;
   about: AboutConfig;
+  skills: SkillsConfig;
   experience: {
     roles: RoleConfig[];
     certificate: CertificateConfig;

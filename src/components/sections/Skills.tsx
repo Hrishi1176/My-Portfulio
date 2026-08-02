@@ -1,85 +1,58 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Layout, Server, Database, Wrench } from "lucide-react";
+import { Layout, Server, Database, Wrench, Code2 } from "lucide-react";
 import { FaReact, FaPython, FaNodeJs, FaGitAlt, FaHtml5, FaCss3Alt, FaRobot } from "react-icons/fa";
 import { SiNextdotjs, SiJavascript, SiTypescript, SiMongodb, SiMysql, SiPostgresql, SiSnowflake } from "react-icons/si";
 import { BiNetworkChart, BiCheckShield, BiChalkboard } from "react-icons/bi";
 import { TbApi } from "react-icons/tb";
+import { portfolioConfig } from "@/config/portfolioConfig";
 
-const MARQUEE_SKILLS = [
-  { name: "React.js", icon: <FaReact className="w-5 h-5 text-[#61DAFB]" /> },
-  { name: "Next.js 16", icon: <SiNextdotjs className="w-5 h-5 text-slate-900 dark:text-white" /> },
-  { name: "TypeScript", icon: <SiTypescript className="w-5 h-5 text-[#3178C6]" /> },
-  { name: "Python", icon: <FaPython className="w-5 h-5 text-[#3776AB]" /> },
-  { name: "Node.js", icon: <FaNodeJs className="w-5 h-5 text-[#339933]" /> },
-  { name: "PostgreSQL", icon: <SiPostgresql className="w-5 h-5 text-[#4169E1]" /> },
-  { name: "MongoDB", icon: <SiMongodb className="w-5 h-5 text-[#47A248]" /> },
-  { name: "Snowflake", icon: <SiSnowflake className="w-5 h-5 text-[#29B5E8]" /> },
-  { name: "AI Agents", icon: <FaRobot className="w-5 h-5 text-purple-500" /> },
-  { name: "Git & GitHub", icon: <FaGitAlt className="w-5 h-5 text-[#F05032]" /> },
-];
+// Dynamic Icon Map Lookup
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
+  // Category Icons (Lucide)
+  Layout,
+  Server,
+  Database,
+  Wrench,
+  Code2,
+  // Tech Stack Icons
+  FaReact,
+  FaPython,
+  FaNodeJs,
+  FaGitAlt,
+  FaHtml5,
+  FaCss3Alt,
+  FaRobot,
+  SiNextdotjs,
+  SiJavascript,
+  SiTypescript,
+  SiMongodb,
+  SiMysql,
+  SiPostgresql,
+  SiSnowflake,
+  BiNetworkChart,
+  BiCheckShield,
+  BiChalkboard,
+  TbApi,
+};
 
-const skillCategories = [
-  {
-    title: "Frontend",
-    icon: Layout,
-    iconColor: "text-blue-500",
-    accent: "from-blue-500/15 to-cyan-500/10",
-    border: "border-blue-500/30 dark:border-blue-500/25",
-    skills: [
-      { name: "React.js", icon: <FaReact className="w-5 h-5 text-[#61DAFB]" /> },
-      { name: "Next.js 16", icon: <SiNextdotjs className="w-5 h-5 text-slate-900 dark:text-white" /> },
-      { name: "TypeScript", icon: <SiTypescript className="w-5 h-5 text-[#3178C6]" /> },
-      { name: "JavaScript", icon: <SiJavascript className="w-5 h-5 text-[#F7DF1E]" /> },
-      { name: "HTML5", icon: <FaHtml5 className="w-5 h-5 text-[#E34F26]" /> },
-      { name: "CSS3 / Tailwind", icon: <FaCss3Alt className="w-5 h-5 text-[#1572B6]" /> },
-    ],
-  },
-  {
-    title: "Backend & APIs",
-    icon: Server,
-    iconColor: "text-emerald-500",
-    accent: "from-emerald-500/15 to-green-500/10",
-    border: "border-emerald-500/30 dark:border-emerald-500/25",
-    skills: [
-      { name: "Python", icon: <FaPython className="w-5 h-5 text-[#3776AB]" /> },
-      { name: "Node.js", icon: <FaNodeJs className="w-5 h-5 text-[#339933]" /> },
-      { name: "REST / WebSockets", icon: <TbApi className="w-5 h-5 text-purple-400" /> },
-    ],
-  },
-  {
-    title: "Databases & Cloud",
-    icon: Database,
-    iconColor: "text-amber-500",
-    accent: "from-amber-500/15 to-yellow-500/10",
-    border: "border-amber-500/30 dark:border-amber-500/25",
-    skills: [
-      { name: "MongoDB", icon: <SiMongodb className="w-5 h-5 text-[#47A248]" /> },
-      { name: "MySQL", icon: <SiMysql className="w-5 h-5 text-[#4479A1]" /> },
-      { name: "PostgreSQL", icon: <SiPostgresql className="w-5 h-5 text-[#4169E1]" /> },
-      { name: "Snowflake", icon: <SiSnowflake className="w-5 h-5 text-[#29B5E8]" /> },
-    ],
-  },
-  {
-    title: "Tools & AI",
-    icon: Wrench,
-    iconColor: "text-purple-500",
-    accent: "from-purple-500/15 to-violet-500/10",
-    border: "border-purple-500/30 dark:border-purple-500/25",
-    skills: [
-      { name: "AI Agents & LLMs", icon: <FaRobot className="w-5 h-5 text-purple-500" /> },
-      { name: "Git & GitHub", icon: <FaGitAlt className="w-5 h-5 text-[#F05032]" /> },
-      { name: "System Design", icon: <BiNetworkChart className="w-5 h-5 text-teal-500" /> },
-      { name: "CI / CD Pipelines", icon: <BiChalkboard className="w-5 h-5 text-blue-500" /> },
-      { name: "Agile & DevOps", icon: <BiCheckShield className="w-5 h-5 text-orange-500" /> },
-    ],
-  },
-];
+function renderSkillIcon(iconName: string, customColor?: string) {
+  const IconComponent = ICON_MAP[iconName] || Code2;
+
+  if (customColor && customColor.startsWith("#")) {
+    return <IconComponent className="w-5 h-5 shrink-0" style={{ color: customColor }} />;
+  }
+
+  const colorClass = customColor || "text-purple-500";
+  return <IconComponent className={`w-5 h-5 shrink-0 ${colorClass}`} />;
+}
 
 export function Skills() {
+  const { marquee: marqueeSkills, categories: skillCategories } = portfolioConfig.skills;
+
   return (
-    <section id="skills" className="scroll-mt-24 py-16 sm:py-20">
+    <section id="skills" className="scroll-mt-24 py-14 sm:py-20">
       <motion.div
         initial={{ opacity: 0, y: 28 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -99,24 +72,24 @@ export function Skills() {
         </h2>
 
         {/* ── Live Infinite Marquee Skill Banner Slider ── */}
-        <div className="mb-10 overflow-hidden py-3 glass rounded-2xl border border-purple-500/20 relative">
-          <div className="flex gap-8 whitespace-nowrap animate-scroll">
-            {[...MARQUEE_SKILLS, ...MARQUEE_SKILLS].map((item, idx) => (
+        <div className="mb-10 overflow-hidden py-3.5 glass rounded-2xl border border-purple-500/20 relative shadow-sm">
+          <div className="flex gap-6 sm:gap-8 whitespace-nowrap animate-scroll">
+            {[...marqueeSkills, ...marqueeSkills, ...marqueeSkills].map((item, idx) => (
               <div
                 key={`${item.name}-${idx}`}
-                className="inline-flex items-center gap-2.5 px-4 py-2 rounded-xl border border-[var(--border)] bg-white/70 dark:bg-white/[0.04] text-xs font-bold text-slate-800 dark:text-slate-200 shadow-sm shrink-0"
+                className="inline-flex items-center gap-2.5 px-4 py-2 rounded-xl border border-[var(--border)] bg-white/80 dark:bg-white/[0.05] text-xs font-bold text-slate-900 dark:text-slate-100 shadow-sm shrink-0 hover:scale-105 hover:border-purple-500/40 transition-all cursor-default"
               >
-                {item.icon}
-                <span>{item.name}</span>
+                {renderSkillIcon(item.icon, item.color)}
+                <span className="text-slate-900 dark:text-slate-100 font-bold">{item.name}</span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Category Cards */}
+        {/* Category Cards Grid */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
           {skillCategories.map((cat, idx) => {
-            const Icon = cat.icon;
+            const CategoryIcon = ICON_MAP[cat.icon] || Layout;
             return (
               <motion.div
                 key={cat.title}
@@ -125,15 +98,17 @@ export function Skills() {
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1, duration: 0.5 }}
                 whileHover={{ y: -6 }}
-                className={`card group relative overflow-hidden p-6 transition-all duration-300 ${cat.border}`}
+                className={`card group relative overflow-hidden p-6 transition-all duration-300 ${cat.border} hover:border-purple-500/40 hover:shadow-lg`}
               >
                 <div
                   className={`absolute inset-0 rounded-[1.25rem] bg-gradient-to-br ${cat.accent} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`}
                 />
 
-                <div className={`relative mb-5 flex items-center gap-3 rounded-xl border ${cat.border} bg-white/70 dark:bg-white/[0.05] px-3.5 py-2.5 backdrop-blur-md`}>
-                  <Icon className={`w-5 h-5 ${cat.iconColor}`} />
-                  <h3 className="font-bold text-slate-800 dark:text-slate-100">{cat.title}</h3>
+                <div className={`relative mb-5 flex items-center gap-3 rounded-xl border ${cat.border} bg-white/80 dark:bg-white/[0.06] px-3.5 py-2.5 backdrop-blur-md shadow-sm`}>
+                  <CategoryIcon className={`w-5 h-5 ${cat.iconColor}`} />
+                  <h3 className="font-extrabold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors">
+                    {cat.title}
+                  </h3>
                 </div>
 
                 <ul className="relative space-y-3">
@@ -141,12 +116,14 @@ export function Skills() {
                     <motion.li
                       key={skill.name}
                       whileHover={{ x: 4, scale: 1.02 }}
-                      className="flex items-center gap-3 text-sm font-semibold text-slate-700 dark:text-slate-300 cursor-default"
+                      className="flex items-center gap-3 text-sm font-semibold text-slate-800 dark:text-slate-200 cursor-default group/item"
                     >
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--border)] bg-white dark:bg-slate-900 shadow-sm group-hover:shadow-md transition-shadow">
-                        {skill.icon}
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--border)] bg-white dark:bg-slate-900 shadow-sm group-hover/item:border-purple-500/30 transition-all">
+                        {renderSkillIcon(skill.icon, skill.color)}
                       </div>
-                      <span>{skill.name}</span>
+                      <span className="group-hover/item:text-purple-600 dark:group-hover/item:text-purple-300 transition-colors">
+                        {skill.name}
+                      </span>
                     </motion.li>
                   ))}
                 </ul>

@@ -1,18 +1,22 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Sparkles, Terminal, Cpu, Database, Layers } from "lucide-react";
+import { Sparkles, Terminal, Cpu, Database, Layers, Code2 } from "lucide-react";
+import { portfolioConfig } from "@/config/portfolioConfig";
 
-const FOCUS_AREAS = [
-  { label: "Scalable SaaS Architecture", icon: Cpu, color: "text-purple-500 bg-purple-500/10 border-purple-500/20" },
-  { label: "Engineering Team Leadership", icon: Layers, color: "text-blue-500 bg-blue-500/10 border-blue-500/20" },
-  { label: "Cloud Data Platforms & ETL", icon: Database, color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" },
-  { label: "Product & System Design", icon: Terminal, color: "text-amber-500 bg-amber-500/10 border-amber-500/20" },
-];
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
+  Cpu,
+  Layers,
+  Database,
+  Terminal,
+  Code2,
+};
 
 export function About() {
+  const { bioParagraphs, traits, focusAreas } = portfolioConfig.about;
+
   return (
-    <section id="about" className="scroll-mt-24 py-16 sm:py-20">
+    <section id="about" className="scroll-mt-24 py-14 sm:py-20">
       <motion.div
         initial={{ opacity: 0, y: 28 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -36,24 +40,19 @@ export function About() {
           <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-14 items-center">
             {/* ── Bio ── */}
             <div className="space-y-5">
-              <p className="text-base leading-[1.85] text-slate-700 dark:text-slate-300 sm:text-lg">
-                I&apos;m a <strong className="font-semibold text-slate-900 dark:text-white">Senior Full Stack Developer</strong> with over{" "}
-                <strong className="font-semibold text-slate-900 dark:text-white">4.5 years</strong> of experience designing and delivering
-                scalable web applications, multi-tenant SaaS platforms, workflow automation systems, and cloud data engineering solutions.
-              </p>
-              <p className="text-base leading-[1.85] text-slate-700 dark:text-slate-300 sm:text-lg">
-                My journey involves leading developer teams, architecting enterprise software, and building robust end-to-end applications.
-                I have strong expertise in full-stack architecture, REST/WebSocket APIs, database optimization, and cloud solutions — always
-                aiming to deliver high-quality, performant software.
-              </p>
+              {bioParagraphs.map((paragraph, idx) => (
+                <p key={idx} className="text-base leading-[1.85] text-slate-800 dark:text-slate-200 sm:text-lg">
+                  {paragraph}
+                </p>
+              ))}
 
               {/* Trait chips */}
               <div className="flex flex-wrap gap-2 pt-2">
-                {["Problem Solver", "Tech Lead", "Full-Stack Engineer", "System Architect", "Open Source Contributor"].map((t) => (
+                {traits.map((t) => (
                   <motion.span
                     key={t}
                     whileHover={{ scale: 1.08 }}
-                    className="tag text-xs font-bold shadow-sm cursor-default"
+                    className="tag text-xs font-bold shadow-sm cursor-default hover:text-purple-700 dark:hover:text-purple-300 transition-colors"
                   >
                     {t}
                   </motion.span>
@@ -70,24 +69,27 @@ export function About() {
                 </p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                {FOCUS_AREAS.map(({ label, icon: Icon, color }, idx) => (
-                  <motion.div
-                    key={label}
-                    initial={{ opacity: 0, y: 16 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: idx * 0.1, duration: 0.45 }}
-                    whileHover={{ y: -6, scale: 1.02 }}
-                    className="card flex flex-col gap-3 p-5 group transition-all duration-300 cursor-default"
-                  >
-                    <div className={`h-10 w-10 rounded-xl flex items-center justify-center border ${color} shadow-sm group-hover:scale-110 transition-transform`}>
-                      <Icon className="h-5 w-5" />
-                    </div>
-                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200 leading-snug group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
-                      {label}
-                    </span>
-                  </motion.div>
-                ))}
+                {focusAreas.map(({ label, icon, color }, idx) => {
+                  const IconComponent = (icon && ICON_MAP[icon]) || Cpu;
+                  return (
+                    <motion.div
+                      key={label}
+                      initial={{ opacity: 0, y: 16 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: idx * 0.1, duration: 0.45 }}
+                      whileHover={{ y: -6, scale: 1.02 }}
+                      className="card flex flex-col gap-3 p-5 group transition-all duration-300 cursor-default hover:border-purple-500/40"
+                    >
+                      <div className={`h-10 w-10 rounded-xl flex items-center justify-center border ${color} shadow-sm group-hover:scale-110 transition-transform`}>
+                        <IconComponent className="h-5 w-5" />
+                      </div>
+                      <span className="text-sm font-extrabold text-slate-900 dark:text-slate-100 leading-snug group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors">
+                        {label}
+                      </span>
+                    </motion.div>
+                  );
+                })}
               </div>
             </div>
           </div>
