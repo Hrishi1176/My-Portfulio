@@ -105,6 +105,8 @@ export interface EducationConfig {
   title: string;
   field: string;
   school: string;
+  period?: string;
+  grade?: string;
   gradient: string;
   iconBg: string;
   iconColor: string;

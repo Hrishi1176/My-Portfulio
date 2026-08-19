@@ -21,24 +21,23 @@ export default function Home() {
       {/* ── Background Video & Ambient Motion ── */}
       <VideoBackground />
 
-      {/* ── Page background fallback & grid ── */}
-      <div className="fixed inset-0 -z-20 bg-page/80" />
-      <div className="fixed inset-0 -z-20 bg-grid" />
+      {/* ── Subtle Cyber Grid Overlay ── */}
+      <div className="fixed inset-0 -z-20 bg-grid opacity-30 pointer-events-none" />
 
-      {/* ── Ambient orbs ── */}
+      {/* ── Ambient Glow Highlights (Screen Blend) ── */}
       <div
         className="pointer-events-none fixed -z-10 left-[-10%] top-[-8%] h-[650px] w-[650px] rounded-full
-          bg-purple-400/20 dark:bg-purple-700/18 blur-[130px]"
+          bg-purple-500/15 dark:bg-purple-600/20 blur-[140px]"
         style={{ animation: "pulse 10s ease-in-out infinite" }}
       />
       <div
         className="pointer-events-none fixed -z-10 right-[-8%] bottom-[-8%] h-[550px] w-[550px] rounded-full
-          bg-blue-400/18 dark:bg-blue-700/15 blur-[120px]"
+          bg-blue-500/12 dark:bg-blue-600/15 blur-[130px]"
         style={{ animation: "pulse 14s ease-in-out infinite", animationDelay: "3s" }}
       />
       <div
         className="pointer-events-none fixed -z-10 left-[40%] top-[50%] h-[400px] w-[400px] rounded-full
-          bg-violet-400/10 dark:bg-violet-900/12 blur-[100px]"
+          bg-violet-500/10 dark:bg-violet-800/12 blur-[110px]"
         style={{ animation: "pulse 12s ease-in-out infinite", animationDelay: "6s" }}
       />
 
