@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { portfolioConfig } from "@/config/portfolioConfig";
+import { GitHubProjectsService } from "@/services/GitHubProjectsService";
 
 export interface AIServiceResponse {
   success: boolean;
@@ -16,32 +17,43 @@ export interface AIRefineResponse {
 /**
  * OOP Class: AIService
  * Encapsulates multi-provider AI model execution (Gemini, Groq, Pollinations)
- * driven dynamically by portfolioConfig.json.
+ * driven dynamically by portfolioConfig.json and dynamic GitHub repositories.
  */
 export class AIService {
-  private systemPrompt: string;
   private geminiKey: string | undefined;
   private groqKey: string | undefined;
 
   constructor() {
     this.geminiKey = process.env.GEMINI_API_KEY;
     this.groqKey = process.env.GROQ_API_KEY;
+  }
 
+  private async getSystemPrompt(): Promise<string> {
     const dev = portfolioConfig.developer;
     const exp = portfolioConfig.experience.roles[0];
-    const featuredProjects = portfolioConfig.projects
-      .filter((p) => p.featured)
-      .map((p) => `${p.title} (${p.live || p.github})`)
-      .join(", ");
+    let allProjects = portfolioConfig.projects;
+    try {
+      allProjects = await GitHubProjectsService.getDynamicProjects();
+    } catch {
+      allProjects = portfolioConfig.projects;
+    }
 
-    this.systemPrompt = `
+    const projectsSummary = allProjects
+      .map(
+        (p) =>
+          `- ${p.title}: ${p.description} (Tech: ${p.tech.join(", ")}) [Demo: ${p.live || "N/A"}, Repo: ${p.github || "N/A"}]`
+      )
+      .join("\n");
+
+    return `
 You are the official AI Portfolio Assistant for ${dev.name}.
 DEVELOPER PROFILE:
 - Name: ${dev.name}
 - Role: ${dev.title}
 - Experience: ${dev.experienceYears} years building web apps, SaaS platforms, cloud solutions.
 - Work History: ${exp.company} (${exp.period}, ${exp.role}).
-- Featured Projects: ${featuredProjects}
+- Active & Public Projects (${allProjects.length} total):
+${projectsSummary}
 - Contact: ${dev.email} | WhatsApp: ${dev.whatsapp} | GitHub: ${dev.github}
 `;
   }
@@ -50,6 +62,8 @@ DEVELOPER PROFILE:
    * Generates a conversational chat reply using available AI providers
    */
   public async generateChatReply(query: string): Promise<AIServiceResponse> {
+    const systemPrompt = await this.getSystemPrompt();
+
     // Strategy 1: Groq Cloud (Llama 3.3 70B)
     if (this.groqKey && this.groqKey.trim() !== "") {
       try {
@@ -62,7 +76,7 @@ DEVELOPER PROFILE:
           body: JSON.stringify({
             model: "llama-3.3-70b-versatile",
             messages: [
-              { role: "system", content: this.systemPrompt },
+              { role: "system", content: systemPrompt },
               { role: "user", content: query },
             ],
             temperature: 0.5,
@@ -86,7 +100,7 @@ DEVELOPER PROFILE:
         const genAI = new GoogleGenerativeAI(this.geminiKey);
         const model = genAI.getGenerativeModel({
           model: "gemini-1.5-flash",
-          systemInstruction: this.systemPrompt,
+          systemInstruction: systemPrompt,
         });
 
         const result = await model.generateContent(query);
