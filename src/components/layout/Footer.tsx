@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { Heart, ArrowUp, ShieldCheck, Mail, Phone, MapPin, ExternalLink, Sparkles } from "lucide-react";
+import { useState, useEffect } from "react";
 import { GithubIcon, LinkedinIcon, InstagramIcon, FacebookIcon } from "@/components/SocialIcons";
-import { portfolioConfig } from "@/config/portfolioConfig";
+import { portfolioConfig, ProjectConfig } from "@/config/portfolioConfig";
 
 const dev = portfolioConfig.developer;
 const navLinks = portfolioConfig.navigation;
-const projects = portfolioConfig.projects;
+const initialProjects = portfolioConfig.projects;
 
 const socialMap = [
   { name: "GitHub", url: dev.github, icon: GithubIcon, hoverColor: "hover:text-slate-900 dark:hover:text-white hover:border-slate-400/60" },
@@ -17,11 +18,24 @@ const socialMap = [
 ];
 
 export function Footer() {
+  const [projectsList, setProjectsList] = useState<ProjectConfig[]>(initialProjects);
+
+  useEffect(() => {
+    fetch("/api/projects")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.projects) && data.projects.length > 0) {
+          setProjectsList(data.projects);
+        }
+      })
+      .catch((err) => console.error("Error fetching projects in footer:", err));
+  }, []);
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const featuredApps = projects.filter((p) => p.featured || p.live);
+  const featuredApps = projectsList.filter((p) => p.featured || p.live);
 
   return (
     <footer className="mt-20 border-t border-[var(--border)] bg-gradient-to-b from-transparent via-purple-950/5 to-purple-950/25 pt-16 pb-8 relative overflow-hidden">

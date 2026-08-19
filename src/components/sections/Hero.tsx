@@ -207,19 +207,19 @@ export function Hero() {
                 {FLOAT_BADGES.map(({ label, color, border, text, top, left, delay }) => (
                   <motion.div
                     key={label}
-                    animate={{ y: [0, -12, 0] }}
+                    animate={{ y: [0, -10, 0] }}
                     transition={{
                       duration: 4.5,
                       repeat: Infinity,
                       ease: "easeInOut",
                       delay,
                     }}
-                    whileHover={{ scale: 1.12, rotate: [-1, 1, 0] }}
-                    className={`absolute ${top} ${left} z-20 cursor-pointer`}
+                    whileHover={{ scale: 1.1, rotate: [-1, 1, 0] }}
+                    className={`absolute ${top} ${left} z-20 cursor-pointer hidden sm:block`}
                   >
                     <div
                       className={`flex items-center gap-2 rounded-full border ${border} bg-gradient-to-r ${color}
-                        backdrop-blur-xl px-4 py-2 text-xs sm:text-sm font-bold ${text}
+                        backdrop-blur-xl px-3.5 py-1.5 text-xs sm:text-sm font-bold ${text}
                         shadow-[0_8px_25px_rgba(0,0,0,0.15)] dark:shadow-[0_8px_25px_rgba(0,0,0,0.4)]
                         dark:bg-slate-950/80 transition-all duration-300 hover:shadow-lg`}
                     >

@@ -12,13 +12,17 @@ import { LiveAnalytics } from "@/components/sections/LiveAnalytics";
 import { Education } from "@/components/sections/Education";
 import { Contact } from "@/components/sections/Contact";
 import { ParticleBackground } from "@/components/ParticleBackground";
+import { VideoBackground } from "@/components/VideoBackground";
 import { AIChatbot } from "@/components/AIChatbot";
 
 export default function Home() {
   return (
     <main className="relative min-h-screen overflow-hidden">
-      {/* ── Page background ── */}
-      <div className="fixed inset-0 -z-20 bg-page" />
+      {/* ── Background Video & Ambient Motion ── */}
+      <VideoBackground />
+
+      {/* ── Page background fallback & grid ── */}
+      <div className="fixed inset-0 -z-20 bg-page/80" />
       <div className="fixed inset-0 -z-20 bg-grid" />
 
       {/* ── Ambient orbs ── */}

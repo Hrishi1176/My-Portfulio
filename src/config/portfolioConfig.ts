@@ -94,6 +94,11 @@ export interface ProjectConfig {
   gradient: string;
   accentBorder: string;
   tagColor: string;
+  stars?: number;
+  forks?: number;
+  updatedAt?: string;
+  language?: string;
+  topics?: string[];
 }
 
 export interface EducationConfig {
