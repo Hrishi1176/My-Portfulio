@@ -1,10 +1,10 @@
 import type { NextConfig } from "next";
 
 const securityHeaders = [
-  // Prevent clickjacking
+  // Prevent cross-origin clickjacking while allowing same-origin iframes (e.g. resume & modal previews)
   {
     key: "X-Frame-Options",
-    value: "DENY",
+    value: "SAMEORIGIN",
   },
   // Prevent MIME sniffing
   {
