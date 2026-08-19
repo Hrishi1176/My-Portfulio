@@ -370,7 +370,7 @@
           "MCP Integration: Work with MCP (Model Context Protocol) servers to enable AI systems to access and retrieve data efficiently across distributed sources.",
           "Prompt Engineering: Develop dynamic and optimized prompts to achieve accurate AI-generated results while minimizing token usage and latency.",
           "Multi-Tenant Systems: Work in sandboxed multi-tenant environments, developing scalable backend services for booking management and integrating delivery APIs for e-commerce platforms.",
-          "ETL & Data Engineering: Architect and maintain robust ETL (Extract, Transform, Load) pipelines for data processing, transformation, and integration.",
+          "ETL & Data Engineering: Make ETL (Extract, Transform, Load) template for data processing, transformation, and integration.",
           "Business Intelligence: Build and maintain Apache Superset dashboards using processed ETL data to provide actionable insights and reporting."
         ],
         "tech": [
