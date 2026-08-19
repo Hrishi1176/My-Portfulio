@@ -32,8 +32,25 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        // Global security headers for all routes
         source: "/(.*)",
         headers: securityHeaders,
+      },
+      {
+        // Allow PDFs in /resume/ to be embedded via <iframe> on the same origin.
+        // Next.js defaults to X-Frame-Options: SAMEORIGIN, but Vercel can override
+        // it to "deny". We explicitly set SAMEORIGIN here so the ResumeModal iframe works.
+        source: "/resume/(.*)",
+        headers: [
+          {
+            key: "X-Frame-Options",
+            value: "SAMEORIGIN",
+          },
+          {
+            key: "Content-Disposition",
+            value: "inline",
+          },
+        ],
       },
     ];
   },
