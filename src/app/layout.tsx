@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     template: "%s | Hrishi Bhattacharya",
   },
   description:
-    "Senior Full Stack Developer & System Architect with 4.5+ years of experience designing scalable multi-tenant SaaS platforms, Next.js web applications, Python automation engines, and cloud data solutions.",
+    "Senior Full Stack Developer & System Architect with 4.4 years of experience designing scalable multi-tenant SaaS platforms, Next.js web applications, Python automation engines, and cloud data solutions.",
   keywords: [
     "Hrishi Bhattacharya",
     "Senior Software Developer",
@@ -76,7 +76,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Hrishi Bhattacharya — Senior Software Developer & Full Stack Engineer",
     description:
-      "Senior Full Stack Developer with 4.5+ years experience building Next.js apps, SaaS platforms, and cloud solutions.",
+      "Senior Full Stack Developer with 4.4 years experience building Next.js apps, SaaS platforms, and cloud solutions.",
     creator: "@Hrishi1176",
     images: ["/Hrishi.Bhattacharyya.jpg"],
   },

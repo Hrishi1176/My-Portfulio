@@ -6,7 +6,7 @@
     "initials": "HB",
     "role": "Senior Software Developer ",
     "title": "Senior Full Stack Engineer & System Architect",
-    "experienceYears": "4.5+",
+    "experienceYears": "4.4",
     "email": "hrishisgp97@gmail.com",
     "phone": "+91 62946 60141",
     "whatsapp": "+91 62946 60141",
@@ -59,7 +59,7 @@
     "tagline": "Full Stack Engineer specialising in scalable web applications, multi-tenant SaaS platforms, workflow automation, and cloud data solutions.",
     "stats": [
       {
-        "value": "4.5+",
+        "value": "4.4",
         "label": "Years Exp."
       },
       {
@@ -138,7 +138,7 @@
   },
   "about": {
     "bioParagraphs": [
-      "I'm a Senior Full Stack Developer with over 4.5 years of experience designing and delivering scalable web applications, multi-tenant SaaS platforms, workflow automation systems, and cloud data engineering solutions.",
+      "I'm a Senior Full Stack Developer with over 4.4 years of experience designing and delivering scalable web applications, multi-tenant SaaS platforms, workflow automation systems, and cloud data engineering solutions.",
       "My journey involves leading developer teams, architecting enterprise software, and building robust end-to-end applications. I have strong expertise in full-stack architecture, REST/WebSocket APIs, database optimization, and cloud solutions — always aiming to deliver high-quality, performant software."
     ],
     "traits": [
@@ -357,25 +357,35 @@
     "roles": [
       {
         "period": "2023 – June 2026",
-        "role": "Manager – Software Development Team",
+        "role": "Manager and Senior Software Developer",
         "company": "eDge Wrapper Technology Pvt. Ltd.",
         "location": "India",
-        "badge": "Leadership Role",
+        "badge": "Leadership & Architecture",
         "type": "current",
         "responsibilities": [
-          "Led the design and development of a multi-tenant e-commerce platform using Next.js with RBAC.",
-          "Built an enterprise Office Management System with HR, leave management, expense tracking, and task management.",
-          "Managed and mentored software engineers across multiple concurrent projects.",
-          "Optimised MySQL and PostgreSQL database performance for high-volume transactional systems."
+          "Team Management: Lead and manage development teams, assign tasks, conduct comprehensive code reviews, and ensure timely project delivery.",
+          "Software Architecture: Design and define scalable project architectures and technical structures based on business and client requirements.",
+          "Data Modeling & Reporting: Design data models and develop reporting solutions to support business intelligence and executive decision-making.",
+          "AI & LLM Integration: Explore and implement AI integration models using Python backend services, including RAG (Retrieval-Augmented Generation) for efficient data retrieval and contextual AI responses.",
+          "MCP Integration: Work with MCP (Model Context Protocol) servers to enable AI systems to access and retrieve data efficiently across distributed sources.",
+          "Prompt Engineering: Develop dynamic and optimized prompts to achieve accurate AI-generated results while minimizing token usage and latency.",
+          "Multi-Tenant Systems: Work in sandboxed multi-tenant environments, developing scalable backend services for booking management and integrating delivery APIs for e-commerce platforms.",
+          "ETL & Data Engineering: Architect and maintain robust ETL (Extract, Transform, Load) pipelines for data processing, transformation, and integration.",
+          "Business Intelligence: Build and maintain Apache Superset dashboards using processed ETL data to provide actionable insights and reporting."
         ],
         "tech": [
-          "Next.js",
-          "React",
-          "TypeScript",
-          "Node.js",
-          "PostgreSQL",
           "Python",
-          "Snowflake"
+          "RAG & LLMs",
+          "MCP Servers",
+          "Prompt Engineering",
+          "Multi-Tenant Systems",
+          "ETL Pipelines",
+          "Apache Superset",
+          "Node.js",
+          "FastAPI",
+          "PostgreSQL",
+          "Next.js",
+          "React"
         ]
       },
       {
@@ -386,16 +396,31 @@
         "badge": "Full Stack Role",
         "type": "past",
         "responsibilities": [
-          "Developed a Snowflake and Python-based data platform supporting ETL pipelines, reporting, and analytics.",
-          "Designed workflow automation applications supporting configurable business processes.",
-          "Delivered custom WordPress solutions with SEO optimisation and responsive design."
+          "Full-Stack Development: Contributed to several full-stack applications across both modern frontend and backend development.",
+          "Frontend Engineering: Built high-performance responsive web applications using React.js and Next.js.",
+          "Backend Microservices: Developed scalable backend services with Node.js, Python, AWS Chalice, and FastAPI.",
+          "Database Architecture: Integrated and managed MongoDB, PostgreSQL, and Snowflake data warehouses.",
+          "DevOps & Cloud Infrastructure: Configured CI/CD automation pipelines, Docker containers, Nginx reverse proxies, and deployed to DigitalOcean Droplets and AWS EC2.",
+          "Quality Assurance: Performed rigorous application testing using various testing frameworks based on client specifications.",
+          "CMS & E-Commerce: Developed WordPress e-commerce websites and maintained Magento framework version upgrades, maintenance, and bug fixes."
         ],
         "tech": [
+          "React.js",
+          "Next.js",
+          "Node.js",
           "Python",
+          "FastAPI",
+          "AWS Chalice",
+          "MongoDB",
+          "PostgreSQL",
           "Snowflake",
+          "Docker",
+          "Nginx",
+          "AWS EC2",
+          "DigitalOcean",
+          "CI/CD",
           "WordPress",
-          "JavaScript",
-          "HTML5/CSS3"
+          "Magento"
         ]
       }
     ]
@@ -500,9 +525,11 @@
   ],
   "education": [
     {
-      "title": "Bachelor of Engineering",
+      "title": "Bachelor of Engineering (B.E.)",
       "field": "Information Technology",
       "school": "University Institute of Technology, The University of Burdwan",
+      "period": "2018 – 2021",
+      "grade": "Grade: A+ (7.5 CGPA)",
       "gradient": "from-purple-500/15 to-violet-500/10",
       "iconBg": "bg-purple-100 dark:bg-purple-500/15",
       "iconColor": "text-purple-600 dark:text-purple-400",
@@ -512,15 +539,19 @@
       "title": "Diploma in Engineering",
       "field": "Computer Science & Technology",
       "school": "Siliguri Government Polytechnic",
+      "period": "Aug 2015 – Aug 2018",
+      "grade": "Grade: A (6.6 CGPA)",
       "gradient": "from-blue-500/15 to-indigo-500/10",
       "iconBg": "bg-blue-100 dark:bg-blue-500/15",
       "iconColor": "text-blue-600 dark:text-blue-400",
       "border": "border-blue-400/25 dark:border-blue-500/20"
     },
     {
-      "title": "Secondary Education",
-      "field": "Madhyamik",
-      "school": "CoochBehar Rambhola High School",
+      "title": "Secondary Education (Madhyamik)",
+      "field": "General Science & Academics",
+      "school": "Coochbehar Rambhola High School",
+      "period": "Completed",
+      "grade": "Score: 69%",
       "gradient": "from-emerald-500/15 to-teal-500/10",
       "iconBg": "bg-emerald-100 dark:bg-emerald-500/15",
       "iconColor": "text-emerald-600 dark:text-emerald-400",

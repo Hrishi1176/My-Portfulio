@@ -41,7 +41,7 @@ export function AIChatbot() {
       {
         id: "welcome",
         sender: "bot",
-        text: "Hi! I am Hrishi's AI Portfolio Assistant 🤖. Ask me anything about his 4.5+ years of experience, Next.js & Python projects, or technical skills!",
+        text: "Hi! I am Hrishi's AI Portfolio Assistant 🤖. Ask me anything about his 4.4 years of experience, Next.js & Python projects, or technical skills!",
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       },
     ]);
