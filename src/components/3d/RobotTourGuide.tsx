@@ -30,97 +30,6 @@ interface GuideStop {
   color: string;
 }
 
-const TOUR_STOPS: Record<string, GuideStop> = {
-  nova: {
-    id: "nova",
-    sceneNumber: 1,
-    name: "Nova",
-    role: "Portfolio Guide",
-    speech:
-      "👋 Hello! I am Nova, your portfolio guide. Welcome to Hrishi's digital universe. Let my team show you what we build.",
-    actionLabel: "Explore Frontend Lab",
-    nextScene: 3,
-    color: "#00f0ff",
-  },
-  codex: {
-    id: "codex",
-    sceneNumber: 3,
-    name: "Codex",
-    role: "Frontend Engineer",
-    speech:
-      "⚡ Codex active. Assembling Next.js 16 reactive interfaces, Tailwind systems, and modular TypeScript components.",
-    actionLabel: "Inspect Backend Command",
-    nextScene: 4,
-    color: "#38bdf8",
-  },
-  matrix: {
-    id: "matrix",
-    sceneNumber: 4,
-    name: "Matrix",
-    role: "Backend Engineer",
-    speech:
-      "🛡️ Matrix online. Connecting microservice server blades, high-throughput REST APIs, and asynchronous message queues.",
-    actionLabel: "Enter Database Core",
-    nextScene: 5,
-    color: "#10b981",
-  },
-  orbit: {
-    id: "orbit",
-    sceneNumber: 5,
-    name: "Orbit",
-    role: "Database Engineer",
-    speech:
-      "🔮 Orbit initialized. Inspecting MongoDB document pipelines, PostgreSQL relational schemas, and real-time cache replication.",
-    actionLabel: "Check Cloud & DevOps",
-    nextScene: 6,
-    color: "#a855f7",
-  },
-  cloudx: {
-    id: "cloudx",
-    sceneNumber: 6,
-    name: "Cloud-X",
-    role: "DevOps & Cloud Engineer",
-    speech:
-      "🚀 Cloud-X deployed. Automating Docker container pods, AWS serverless deployments, and GitHub Actions CI/CD workflows.",
-    actionLabel: "Explore AI Foundry",
-    nextScene: 7,
-    color: "#f97316",
-  },
-  neura: {
-    id: "neura",
-    sceneNumber: 7,
-    name: "Neura",
-    role: "AI & Automation Engineer",
-    speech:
-      "🧠 Neura connected. Activating deep neural network synapses, intelligent workflow automations, and multi-agent LLM systems.",
-    actionLabel: "Enter Project Arena",
-    nextScene: 8,
-    color: "#06b6d4",
-  },
-  titan: {
-    id: "titan",
-    sceneNumber: 8,
-    name: "Titan",
-    role: "System Architect",
-    speech:
-      "🏆 Titan reporting! Browse Hrishi's live full-stack production repositories, synchronized in real-time with GitHub telemetry.",
-    actionLabel: "Join Final Assembly",
-    nextScene: 9,
-    color: "#f59e0b",
-  },
-  all: {
-    id: "all",
-    sceneNumber: 9,
-    name: "The Squad",
-    role: "Full Engineering Division",
-    speech:
-      "🤝 All seven specialists are assembled. The next mission starts with you. Let's build something extraordinary together!",
-    actionLabel: "Return to Gateway",
-    nextScene: 1,
-    color: "#eab308",
-  },
-};
-
 export function RobotTourGuide() {
   const {
     activeAgentId,
@@ -130,13 +39,37 @@ export function RobotTourGuide() {
     isTourPlaying,
     toggleTourPlayPause,
     playSound,
+    robots,
   } = useRobotCompanion();
 
   const [isDismissed, setIsDismissed] = useState(false);
   const [displayedSpeech, setDisplayedSpeech] = useState("");
-  const autoTourTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const currentStop = TOUR_STOPS[activeAgentId] || TOUR_STOPS.nova;
+  const activeBot = robots.find((r) => r.agentId === activeAgentId) || robots[0];
+  const nextSceneNum = activeBot ? (activeBot.sceneNumber >= 9 ? 1 : activeBot.sceneNumber + 1) : 1;
+
+  const currentStop: GuideStop = activeBot
+    ? {
+        id: (activeBot.agentId as RobotAgentId) || "nova",
+        sceneNumber: activeBot.sceneNumber,
+        name: activeBot.name,
+        role: activeBot.role,
+        speech: activeBot.tourSpeech || activeBot.transmission,
+        actionLabel: activeBot.tourActionLabel || "Explore Next Lab",
+        nextScene: nextSceneNum,
+        color: activeBot.glowColor,
+      }
+    : {
+        id: "nova" as RobotAgentId,
+        sceneNumber: 1,
+        name: "Nova",
+        role: "Portfolio Guide",
+        speech: "Welcome to Hrishi's technology universe.",
+        actionLabel: "Explore Lab",
+        nextScene: 3,
+        color: "#00f0ff",
+      };
+  const autoTourTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Typewriter effect on dialogue change
   useEffect(() => {

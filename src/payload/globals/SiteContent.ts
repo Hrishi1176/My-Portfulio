@@ -264,6 +264,27 @@ export const SiteContent: GlobalConfig = {
             },
           ],
         },
+
+        // ── Tab 6: Impact Metrics ──
+        {
+          label: "Impact Metrics",
+          fields: [
+            {
+              name: "impactMetrics",
+              type: "array",
+              admin: {
+                description: "Key performance metrics displayed on the interactive Impact Slider",
+              },
+              fields: [
+                { name: "label", type: "text", required: true },
+                { name: "before", type: "text", required: true },
+                { name: "after", type: "text", required: true },
+                { name: "unit", type: "text", required: true },
+                { name: "detail", type: "text", required: true },
+              ],
+            },
+          ],
+        },
       ],
     },
   ],

@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { GraduationCap, Award, School, Calendar, CheckCircle2 } from "lucide-react";
-import { portfolioConfig, EducationConfig } from "@/config/portfolioConfig";
+import type { EducationConfig } from "@/config/portfolioConfig";
 import { SectionHeader } from "@/components/ui";
 import { TiltCard } from "@/components/3d/TiltCard";
 
@@ -13,7 +13,7 @@ interface EducationProps {
 }
 
 export function Education({ education }: EducationProps = {}) {
-  const sourceItems = education && education.length > 0 ? education : portfolioConfig.education;
+  const sourceItems = education || [];
   const educationItems = sourceItems.map((item, index) => ({
     ...item,
     icon: ICONS[index % ICONS.length],

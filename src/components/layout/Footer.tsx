@@ -4,17 +4,35 @@ import Link from "next/link";
 import { Heart, ArrowUp, ShieldCheck, Mail, Phone, ExternalLink, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
 import { GithubIcon, LinkedinIcon, InstagramIcon, FacebookIcon } from "@/components/SocialIcons";
-import { portfolioConfig, ProjectConfig, DeveloperConfig, NavigationItem } from "@/config/portfolioConfig";
+import type { ProjectConfig, DeveloperConfig, NavigationItem } from "@/config/portfolioConfig";
 
 interface FooterProps {
   developer?: DeveloperConfig;
   navigation?: NavigationItem[];
 }
 
+const DEFAULT_DEV: DeveloperConfig = {
+  name: "Hrishi Bhattacharya",
+  firstName: "Hrishi",
+  lastName: "Bhattacharyya",
+  initials: "HB",
+  role: "Senior Software Developer",
+  title: "Senior Full Stack Engineer & System Architect",
+  experienceYears: "4.4",
+  email: "hrishisgp97@gmail.com",
+  phone: "+91 62946 60141",
+  whatsapp: "+91 62946 60141",
+  location: "Kolkata, India",
+  github: "https://github.com/Hrishi1176",
+  linkedin: "https://linkedin.com/in/hrishi-bhattacharyya",
+  instagram: "",
+  facebook: "",
+};
+
 export function Footer({ developer: devProp, navigation: navProp }: FooterProps = {}) {
-  const dev = devProp || portfolioConfig.developer;
-  const navLinks = navProp && navProp.length > 0 ? navProp : portfolioConfig.navigation;
-  const [projectsList, setProjectsList] = useState<ProjectConfig[]>(portfolioConfig.projects);
+  const dev = devProp || DEFAULT_DEV;
+  const navLinks = navProp || [];
+  const [projectsList, setProjectsList] = useState<ProjectConfig[]>([]);
 
   const socialMap = [
     { name: "GitHub", url: dev.github, icon: GithubIcon, hoverColor: "hover:text-slate-900 dark:hover:text-white hover:border-slate-400/60" },

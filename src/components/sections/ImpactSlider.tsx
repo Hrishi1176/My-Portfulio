@@ -6,7 +6,7 @@ import { Zap, Server, CloudLightning } from "lucide-react";
 import { SectionHeader } from "@/components/ui";
 import { TiltCard } from "@/components/3d/TiltCard";
 
-interface ImpactMetric {
+export interface ImpactMetric {
   label: string;
   before: string;
   after: string;
@@ -14,39 +14,16 @@ interface ImpactMetric {
   detail: string;
 }
 
-const METRICS: ImpactMetric[] = [
-  {
-    label: "API Response Latency",
-    before: "480",
-    after: "38",
-    unit: "ms",
-    detail: "Redis caching & edge compute routing",
-  },
-  {
-    label: "System Throughput",
-    before: "12k",
-    after: "450k",
-    unit: "req/min",
-    detail: "Stateless horizontally scalable cluster",
-  },
-  {
-    label: "Deployment Frequency",
-    before: "Bi-weekly",
-    after: "Continuous",
-    unit: "CI/CD",
-    detail: "Zero-downtime blue/green rollouts",
-  },
-  {
-    label: "Production Uptime",
-    before: "98.2%",
-    after: "99.99%",
-    unit: "SLA",
-    detail: "Multi-region failover & automated healing",
-  },
-];
+interface ImpactSliderProps {
+  metrics?: ImpactMetric[];
+}
 
-export function ImpactSlider() {
+export function ImpactSlider({ metrics = [] }: ImpactSliderProps = {}) {
   const [sliderPos, setSliderPos] = useState<number>(50);
+
+  if (!metrics || metrics.length === 0) {
+    return null;
+  }
 
   return (
     <section id="impact" className="scroll-mt-24 py-16 sm:py-24 relative">
@@ -170,7 +147,7 @@ export function ImpactSlider() {
 
               {/* Metric Counter Grid */}
               <div className="mt-8 grid grid-cols-2 lg:grid-cols-4 gap-4">
-                {METRICS.map((m) => (
+                {metrics.map((m) => (
                   <div
                     key={m.label}
                     className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 transition-all hover:border-purple-500/40"

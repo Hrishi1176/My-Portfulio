@@ -28,117 +28,36 @@ interface StoryDialogue {
   status: string;
 }
 
-const ROBOTVERSE_STORY: Record<string, StoryDialogue> = {
-  nova: {
-    id: "nova",
-    name: "Nova",
-    codename: "ROBOT-01 // GUIDE",
-    role: "Portfolio Guide",
-    sceneTitle: "SCENE 01 & 02 // THE ARRIVAL & ABOUT",
-    badgeColor: "bg-cyan-500/20 text-cyan-300 border-cyan-500/40",
-    borderColor: "border-cyan-500/30",
-    glowColor: "rgba(0,240,255,0.25)",
-    transmission:
-      "Hello, I am Nova! Welcome to Hrishi's digital universe. Let my team show you the scalable architectures we build.",
-    status: "NAVIGATING GATEWAY",
-  },
-  codex: {
-    id: "codex",
-    name: "Codex",
-    codename: "ROBOT-02 // FRONTEND",
-    role: "Frontend Engineer",
-    sceneTitle: "SCENE 03 // FRONTEND DEVELOPMENT LAB",
-    badgeColor: "bg-sky-500/20 text-sky-300 border-sky-500/40",
-    borderColor: "border-sky-500/30",
-    glowColor: "rgba(56,189,248,0.25)",
-    transmission:
-      "Assembling floating UI components, Next.js 16 micro-frontends, and responsive design systems with TypeScript.",
-    status: "COMPILING UI MESH",
-  },
-  matrix: {
-    id: "matrix",
-    name: "Matrix",
-    codename: "ROBOT-03 // BACKEND",
-    role: "Backend Engineer",
-    sceneTitle: "SCENE 04 // BACKEND COMMAND CENTER",
-    badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
-    borderColor: "border-emerald-500/30",
-    glowColor: "rgba(16,185,129,0.25)",
-    transmission:
-      "Synchronizing Node.js microservices, Python distributed tasks, and high-frequency REST API endpoints.",
-    status: "ROUTING API PULSES",
-  },
-  orbit: {
-    id: "orbit",
-    name: "Orbit",
-    codename: "ROBOT-04 // DATABASE",
-    role: "Database Engineer",
-    sceneTitle: "SCENE 05 // DATABASE CORE",
-    badgeColor: "bg-purple-500/20 text-purple-300 border-purple-500/40",
-    borderColor: "border-purple-500/30",
-    glowColor: "rgba(168,85,247,0.25)",
-    transmission:
-      "Optimizing MongoDB clusters, PostgreSQL relational schemas, and real-time ACID transactions.",
-    status: "INDEXING DATA FLOW",
-  },
-  cloudx: {
-    id: "cloudx",
-    name: "Cloud-X",
-    codename: "ROBOT-05 // DEVOPS",
-    role: "DevOps & Cloud Engineer",
-    sceneTitle: "SCENE 06 // CLOUD & DEVOPS STATION",
-    badgeColor: "bg-orange-500/20 text-orange-300 border-orange-500/40",
-    borderColor: "border-orange-500/30",
-    glowColor: "rgba(249,115,22,0.25)",
-    transmission:
-      "Deploying containerized Docker pods, automated GitHub Actions CI/CD pipelines, and AWS cloud infrastructure.",
-    status: "DEPLOYING PODS",
-  },
-  neura: {
-    id: "neura",
-    name: "Neura",
-    codename: "ROBOT-06 // AI LAB",
-    role: "AI & Automation Engineer",
-    sceneTitle: "SCENE 07 // ARTIFICIAL INTELLIGENCE UNIVERSE",
-    badgeColor: "bg-cyan-500/20 text-cyan-300 border-cyan-500/40",
-    borderColor: "border-cyan-500/30",
-    glowColor: "rgba(6,182,212,0.25)",
-    transmission:
-      "Activating neural network synaptic weights, intelligent workflow automation, and multi-agent LLM systems.",
-    status: "PROCESSING SYNAPSE",
-  },
-  titan: {
-    id: "titan",
-    name: "Titan",
-    codename: "ROBOT-07 // ARENA",
-    role: "System Architect",
-    sceneTitle: "SCENE 08 // PROJECT ARENA",
-    badgeColor: "bg-amber-500/20 text-amber-300 border-amber-500/40",
-    borderColor: "border-amber-500/30",
-    glowColor: "rgba(245,158,11,0.25)",
-    transmission:
-      "Presenting Hrishi's verified production applications, real-time GitHub telemetry, and full-stack solutions.",
-    status: "PRESENTING SHOWCASE",
-  },
-  all: {
-    id: "all",
-    name: "The Squad",
-    codename: "ROBOT-07 // ASSEMBLY",
-    role: "Full Engineering Division",
-    sceneTitle: "SCENE 09 // CONTACT & FINAL MISSION",
-    badgeColor: "bg-yellow-500/20 text-yellow-300 border-yellow-500/40",
-    borderColor: "border-yellow-500/30",
-    glowColor: "rgba(234,179,8,0.25)",
-    transmission:
-      "The next mission starts with you. All seven specialists are assembled. Let's build something extraordinary together!",
-    status: "7 AGENTS ASSEMBLED",
-  },
-};
-
 export function RobotStoryBanner() {
-  const { activeAgentId, isEnabled } = useRobotCompanion();
+  const { activeAgentId, isEnabled, robots } = useRobotCompanion();
   const [displayedText, setDisplayedText] = useState("");
-  const currentStory = ROBOTVERSE_STORY[activeAgentId] || ROBOTVERSE_STORY.nova;
+
+  const activeBot = robots.find((r) => r.agentId === activeAgentId) || robots[0];
+  const currentStory: StoryDialogue = activeBot
+    ? {
+        id: (activeBot.agentId as RobotAgentId) || "nova",
+        name: activeBot.name,
+        codename: activeBot.codename,
+        role: activeBot.role,
+        sceneTitle: activeBot.sector,
+        badgeColor: activeBot.badgeColor,
+        borderColor: activeBot.borderColor,
+        glowColor: activeBot.glowRgba || "rgba(0,240,255,0.25)",
+        transmission: activeBot.transmission,
+        status: activeBot.status,
+      }
+    : {
+        id: "nova" as RobotAgentId,
+        name: "Nova",
+        codename: "ROBOT-01 // GUIDE",
+        role: "Portfolio Guide",
+        sceneTitle: "SCENE 01 // THE ARRIVAL",
+        badgeColor: "bg-cyan-500/20 text-cyan-300 border-cyan-500/40",
+        borderColor: "border-cyan-500/30",
+        glowColor: "rgba(0,240,255,0.25)",
+        transmission: "Welcome to Hrishi's technology universe.",
+        status: "ONLINE",
+      };
 
   // Typewriter effect on transmission change
   useEffect(() => {

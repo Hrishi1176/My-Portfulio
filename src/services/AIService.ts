@@ -1,5 +1,4 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { portfolioConfig } from "@/config/portfolioConfig";
 import { GitHubProjectsService } from "@/services/GitHubProjectsService";
 import { PayloadService } from "@/services/payloadService";
 
@@ -33,7 +32,11 @@ export class AIService {
     const siteContent = await PayloadService.getSiteContent();
     const dev = siteContent.developer;
     const experiences = await PayloadService.getExperiences();
-    const exp = experiences[0] || portfolioConfig.experience.roles[0];
+    const exp = experiences[0] || {
+      company: "Software Systems",
+      role: dev.role || "Software Developer",
+      period: "Recent",
+    };
     let allProjects = await PayloadService.getProjects();
     try {
       const gitHubProjects = await GitHubProjectsService.getDynamicProjects();
@@ -118,7 +121,7 @@ ${projectsSummary}
     }
 
     // Strategy 3: Keyless Fallback Knowledge Base
-    return this.getKnowledgeBaseFallback(query);
+    return await this.getKnowledgeBaseFallback(query);
   }
 
   /**
@@ -184,16 +187,18 @@ Instructions: Use bullet points, highlight core features, target tech stack, and
     return { success: true, refinedRequirements: fallbackText, provider: "Smart Template" };
   }
 
-  private getKnowledgeBaseFallback(query: string): AIServiceResponse {
+  private async getKnowledgeBaseFallback(query: string): Promise<AIServiceResponse> {
     const lower = query.toLowerCase();
-    const dev = portfolioConfig.developer;
-    const exp = portfolioConfig.experience.roles[0];
+    const siteContent = await PayloadService.getSiteContent();
+    const dev = siteContent.developer;
+    const experiences = await PayloadService.getExperiences();
+    const exp = experiences[0] || { company: "Software Systems", role: dev.role, period: "Recent" };
     let reply = "";
 
     if (lower.includes("experience") || lower.includes("work") || lower.includes("company")) {
       reply = `${dev.name} has ${dev.experienceYears} years of software engineering experience, progressing from Associate Developer to ${exp.role} at ${exp.company}.`;
     } else if (lower.includes("project") || lower.includes("workpilot") || lower.includes("cloudledger")) {
-      reply = `${dev.firstName} built CloudLedger, WorkPilot-AI, and OpenConnect. Explore all projects at ${dev.github}`;
+      reply = `${dev.firstName} built advanced enterprise systems and software solutions. Explore all projects at ${dev.github}`;
     } else if (lower.includes("contact") || lower.includes("email") || lower.includes("whatsapp")) {
       reply = `Reach ${dev.firstName} at ${dev.email}, WhatsApp ${dev.whatsapp}, or fill out the portfolio contact form.`;
     } else {

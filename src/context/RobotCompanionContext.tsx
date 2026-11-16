@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from "react";
 import { soundFX } from "@/utils/audioFX";
+import type { RobotCMSDoc } from "@/services/payloadService";
 
 export type RobotUiState = "idle" | "typing" | "verifying" | "success" | "error";
 export type ActiveFormField = "name" | "email" | "requirements" | "chat" | "none";
@@ -176,6 +177,7 @@ interface RobotCompanionContextType {
   isTourPlaying: boolean;
   activeSkillCategory: string;
   projectShiftCounter: number;
+  robots: RobotCMSDoc[];
 
   // Actions
   goToScene: (sceneNum: number) => void;
@@ -194,7 +196,14 @@ interface RobotCompanionContextType {
 
 const RobotCompanionContext = createContext<RobotCompanionContextType | null>(null);
 
-export function RobotCompanionProvider({ children }: { children: React.ReactNode }) {
+export function RobotCompanionProvider({
+  children,
+  initialRobots = [],
+}: {
+  children: React.ReactNode;
+  initialRobots?: RobotCMSDoc[];
+}) {
+  const [robots] = useState<RobotCMSDoc[]>(initialRobots);
   const [state, setState] = useState<RobotUiState>("idle");
   const [activeField, setActiveField] = useState<ActiveFormField>("none");
   const [modelType, setModelType] = useState<RobotModelType>("squad");
@@ -403,6 +412,7 @@ export function RobotCompanionProvider({ children }: { children: React.ReactNode
         isTourPlaying,
         activeSkillCategory,
         projectShiftCounter,
+        robots,
         goToScene,
         setNavigationMode,
         toggleTourPlayPause,
@@ -436,6 +446,7 @@ export function useRobotCompanion() {
       isTourPlaying: false,
       activeSkillCategory: "All",
       projectShiftCounter: 0,
+      robots: [] as RobotCMSDoc[],
       setState: () => {},
       setActiveField: () => {},
       setModelType: () => {},

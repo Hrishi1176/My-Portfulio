@@ -1,6 +1,6 @@
 import { getPayload } from "payload";
 import config from "@payload-config";
-import portfolioConfig, {
+import type {
   ProjectConfig,
   RoleConfig,
   SkillCategoryConfig,
@@ -22,6 +22,37 @@ export interface ReviewItem {
   isVerified?: boolean;
 }
 
+export interface ImpactMetricDoc {
+  label: string;
+  before: string;
+  after: string;
+  unit: string;
+  detail: string;
+}
+
+export interface RobotCMSDoc {
+  id: string;
+  agentId: string;
+  name: string;
+  codename: string;
+  role: string;
+  sector: string;
+  sceneNumber: number;
+  targetElementId: string;
+  modelPath: string;
+  glowColor: string;
+  glowRgba: string;
+  voicePitch: number;
+  description: string;
+  transmission: string;
+  status: string;
+  badgeColor: string;
+  borderColor: string;
+  tourSpeech?: string | null;
+  tourActionLabel?: string | null;
+  order?: number | null;
+}
+
 export interface SiteContentData {
   developer: DeveloperConfig;
   hero: HeroConfig;
@@ -36,6 +67,7 @@ export interface SiteContentData {
     suggestedPrompts: string[];
   };
   navigation: NavigationItem[];
+  impactMetrics: ImpactMetricDoc[];
 }
 
 interface PayloadProjectDoc {
@@ -88,6 +120,29 @@ interface PayloadReviewDoc {
   createdAt?: string | Date | null;
 }
 
+interface PayloadRobotDoc {
+  id: string | number;
+  agentId: string;
+  name: string;
+  codename: string;
+  role: string;
+  sector: string;
+  sceneNumber: number;
+  targetElementId?: string | null;
+  modelPath?: string | null;
+  glowColor?: string | null;
+  glowRgba?: string | null;
+  voicePitch?: number | null;
+  description: string;
+  transmission: string;
+  status?: string | null;
+  badgeColor?: string | null;
+  borderColor?: string | null;
+  tourSpeech?: string | null;
+  tourActionLabel?: string | null;
+  order?: number | null;
+}
+
 interface PayloadSiteContentGlobalDoc {
   name?: string | null;
   firstName?: string | null;
@@ -134,7 +189,51 @@ interface PayloadSiteContentGlobalDoc {
     suggestedPrompts?: Array<{ prompt: string } | string> | null;
   } | null;
   navigation?: Array<{ name: string; href: string }> | null;
+  impactMetrics?: ImpactMetricDoc[] | null;
 }
+
+const DEFAULT_BLANK_SITE_CONTENT: SiteContentData = {
+  developer: {
+    name: "",
+    firstName: "",
+    lastName: "",
+    initials: "HB",
+    role: "",
+    title: "",
+    experienceYears: "0",
+    email: "",
+    phone: "",
+    whatsapp: "",
+    location: "",
+    github: "",
+    linkedin: "",
+    instagram: "",
+    facebook: "",
+  },
+  hero: {
+    availabilityBadge: "Available for new opportunities",
+    tagline: "",
+    stats: [],
+    floatingBadges: [],
+    techStreams: [],
+  },
+  about: {
+    bioParagraphs: [],
+    traits: [],
+    focusAreas: [],
+  },
+  contactOptions: {
+    subjectOptions: [],
+    budgetRanges: [],
+  },
+  aiChat: {
+    maxDailyChats: 10,
+    maxDailyRefinements: 5,
+    suggestedPrompts: [],
+  },
+  navigation: [],
+  impactMetrics: [],
+};
 
 export class PayloadService {
   private static async getSafePayload() {
@@ -147,25 +246,16 @@ export class PayloadService {
   }
 
   static async getSiteContent(): Promise<SiteContentData> {
-    const fallback: SiteContentData = {
-      developer: portfolioConfig.developer,
-      hero: portfolioConfig.hero,
-      about: portfolioConfig.about,
-      contactOptions: portfolioConfig.contactOptions,
-      aiChat: portfolioConfig.aiChat,
-      navigation: portfolioConfig.navigation,
-    };
-
     try {
       const payload = await this.getSafePayload();
-      if (!payload) return fallback;
+      if (!payload) return DEFAULT_BLANK_SITE_CONTENT;
 
       const doc = (await payload.findGlobal({
         slug: "site-content",
       })) as unknown as PayloadSiteContentGlobalDoc;
 
       if (!doc || !doc.name) {
-        return fallback;
+        return DEFAULT_BLANK_SITE_CONTENT;
       }
 
       const bioParagraphs = (doc.bioParagraphs || [])
@@ -184,81 +274,72 @@ export class PayloadService {
         .map((p) => (typeof p === "string" ? p : p.prompt))
         .filter(Boolean);
 
+      const firstInitial = doc.firstName ? doc.firstName[0].toUpperCase() : "H";
+      const lastInitial = doc.lastName ? doc.lastName[0].toUpperCase() : "B";
+      const initials = `${firstInitial}${lastInitial}`;
+
       return {
         developer: {
-          name: doc.name || fallback.developer.name,
-          firstName: doc.firstName || fallback.developer.firstName,
-          lastName: doc.lastName || fallback.developer.lastName,
-          initials: fallback.developer.initials,
-          role: doc.role || fallback.developer.role,
-          title: doc.title || fallback.developer.title,
-          experienceYears: doc.experienceYears || fallback.developer.experienceYears,
-          email: doc.email || fallback.developer.email,
-          phone: doc.phone || fallback.developer.phone,
-          whatsapp: doc.whatsapp || fallback.developer.whatsapp,
-          location: doc.location || fallback.developer.location,
-          github: doc.socials?.github || fallback.developer.github,
-          linkedin: doc.socials?.linkedin || fallback.developer.linkedin,
-          instagram: doc.socials?.instagram || fallback.developer.instagram,
-          facebook: doc.socials?.facebook || fallback.developer.facebook,
+          name: doc.name || "",
+          firstName: doc.firstName || "",
+          lastName: doc.lastName || "",
+          initials,
+          role: doc.role || "",
+          title: doc.title || "",
+          experienceYears: doc.experienceYears || "0",
+          email: doc.email || "",
+          phone: doc.phone || "",
+          whatsapp: doc.whatsapp || "",
+          location: doc.location || "",
+          github: doc.socials?.github || "",
+          linkedin: doc.socials?.linkedin || "",
+          instagram: doc.socials?.instagram || "",
+          facebook: doc.socials?.facebook || "",
         },
         hero: {
-          availabilityBadge: doc.availabilityBadge || fallback.hero.availabilityBadge,
-          tagline: doc.tagline || fallback.hero.tagline,
-          stats: doc.stats && doc.stats.length > 0 ? doc.stats : fallback.hero.stats,
-          floatingBadges:
-            doc.floatingBadges && doc.floatingBadges.length > 0
-              ? doc.floatingBadges
-              : fallback.hero.floatingBadges,
-          techStreams:
-            doc.techStreams && doc.techStreams.length > 0
-              ? doc.techStreams
-              : fallback.hero.techStreams,
+          availabilityBadge: doc.availabilityBadge || "Available for new opportunities",
+          tagline: doc.tagline || "",
+          stats: doc.stats || [],
+          floatingBadges: doc.floatingBadges || [],
+          techStreams: doc.techStreams || [],
         },
         about: {
-          bioParagraphs:
-            bioParagraphs.length > 0 ? bioParagraphs : fallback.about.bioParagraphs,
-          traits: traits.length > 0 ? traits : fallback.about.traits,
-          focusAreas:
-            doc.focusAreas && doc.focusAreas.length > 0
-              ? doc.focusAreas
-              : fallback.about.focusAreas,
+          bioParagraphs,
+          traits,
+          focusAreas: doc.focusAreas || [],
         },
         contactOptions: {
-          subjectOptions:
-            subjectOptions.length > 0
-              ? subjectOptions
-              : fallback.contactOptions.subjectOptions,
-          budgetRanges:
-            doc.budgetRanges && doc.budgetRanges.length > 0
-              ? doc.budgetRanges
-              : fallback.contactOptions.budgetRanges,
+          subjectOptions,
+          budgetRanges: doc.budgetRanges || [],
         },
         aiChat: {
-          maxDailyChats:
-            doc.aiChat?.maxDailyChats || fallback.aiChat.maxDailyChats,
-          maxDailyRefinements:
-            doc.aiChat?.maxDailyRefinements || fallback.aiChat.maxDailyRefinements,
-          suggestedPrompts:
-            suggestedPrompts.length > 0
-              ? suggestedPrompts
-              : fallback.aiChat.suggestedPrompts,
+          maxDailyChats: doc.aiChat?.maxDailyChats || 10,
+          maxDailyRefinements: doc.aiChat?.maxDailyRefinements || 5,
+          suggestedPrompts,
         },
-        navigation:
-          doc.navigation && doc.navigation.length > 0
-            ? doc.navigation
-            : fallback.navigation,
+        navigation: doc.navigation || [],
+        impactMetrics: doc.impactMetrics || [],
       };
     } catch (error) {
-      console.warn("Falling back to static siteContent config:", error);
-      return fallback;
+      console.warn("Error fetching siteContent from Payload CMS:", error);
+      return DEFAULT_BLANK_SITE_CONTENT;
+    }
+  }
+
+  static async getImpactMetrics(): Promise<ImpactMetricDoc[]> {
+    try {
+      const siteContent = await this.getSiteContent();
+      return siteContent.impactMetrics || [];
+    } catch (error) {
+      console.warn("Error fetching impactMetrics from Payload CMS:", error);
+      return [];
     }
   }
 
   static async getProjects(): Promise<ProjectConfig[]> {
     try {
       const payload = await this.getSafePayload();
-      if (!payload) return portfolioConfig.projects;
+      if (!payload) return [];
 
       const result = await payload.find({
         collection: "projects",
@@ -267,7 +348,7 @@ export class PayloadService {
       });
 
       if (!result.docs || result.docs.length === 0) {
-        return portfolioConfig.projects;
+        return [];
       }
 
       return (result.docs as unknown as PayloadProjectDoc[]).map((doc, i) => ({
@@ -286,15 +367,15 @@ export class PayloadService {
         language: doc.language || undefined,
       }));
     } catch (error) {
-      console.warn("Falling back to static projects config:", error);
-      return portfolioConfig.projects;
+      console.warn("Error fetching projects from Payload CMS:", error);
+      return [];
     }
   }
 
   static async getExperiences(): Promise<RoleConfig[]> {
     try {
       const payload = await this.getSafePayload();
-      if (!payload) return portfolioConfig.experience.roles;
+      if (!payload) return [];
 
       const result = await payload.find({
         collection: "experiences",
@@ -303,7 +384,7 @@ export class PayloadService {
       });
 
       if (!result.docs || result.docs.length === 0) {
-        return portfolioConfig.experience.roles;
+        return [];
       }
 
       return (result.docs as unknown as PayloadExperienceDoc[]).map((doc) => ({
@@ -321,15 +402,15 @@ export class PayloadService {
         ),
       }));
     } catch (error) {
-      console.warn("Falling back to static experiences config:", error);
-      return portfolioConfig.experience.roles;
+      console.warn("Error fetching experiences from Payload CMS:", error);
+      return [];
     }
   }
 
   static async getSkills(): Promise<SkillCategoryConfig[]> {
     try {
       const payload = await this.getSafePayload();
-      if (!payload) return portfolioConfig.skills.categories;
+      if (!payload) return [];
 
       const result = await payload.find({
         collection: "skills",
@@ -338,7 +419,7 @@ export class PayloadService {
       });
 
       if (!result.docs || result.docs.length === 0) {
-        return portfolioConfig.skills.categories;
+        return [];
       }
 
       return (result.docs as unknown as PayloadSkillDoc[]).map((doc) => ({
@@ -354,15 +435,15 @@ export class PayloadService {
         })),
       }));
     } catch (error) {
-      console.warn("Falling back to static skills config:", error);
-      return portfolioConfig.skills.categories;
+      console.warn("Error fetching skills from Payload CMS:", error);
+      return [];
     }
   }
 
   static async getEducation(): Promise<EducationConfig[]> {
     try {
       const payload = await this.getSafePayload();
-      if (!payload) return portfolioConfig.education;
+      if (!payload) return [];
 
       const result = await payload.find({
         collection: "education",
@@ -371,7 +452,7 @@ export class PayloadService {
       });
 
       if (!result.docs || result.docs.length === 0) {
-        return portfolioConfig.education;
+        return [];
       }
 
       return (result.docs as unknown as PayloadEducationDoc[]).map((doc) => ({
@@ -386,8 +467,8 @@ export class PayloadService {
         border: "border-purple-500/20 hover:border-purple-500/50",
       }));
     } catch (error) {
-      console.warn("Falling back to static education config:", error);
-      return portfolioConfig.education;
+      console.warn("Error fetching education from Payload CMS:", error);
+      return [];
     }
   }
 
@@ -422,7 +503,50 @@ export class PayloadService {
         isVerified: true,
       }));
     } catch (error) {
-      console.warn("Falling back to empty/static reviews:", error);
+      console.warn("Error fetching reviews from Payload CMS:", error);
+      return [];
+    }
+  }
+
+  static async getRobots(): Promise<RobotCMSDoc[]> {
+    try {
+      const payload = await this.getSafePayload();
+      if (!payload) return [];
+
+      const result = await payload.find({
+        collection: "robots",
+        sort: "order",
+        limit: 50,
+      });
+
+      if (!result.docs || result.docs.length === 0) {
+        return [];
+      }
+
+      return (result.docs as unknown as PayloadRobotDoc[]).map((doc) => ({
+        id: String(doc.id),
+        agentId: doc.agentId,
+        name: doc.name,
+        codename: doc.codename,
+        role: doc.role,
+        sector: doc.sector,
+        sceneNumber: doc.sceneNumber,
+        targetElementId: doc.targetElementId || "hero",
+        modelPath: doc.modelPath || "/models/robot-mecha.glb",
+        glowColor: doc.glowColor || "#00f0ff",
+        glowRgba: doc.glowRgba || "rgba(0, 240, 255, 0.25)",
+        voicePitch: typeof doc.voicePitch === "number" ? doc.voicePitch : 1.0,
+        description: doc.description,
+        transmission: doc.transmission,
+        status: doc.status || "ONLINE",
+        badgeColor: doc.badgeColor || "bg-cyan-500/20 text-cyan-300 border-cyan-500/40",
+        borderColor: doc.borderColor || "border-cyan-500/30",
+        tourSpeech: doc.tourSpeech || null,
+        tourActionLabel: doc.tourActionLabel || "Explore Next Lab",
+        order: doc.order || 0,
+      }));
+    } catch (error) {
+      console.warn("Error fetching robots from Payload CMS:", error);
       return [];
     }
   }

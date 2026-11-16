@@ -4,7 +4,7 @@ import { GitHubProjectsService, getGitHubUsername } from "@/services/GitHubProje
 export async function GET() {
   try {
     const projects = await GitHubProjectsService.getDynamicProjects();
-    const username = getGitHubUsername();
+    const username = await getGitHubUsername();
 
     return NextResponse.json(
       {

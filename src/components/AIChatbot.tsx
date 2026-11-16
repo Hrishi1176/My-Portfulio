@@ -19,7 +19,7 @@ interface ChatMessage {
   timestamp: string;
 }
 
-import { portfolioConfig, DeveloperConfig } from "@/config/portfolioConfig";
+import type { DeveloperConfig } from "@/config/portfolioConfig";
 
 interface AIChatbotProps {
   aiConfig?: {
@@ -29,6 +29,24 @@ interface AIChatbotProps {
   };
   developer?: DeveloperConfig;
 }
+
+const DEFAULT_DEV: DeveloperConfig = {
+  name: "Hrishi Bhattacharya",
+  firstName: "Hrishi",
+  lastName: "Bhattacharyya",
+  initials: "HB",
+  role: "Senior Software Developer",
+  title: "Senior Full Stack Engineer & System Architect",
+  experienceYears: "4.4",
+  email: "hrishisgp97@gmail.com",
+  phone: "+91 62946 60141",
+  whatsapp: "+91 62946 60141",
+  location: "Kolkata, India",
+  github: "https://github.com/Hrishi1176",
+  linkedin: "https://linkedin.com/in/hrishi-bhattacharyya",
+  instagram: "",
+  facebook: "",
+};
 
 function getTodayCookieKey() {
   const d = new Date();
@@ -47,12 +65,17 @@ function generateMessageId() {
 }
 
 export function AIChatbot({ aiConfig, developer }: AIChatbotProps = {}) {
-  const dev = developer || portfolioConfig.developer;
-  const MAX_DAILY_REQUESTS = aiConfig?.maxDailyChats || portfolioConfig.aiChat.maxDailyChats;
+  const dev = developer || DEFAULT_DEV;
+  const MAX_DAILY_REQUESTS = aiConfig?.maxDailyChats || 10;
   const SUGGESTED_PROMPTS =
     aiConfig?.suggestedPrompts && aiConfig.suggestedPrompts.length > 0
       ? aiConfig.suggestedPrompts
-      : portfolioConfig.aiChat.suggestedPrompts;
+      : [
+          "Tell me about Hrishi's experience",
+          "What projects has he built?",
+          "What is his tech stack?",
+          "How can I contact Hrishi?",
+        ];
 
   const INITIAL_MESSAGES: ChatMessage[] = [
     {

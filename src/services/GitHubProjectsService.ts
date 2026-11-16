@@ -1,4 +1,5 @@
-import { portfolioConfig, ProjectConfig } from "@/config/portfolioConfig";
+import type { ProjectConfig } from "@/config/portfolioConfig";
+import { PayloadService } from "@/services/payloadService";
 
 export interface GitHubRepoItem {
   id: number;
@@ -61,10 +62,15 @@ const COLOR_THEMES = [
 /**
  * Extract GitHub username from configured URL or fallback
  */
-export function getGitHubUsername(): string {
-  const url = portfolioConfig.developer.github || "https://github.com/Hrishi1176";
-  const parts = url.split("/").filter(Boolean);
-  return parts[parts.length - 1] || "Hrishi1176";
+export async function getGitHubUsername(): Promise<string> {
+  try {
+    const siteContent = await PayloadService.getSiteContent();
+    const url = siteContent?.developer?.github || "https://github.com/Hrishi1176";
+    const parts = url.split("/").filter(Boolean);
+    return parts[parts.length - 1] || "Hrishi1176";
+  } catch {
+    return "Hrishi1176";
+  }
 }
 
 /**
@@ -104,8 +110,8 @@ export class GitHubProjectsService {
    * Fetches public repositories from GitHub and seamlessly integrates them with portfolio projects.
    */
   public static async getDynamicProjects(): Promise<ProjectConfig[]> {
-    const username = getGitHubUsername();
-    const configProjects = portfolioConfig.projects || [];
+    const username = await getGitHubUsername();
+    const configProjects = await PayloadService.getProjects();
 
     try {
       const headers: Record<string, string> = {

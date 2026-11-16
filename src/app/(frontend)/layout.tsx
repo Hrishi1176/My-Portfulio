@@ -105,6 +105,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const robots = await PayloadService.getRobots();
   const content = await PayloadService.getSiteContent();
   const dev = content.developer;
 
@@ -150,7 +151,7 @@ export default async function RootLayout({
         className={`${inter.variable} font-sans antialiased bg-[#030014] text-slate-100`}
       >
         <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark" enableSystem={false}>
-          <RobotCompanionProvider>
+          <RobotCompanionProvider initialRobots={robots}>
             {children}
           </RobotCompanionProvider>
         </ThemeProvider>

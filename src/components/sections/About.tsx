@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Sparkles, Terminal, Cpu, Database, Layers, Code2 } from "lucide-react";
-import { portfolioConfig, AboutConfig } from "@/config/portfolioConfig";
+import type { AboutConfig } from "@/config/portfolioConfig";
 import { SectionHeader, Badge } from "@/components/ui";
 import { TiltCard } from "@/components/3d/TiltCard";
 
@@ -19,7 +19,9 @@ interface AboutProps {
 }
 
 export function About({ about: aboutProp }: AboutProps = {}) {
-  const { bioParagraphs, traits, focusAreas } = aboutProp || portfolioConfig.about;
+  const bioParagraphs = aboutProp?.bioParagraphs || [];
+  const traits = aboutProp?.traits || [];
+  const focusAreas = aboutProp?.focusAreas || [];
 
   return (
     <section id="about" className="scroll-mt-24 py-14 sm:py-20">

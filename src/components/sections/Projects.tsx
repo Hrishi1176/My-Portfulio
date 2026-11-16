@@ -14,12 +14,10 @@ import {
   Search,
 } from "lucide-react";
 import { GithubIcon } from "@/components/SocialIcons";
-import { portfolioConfig, ProjectConfig } from "@/config/portfolioConfig";
+import type { ProjectConfig } from "@/config/portfolioConfig";
 import { SectionHeader } from "@/components/ui";
 import { TiltCard } from "@/components/3d/TiltCard";
 import { useRobotCompanion } from "@/context/RobotCompanionContext";
-
-const defaultProjects: ProjectConfig[] = portfolioConfig.projects;
 
 interface ProjectsProps {
   initialProjects?: ProjectConfig[];
@@ -28,7 +26,7 @@ interface ProjectsProps {
 export function Projects({ initialProjects }: ProjectsProps = {}) {
   const { triggerProjectShift } = useRobotCompanion();
   const [projectsList, setProjectsList] = useState<ProjectConfig[]>(
-    initialProjects && initialProjects.length > 0 ? initialProjects : defaultProjects
+    initialProjects || []
   );
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedTag, setSelectedTag] = useState<string>("All");

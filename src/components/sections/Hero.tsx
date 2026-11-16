@@ -6,7 +6,7 @@ import { Mail, FileText, ArrowDown, Play, Pause, Cpu, Sparkles } from "lucide-re
 import Link from "next/link";
 import { ResumeModal } from "./ResumeModal";
 import { GithubIcon, LinkedinIcon } from "@/components/SocialIcons";
-import { portfolioConfig, HeroConfig, DeveloperConfig } from "@/config/portfolioConfig";
+import type { HeroConfig, DeveloperConfig } from "@/config/portfolioConfig";
 import { Badge, Button, Dialog } from "@/components/ui";
 import { Hero3DCore } from "@/components/3d/Hero3DCore";
 import { useRobotCompanion } from "@/context/RobotCompanionContext";
@@ -16,9 +16,35 @@ interface HeroProps {
   developer?: DeveloperConfig;
 }
 
+const DEFAULT_HERO: HeroConfig = {
+  availabilityBadge: "Available for new opportunities",
+  tagline: "Senior Full Stack Engineer & System Architect",
+  stats: [],
+  floatingBadges: [],
+  techStreams: [],
+};
+
+const DEFAULT_DEV: DeveloperConfig = {
+  name: "Hrishi Bhattacharya",
+  firstName: "Hrishi",
+  lastName: "Bhattacharyya",
+  initials: "HB",
+  role: "Senior Software Developer",
+  title: "Senior Full Stack Engineer & System Architect",
+  experienceYears: "4.4",
+  email: "hrishisgp97@gmail.com",
+  phone: "+91 62946 60141",
+  whatsapp: "+91 62946 60141",
+  location: "Kolkata, India",
+  github: "https://github.com/Hrishi1176",
+  linkedin: "https://linkedin.com/in/hrishi-bhattacharyya",
+  instagram: "",
+  facebook: "",
+};
+
 export function Hero({ hero: heroProp, developer: devProp }: HeroProps = {}) {
-  const hero = heroProp || portfolioConfig.hero;
-  const dev = devProp || portfolioConfig.developer;
+  const hero = heroProp || DEFAULT_HERO;
+  const dev = devProp || DEFAULT_DEV;
   const FLOAT_BADGES = hero.floatingBadges;
   const STATS = hero.stats;
   const TECH_VIDEO_STREAMS = hero.techStreams;

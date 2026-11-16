@@ -21,13 +21,14 @@ import { PayloadService } from "@/services/payloadService";
 export const revalidate = 60;
 
 export default async function Home() {
-  const [siteContent, projects, experiences, skills, education, reviews] = await Promise.all([
+  const [siteContent, projects, experiences, skills, education, reviews, impactMetrics] = await Promise.all([
     PayloadService.getSiteContent(),
     PayloadService.getProjects(),
     PayloadService.getExperiences(),
     PayloadService.getSkills(),
     PayloadService.getEducation(),
     PayloadService.getReviews(),
+    PayloadService.getImpactMetrics(),
   ]);
 
   return (
@@ -49,7 +50,7 @@ export default async function Home() {
 
         <About about={siteContent.about} />
 
-        <ImpactSlider />
+        <ImpactSlider metrics={impactMetrics} />
 
         <Skills categories={skills} />
 

@@ -8,8 +8,7 @@ import { ToastNotification } from "@/components/common/ToastNotification";
 import { GithubIcon, LinkedinIcon, InstagramIcon, FacebookIcon } from "@/components/SocialIcons";
 import { SectionHeader, Input, Textarea, Button } from "@/components/ui";
 import { useRobotCompanion } from "@/context/RobotCompanionContext";
-
-import { portfolioConfig, DeveloperConfig } from "@/config/portfolioConfig";
+import type { DeveloperConfig } from "@/config/portfolioConfig";
 
 interface ContactProps {
   contactOptions?: {
@@ -19,21 +18,33 @@ interface ContactProps {
   developer?: DeveloperConfig;
 }
 
+const DEFAULT_DEV: DeveloperConfig = {
+  name: "Hrishi Bhattacharya",
+  firstName: "Hrishi",
+  lastName: "Bhattacharyya",
+  initials: "HB",
+  role: "Senior Software Developer",
+  title: "Senior Full Stack Engineer & System Architect",
+  experienceYears: "4.4",
+  email: "hrishisgp97@gmail.com",
+  phone: "+91 62946 60141",
+  whatsapp: "+91 62946 60141",
+  location: "Kolkata, India",
+  github: "https://github.com/Hrishi1176",
+  linkedin: "https://linkedin.com/in/hrishi-bhattacharyya",
+  instagram: "",
+  facebook: "",
+};
+
 function getRefineTodayCookieKey() {
   const d = new Date();
   return `refine_req_${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
 export function Contact({ contactOptions: contactProp, developer: devProp }: ContactProps = {}) {
-  const dev = devProp || portfolioConfig.developer;
-  const SUBJECT_OPTIONS =
-    contactProp?.subjectOptions && contactProp.subjectOptions.length > 0
-      ? contactProp.subjectOptions
-      : portfolioConfig.contactOptions.subjectOptions;
-  const BUDGET_RANGES =
-    contactProp?.budgetRanges && contactProp.budgetRanges.length > 0
-      ? contactProp.budgetRanges
-      : portfolioConfig.contactOptions.budgetRanges;
+  const dev = devProp || DEFAULT_DEV;
+  const SUBJECT_OPTIONS = contactProp?.subjectOptions || [];
+  const BUDGET_RANGES = contactProp?.budgetRanges || [];
 
   const socialLinks = [
     {
@@ -86,7 +97,7 @@ export function Contact({ contactOptions: contactProp, developer: devProp }: Con
     },
   ];
 
-  const MAX_DAILY_REFINEMENTS = portfolioConfig.aiChat.maxDailyRefinements;
+  const MAX_DAILY_REFINEMENTS = 5;
   const [formData, setFormData] = useState({
     name: "",
     email: "",

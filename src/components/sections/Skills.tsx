@@ -6,7 +6,7 @@ import { FaReact, FaPython, FaNodeJs, FaGitAlt, FaHtml5, FaCss3Alt, FaRobot } fr
 import { SiNextdotjs, SiJavascript, SiTypescript, SiMongodb, SiMysql, SiPostgresql, SiSnowflake } from "react-icons/si";
 import { BiNetworkChart, BiCheckShield, BiChalkboard } from "react-icons/bi";
 import { TbApi } from "react-icons/tb";
-import { portfolioConfig, SkillCategoryConfig, SkillItemConfig } from "@/config/portfolioConfig";
+import type { SkillCategoryConfig, SkillItemConfig } from "@/config/portfolioConfig";
 import { SectionHeader } from "@/components/ui";
 import { TiltCard } from "@/components/3d/TiltCard";
 import { useRobotCompanion } from "@/context/RobotCompanionContext";
@@ -56,7 +56,7 @@ interface SkillsProps {
 
 export function Skills({ categories, marquee }: SkillsProps = {}) {
   const { setActiveSkillCategory, playSound } = useRobotCompanion();
-  const skillCategories = categories && categories.length > 0 ? categories : portfolioConfig.skills.categories;
+  const skillCategories = categories || [];
   const marqueeSkills =
     marquee && marquee.length > 0
       ? marquee

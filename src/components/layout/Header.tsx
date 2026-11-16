@@ -4,16 +4,34 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Menu, X, Send } from "lucide-react";
 import { useState, useEffect } from "react";
-import { portfolioConfig, DeveloperConfig, NavigationItem } from "@/config/portfolioConfig";
+import type { DeveloperConfig, NavigationItem } from "@/config/portfolioConfig";
 
 interface HeaderProps {
   navigation?: NavigationItem[];
   developer?: DeveloperConfig;
 }
 
+const DEFAULT_DEV: DeveloperConfig = {
+  name: "Hrishi Bhattacharya",
+  firstName: "Hrishi",
+  lastName: "Bhattacharyya",
+  initials: "HB",
+  role: "Senior Software Developer",
+  title: "Senior Full Stack Engineer & System Architect",
+  experienceYears: "4.4",
+  email: "hrishisgp97@gmail.com",
+  phone: "+91 62946 60141",
+  whatsapp: "+91 62946 60141",
+  location: "Kolkata, India",
+  github: "https://github.com/Hrishi1176",
+  linkedin: "https://linkedin.com/in/hrishi-bhattacharyya",
+  instagram: "",
+  facebook: "",
+};
+
 export function Header({ navigation: navProp, developer: devProp }: HeaderProps = {}) {
-  const navLinks = navProp && navProp.length > 0 ? navProp : portfolioConfig.navigation;
-  const developer = devProp || portfolioConfig.developer;
+  const navLinks = navProp || [];
+  const developer = devProp || DEFAULT_DEV;
   const [activeSection, setActiveSection] = useState("hero");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);

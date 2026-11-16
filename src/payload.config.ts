@@ -10,6 +10,7 @@ import { Experiences } from "./payload/collections/Experiences";
 import { Skills } from "./payload/collections/Skills";
 import { Education } from "./payload/collections/Education";
 import { Reviews } from "./payload/collections/Reviews";
+import { Robots } from "./payload/collections/Robots";
 import { SiteContent } from "./payload/globals/SiteContent";
 
 const filename = fileURLToPath(import.meta.url);
@@ -23,7 +24,7 @@ export default buildConfig({
     },
     suppressHydrationWarning: true,
   },
-  collections: [Users, Projects, Experiences, Skills, Education, Reviews],
+  collections: [Users, Projects, Experiences, Skills, Education, Reviews, Robots],
   globals: [SiteContent],
   editor: lexicalEditor(),
   secret:

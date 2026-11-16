@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
+import { getGitHubUsername } from "@/services/GitHubProjectsService";
 
 export async function GET() {
   try {
@@ -29,7 +30,8 @@ export async function GET() {
     let githubFollowers = 0;
 
     try {
-      const userRes = await fetch("https://api.github.com/users/Hrishi1176", {
+      const githubUsername = await getGitHubUsername();
+      const userRes = await fetch(`https://api.github.com/users/${githubUsername}`, {
         headers: { "User-Agent": "My-Portfolio-App" },
         next: { revalidate: 60 },
       });
@@ -40,7 +42,7 @@ export async function GET() {
         githubFollowers = userData.followers || 0;
       }
 
-      const reposRes = await fetch("https://api.github.com/users/Hrishi1176/repos?per_page=100", {
+      const reposRes = await fetch(`https://api.github.com/users/${githubUsername}/repos?per_page=100`, {
         headers: { "User-Agent": "My-Portfolio-App" },
         next: { revalidate: 60 },
       });

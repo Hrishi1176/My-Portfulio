@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Calendar, MapPin, Building, ChevronRight, ShieldCheck } from "lucide-react";
-import { portfolioConfig, RoleConfig } from "@/config/portfolioConfig";
+import type { RoleConfig } from "@/config/portfolioConfig";
 import { SectionHeader, Badge } from "@/components/ui";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -12,7 +12,7 @@ interface ExperienceProps {
 }
 
 export function ExperienceElevator({ roles: initialRoles }: ExperienceProps = {}) {
-  const roles = initialRoles && initialRoles.length > 0 ? initialRoles : portfolioConfig.experience.roles;
+  const roles = initialRoles || [];
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeFloor, setActiveFloor] = useState<number>(0);
 
