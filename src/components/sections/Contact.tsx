@@ -1,71 +1,91 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Mail, Phone, MessageCircle, Send, Loader2, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Mail, Phone, MessageCircle, Send, Loader2, Sparkles, Copy, Check } from "lucide-react";
 import Cookies from "js-cookie";
 import { ToastNotification } from "@/components/common/ToastNotification";
 import { GithubIcon, LinkedinIcon, InstagramIcon, FacebookIcon } from "@/components/SocialIcons";
+import { SectionHeader, Input, Textarea, Button } from "@/components/ui";
 
-import { portfolioConfig } from "@/config/portfolioConfig";
+import { portfolioConfig, DeveloperConfig } from "@/config/portfolioConfig";
 
-const dev = portfolioConfig.developer;
+interface ContactProps {
+  contactOptions?: {
+    subjectOptions: string[];
+    budgetRanges: Array<{ value: string; label: string }>;
+  };
+  developer?: DeveloperConfig;
+}
 
-const socialLinks = [
-  {
-    name: "LinkedIn",
-    url: dev.linkedin,
-    icon: LinkedinIcon,
-    color: "hover:text-[#0A66C2] hover:border-[#0A66C2]/40",
-  },
-  {
-    name: "GitHub",
-    url: dev.github,
-    icon: GithubIcon,
-    color: "hover:text-slate-900 dark:hover:text-white hover:border-slate-400/60",
-  },
-  {
-    name: "Instagram",
-    url: dev.instagram,
-    icon: InstagramIcon,
-    color: "hover:text-[#E1306C] hover:border-[#E1306C]/40",
-  },
-  {
-    name: "Facebook",
-    url: dev.facebook,
-    icon: FacebookIcon,
-    color: "hover:text-[#1877F2] hover:border-[#1877F2]/40",
-  },
-];
+function getRefineTodayCookieKey() {
+  const d = new Date();
+  return `refine_req_${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
 
-const contactMethods = [
-  {
-    icon: Mail,
-    label: "Email Me",
-    value: dev.email,
-    href: `mailto:${dev.email}`,
-    style: "btn-primary",
-  },
-  {
-    icon: MessageCircle,
-    label: "WhatsApp",
-    value: dev.whatsapp,
-    href: `https://wa.me/${dev.whatsapp.replace(/[^0-9]/g, "")}`,
-    style: "whatsapp",
-  },
-  {
-    icon: Phone,
-    label: "Call Me",
-    value: dev.phone,
-    href: `tel:${dev.phone.replace(/[^0-9+]/g, "")}`,
-    style: "outline",
-  },
-];
+export function Contact({ contactOptions: contactProp, developer: devProp }: ContactProps = {}) {
+  const dev = devProp || portfolioConfig.developer;
+  const SUBJECT_OPTIONS =
+    contactProp?.subjectOptions && contactProp.subjectOptions.length > 0
+      ? contactProp.subjectOptions
+      : portfolioConfig.contactOptions.subjectOptions;
+  const BUDGET_RANGES =
+    contactProp?.budgetRanges && contactProp.budgetRanges.length > 0
+      ? contactProp.budgetRanges
+      : portfolioConfig.contactOptions.budgetRanges;
 
-const SUBJECT_OPTIONS = portfolioConfig.contactOptions.subjectOptions;
-const MAX_DAILY_REFINEMENTS = portfolioConfig.aiChat.maxDailyRefinements;
+  const socialLinks = [
+    {
+      name: "LinkedIn",
+      url: dev.linkedin,
+      icon: LinkedinIcon,
+      color: "hover:text-[#0A66C2] hover:border-[#0A66C2]/40",
+    },
+    {
+      name: "GitHub",
+      url: dev.github,
+      icon: GithubIcon,
+      color: "hover:text-slate-900 dark:hover:text-white hover:border-slate-400/60",
+    },
+    {
+      name: "Instagram",
+      url: dev.instagram,
+      icon: InstagramIcon,
+      color: "hover:text-[#E1306C] hover:border-[#E1306C]/40",
+    },
+    {
+      name: "Facebook",
+      url: dev.facebook,
+      icon: FacebookIcon,
+      color: "hover:text-[#1877F2] hover:border-[#1877F2]/40",
+    },
+  ];
 
-export function Contact() {
+  const contactMethods = [
+    {
+      icon: Mail,
+      label: "Email Me",
+      value: dev.email,
+      href: `mailto:${dev.email}`,
+      style: "btn-primary",
+    },
+    {
+      icon: MessageCircle,
+      label: "WhatsApp",
+      value: dev.whatsapp,
+      href: `https://wa.me/${dev.whatsapp.replace(/[^0-9]/g, "")}`,
+      style: "whatsapp",
+    },
+    {
+      icon: Phone,
+      label: "Call Me",
+      value: dev.phone,
+      href: `tel:${dev.phone.replace(/[^0-9+]/g, "")}`,
+      style: "outline",
+    },
+  ];
+
+  const MAX_DAILY_REFINEMENTS = portfolioConfig.aiChat.maxDailyRefinements;
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -88,25 +108,19 @@ export function Contact() {
   const [isRefining, setIsRefining] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [aiProvider, setAiProvider] = useState<"gemini" | "groq">("gemini");
+  const [copiedEmail, setCopiedEmail] = useState(false);
   const [refinementCountToday, setRefinementCountToday] = useState(0);
-
-  const getRefineTodayCookieKey = () => {
-    const d = new Date();
-    return `refine_req_${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-  };
 
   useEffect(() => {
     const key = getRefineTodayCookieKey();
     const count = Cookies.get(key);
-    setRefinementCountToday(count ? parseInt(count, 10) : 0);
-  }, []);
-
-  // Trigger floating toast when status message changes
-  useEffect(() => {
-    if (status.message && status.success !== null) {
-      setShowToast(true);
+    if (count) {
+      const parsed = parseInt(count, 10);
+      queueMicrotask(() => {
+        setRefinementCountToday(parsed);
+      });
     }
-  }, [status.message, status.success]);
+  }, []);
 
   const handleRefineRequirements = async () => {
     if (!formData.requirements.trim() || isRefining) return;
@@ -120,6 +134,7 @@ export function Contact() {
         success: false,
         message: "Daily free AI refinement limit reached (5/5 for today). You can submit your requirements as is!",
       });
+      setShowToast(true);
       return;
     }
 
@@ -185,6 +200,7 @@ export function Contact() {
           success: true,
           message: "Thank you! Your requirements have been received. A confirmation email has been dispatched to your inbox.",
         });
+        setShowToast(true);
         setFormData({
           name: "",
           email: "",
@@ -199,6 +215,7 @@ export function Contact() {
           success: false,
           message: data.error || "Failed to process your request. Please check your details and try again.",
         });
+        setShowToast(true);
       }
     } catch (err) {
       console.error(err);
@@ -207,6 +224,7 @@ export function Contact() {
         success: false,
         message: "Network connection error. Please try emailing directly at hrishisgp97@gmail.com.",
       });
+      setShowToast(true);
     }
   };
 
@@ -229,26 +247,19 @@ export function Contact() {
         viewport={{ once: true, amount: 0.15 }}
         transition={{ duration: 0.65 }}
       >
-        {/* Label */}
-        <div className="mb-3 flex items-center justify-center gap-2">
-          <span className="section-num text-base">07.</span>
-          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
-            Get In Touch
-          </span>
-        </div>
-
-        <h2 className="mb-4 text-center text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-          Let&apos;s Build Something <span className="gradient-text">Exceptional</span>
-        </h2>
-
-        <p className="mx-auto mb-12 max-w-xl text-center text-base text-slate-600 dark:text-slate-400">
-          Whether you need a multi-tenant SaaS platform, workflow automation, custom full-stack application, or cloud data engineering — I&apos;m here to help.
-        </p>
+        <SectionHeader
+          number="09."
+          badge="Quantum Comm Link"
+          title="Direct Connect ·"
+          gradientText="Get In Touch"
+          description="Whether you need a multi-tenant SaaS platform, high-scale workflow automation, or cloud data engineering — establish connection below."
+          align="center"
+        />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Column: Direct Contact Info & Socials */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="glass p-6 sm:p-8 space-y-6">
+            <div className="p-0 sm:p-2 space-y-6">
               <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                 Direct Contact Channels
               </h3>
@@ -265,7 +276,7 @@ export function Contact() {
                       href={method.href}
                       target={method.href.startsWith("http") ? "_blank" : undefined}
                       rel={method.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                      className="flex items-center justify-between p-4 rounded-2xl border border-[var(--border)] bg-white/50 dark:bg-white/[0.03] hover:border-purple-500/40 hover:bg-purple-500/5 transition-all group"
+                      className="flex items-center justify-between p-4 rounded-2xl border border-white/5 bg-transparent hover:border-purple-500/30 hover:bg-white/[0.01] transition-all group"
                     >
                       <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -280,7 +291,36 @@ export function Contact() {
                           </div>
                         </div>
                       </div>
-                      <Send className="h-4 w-4 text-slate-400 group-hover:text-purple-500 group-hover:translate-x-1 transition-all" />
+                      <div className="flex items-center gap-2">
+                        {method.label === "Email Me" && (
+                          <button
+                            type="button"
+                            suppressHydrationWarning
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              navigator.clipboard.writeText(method.value);
+                              setCopiedEmail(true);
+                              setTimeout(() => setCopiedEmail(false), 2000);
+                            }}
+                            className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-purple-500/30 bg-purple-500/10 text-xs font-mono font-medium text-purple-400 hover:bg-purple-500/20 transition-all cursor-pointer"
+                            title="Copy email to clipboard"
+                          >
+                            {copiedEmail ? (
+                              <>
+                                <Check className="h-3 w-3 text-emerald-400" />
+                                <span className="text-emerald-400 text-[10px]">Copied!</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="h-3 w-3" />
+                                <span className="text-[10px]">Copy</span>
+                              </>
+                            )}
+                          </button>
+                        )}
+                        <Send className="h-4 w-4 text-slate-400 group-hover:text-purple-500 group-hover:translate-x-1 transition-all" />
+                      </div>
                     </a>
                   );
                 })}
@@ -314,7 +354,7 @@ export function Contact() {
 
           {/* Right Column: Project Requirements Submission Form */}
           <div className="lg:col-span-7">
-            <div className="glass-raised p-6 sm:p-8 lg:p-10 relative overflow-hidden">
+            <div className="p-0 sm:p-2 lg:p-4 relative">
               <h3 className="text-xl font-extrabold text-slate-900 dark:text-white mb-2">
                 Submit Your Project Requirements
               </h3>
@@ -324,33 +364,22 @@ export function Contact() {
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
-                      Your Name *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="John Doe"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full rounded-xl border border-[var(--border)] bg-white/70 dark:bg-slate-950/50 px-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
-                    />
-                  </div>
+                  <Input
+                    label="Your Name *"
+                    required
+                    placeholder="John Doe"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  />
 
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
-                      Email Address *
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      placeholder="john@example.com"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full rounded-xl border border-[var(--border)] bg-white/70 dark:bg-slate-950/50 px-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
-                    />
-                  </div>
+                  <Input
+                    label="Email Address *"
+                    type="email"
+                    required
+                    placeholder="john@example.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  />
                 </div>
 
                 {/* Subject & Budget Row */}
@@ -360,6 +389,7 @@ export function Contact() {
                       Subject / Expertise Topic
                     </label>
                     <select
+                      suppressHydrationWarning
                       value={formData.subject}
                       onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                       className="w-full rounded-xl border border-[var(--border)] bg-white/70 dark:bg-slate-950/50 px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
@@ -379,6 +409,7 @@ export function Contact() {
                         className="mt-2.5"
                       >
                         <input
+                          suppressHydrationWarning
                           type="text"
                           required
                           placeholder="Enter your custom subject..."
@@ -395,14 +426,16 @@ export function Contact() {
                       Estimated Budget
                     </label>
                     <select
+                      suppressHydrationWarning
                       value={formData.budget}
                       onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
                       className="w-full rounded-xl border border-[var(--border)] bg-white/70 dark:bg-slate-950/50 px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all"
                     >
-                      <option value="<$1k">&lt; $1,000 (Consultation / Audit)</option>
-                      <option value="$1k - $5k">$1,000 - $5,000</option>
-                      <option value="$5k - $15k">$5,000 - $15,000</option>
-                      <option value="$15k+">$15,000+ (Full System / Enterprise)</option>
+                      {BUDGET_RANGES.map((b) => (
+                        <option key={b.value} value={b.value}>
+                          {b.label}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>
@@ -417,6 +450,7 @@ export function Contact() {
                     <div className="flex items-center gap-2">
                       {/* AI Provider & Model Selector */}
                       <select
+                        suppressHydrationWarning
                         value={aiProvider}
                         onChange={(e) => setAiProvider(e.target.value as "gemini" | "groq")}
                         className="text-[11px] font-bold rounded-lg border border-purple-500/30 bg-purple-500/10 px-2 py-1 text-purple-600 dark:text-purple-300 focus:outline-none"
@@ -427,6 +461,7 @@ export function Contact() {
 
                       {/* AI Refine Button */}
                       <button
+                        suppressHydrationWarning
                         type="button"
                         onClick={handleRefineRequirements}
                         disabled={!formData.requirements.trim() || isRefining || remainingRefinements <= 0}
@@ -448,34 +483,25 @@ export function Contact() {
                     </div>
                   </div>
 
-                  <textarea
+                  <Textarea
                     required
                     rows={4}
                     placeholder="Describe your project, feature requirements, scope, or timeline..."
                     value={formData.requirements}
                     onChange={(e) => setFormData({ ...formData, requirements: e.target.value })}
-                    className="w-full rounded-xl border border-[var(--border)] bg-white/70 dark:bg-slate-950/50 px-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all resize-none"
                   />
                 </div>
 
                 {/* Submit Button */}
-                <button
+                <Button
                   type="submit"
-                  disabled={status.submitting}
-                  className="btn-primary w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg hover:shadow-purple-500/25 transition-all"
+                  size="lg"
+                  isLoading={status.submitting}
+                  leftIcon={<Send className="h-4 w-4" />}
+                  className="w-full mt-2 shadow-lg hover:shadow-purple-500/25"
                 >
-                  {status.submitting ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Dispatching Requirements...
-                    </>
-                  ) : (
-                    <>
-                      <Send className="h-4 w-4" />
-                      Send Message & Requirements
-                    </>
-                  )}
-                </button>
+                  Send Message & Requirements
+                </Button>
               </form>
             </div>
           </div>

@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { portfolioConfig } from "@/config/portfolioConfig";
 import { GitHubProjectsService } from "@/services/GitHubProjectsService";
+import { PayloadService } from "@/services/payloadService";
 
 export interface AIServiceResponse {
   success: boolean;
@@ -29,13 +30,18 @@ export class AIService {
   }
 
   private async getSystemPrompt(): Promise<string> {
-    const dev = portfolioConfig.developer;
-    const exp = portfolioConfig.experience.roles[0];
-    let allProjects = portfolioConfig.projects;
+    const siteContent = await PayloadService.getSiteContent();
+    const dev = siteContent.developer;
+    const experiences = await PayloadService.getExperiences();
+    const exp = experiences[0] || portfolioConfig.experience.roles[0];
+    let allProjects = await PayloadService.getProjects();
     try {
-      allProjects = await GitHubProjectsService.getDynamicProjects();
+      const gitHubProjects = await GitHubProjectsService.getDynamicProjects();
+      if (gitHubProjects && gitHubProjects.length > 0) {
+        allProjects = gitHubProjects;
+      }
     } catch {
-      allProjects = portfolioConfig.projects;
+      // Keep CMS projects
     }
 
     const projectsSummary = allProjects

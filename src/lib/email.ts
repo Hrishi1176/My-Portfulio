@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import portfolioConfig from "@/config/portfolioConfig";
+import { PayloadService } from "@/services/payloadService";
 
 interface SendContactEmailProps {
   toEmail: string;
@@ -16,7 +16,8 @@ export async function sendThankYouEmail({
   requirements,
   budget,
 }: SendContactEmailProps) {
-  const dev = portfolioConfig.developer;
+  const siteContent = await PayloadService.getSiteContent();
+  const dev = siteContent.developer;
 
   const smtpHost = process.env.SMTP_HOST || "smtp.gmail.com";
   const smtpPort = parseInt(process.env.SMTP_PORT || "587");

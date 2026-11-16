@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Activity, Eye, ShieldCheck, Server, Star, FolderGit2, MessageSquare, Loader2 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface AnalyticsData {
   totalViews: number;
@@ -19,44 +19,31 @@ interface AnalyticsData {
 export function LiveAnalytics() {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
+  const hasLoadedRef = useRef(false);
 
   useEffect(() => {
-    // 1. Record real page view in MongoDB
-    recordPageView();
+    // Prevent duplicate calls in React StrictMode dev
+    if (hasLoadedRef.current) return;
+    hasLoadedRef.current = true;
 
-    // 2. Fetch real analytics data
-    fetchAnalyticsData();
+    // 1. Record page view in MongoDB (fire & forget once)
+    fetch("/api/analytics", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ path: window.location.pathname }),
+    }).catch((err) => console.error("Error logging page view:", err));
 
-    // Revalidate real metrics every 30 seconds
-    const interval = setInterval(fetchAnalyticsData, 30000);
-    return () => clearInterval(interval);
+    // 2. Fetch real analytics data exactly once on mount
+    fetch("/api/analytics")
+      .then((res) => res.json())
+      .then((json) => {
+        if (json?.data) {
+          setAnalytics(json.data);
+        }
+      })
+      .catch((err) => console.error("Error fetching analytics:", err))
+      .finally(() => setLoading(false));
   }, []);
-
-  const recordPageView = async () => {
-    try {
-      await fetch("/api/analytics", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ path: window.location.pathname }),
-      });
-    } catch (err) {
-      console.error("Error logging page view:", err);
-    }
-  };
-
-  const fetchAnalyticsData = async () => {
-    try {
-      const res = await fetch("/api/analytics");
-      const json = await res.json();
-      if (json.data) {
-        setAnalytics(json.data);
-      }
-    } catch (err) {
-      console.error("Error fetching analytics:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <section id="analytics" className="scroll-mt-24 py-12">
@@ -66,21 +53,17 @@ export function LiveAnalytics() {
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
       >
-        <div className="glass-raised p-6 sm:p-8 lg:p-10 rounded-3xl border border-purple-500/20 shadow-2xl relative overflow-hidden">
-          {/* Background Ambient Glow */}
-          <div className="absolute top-0 right-0 -mt-12 -mr-12 h-64 w-64 rounded-full bg-purple-500/10 blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 -mb-12 -ml-12 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
-
+        <div className="p-0 sm:p-2 lg:p-4 relative">
           {/* Section Header */}
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-[var(--border)] pb-6 mb-8">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-4 mb-6">
             <div>
               <div className="flex items-center gap-2 mb-1.5">
                 <span className="relative flex h-2.5 w-2.5">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                   <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
                 </span>
-                <span className="text-xs font-extrabold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">
-                  Real MongoDB & GitHub Telemetry
+                <span className="text-xs font-mono font-bold uppercase tracking-[0.2em] text-emerald-400">
+                  07 // MISSION CONTROL · Real-Time Telemetry
                 </span>
               </div>
               <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
@@ -104,7 +87,7 @@ export function LiveAnalytics() {
           {/* Real Metrics Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             {/* 1. Real Page Views */}
-            <div className="p-4 rounded-2xl border border-[var(--border)] bg-white/50 dark:bg-white/[0.03] backdrop-blur-md text-center">
+            <div className="p-4 rounded-2xl border border-white/5 bg-transparent text-center">
               <Eye className="h-5 w-5 text-purple-500 mx-auto mb-2" />
               <div className="text-2xl sm:text-3xl font-black gradient-text">
                 {loading ? <Loader2 className="h-6 w-6 animate-spin mx-auto text-purple-500" /> : analytics?.totalViews.toLocaleString()}
@@ -115,7 +98,7 @@ export function LiveAnalytics() {
             </div>
 
             {/* 2. Real GitHub Stars */}
-            <div className="p-4 rounded-2xl border border-[var(--border)] bg-white/50 dark:bg-white/[0.03] backdrop-blur-md text-center">
+            <div className="p-4 rounded-2xl border border-white/5 bg-transparent text-center">
               <Star className="h-5 w-5 text-amber-500 mx-auto mb-2" />
               <div className="text-2xl sm:text-3xl font-black text-amber-500 dark:text-amber-400">
                 {loading ? <Loader2 className="h-6 w-6 animate-spin mx-auto text-amber-500" /> : analytics?.githubStars}
@@ -126,7 +109,7 @@ export function LiveAnalytics() {
             </div>
 
             {/* 3. Real GitHub Public Repos */}
-            <div className="p-4 rounded-2xl border border-[var(--border)] bg-white/50 dark:bg-white/[0.03] backdrop-blur-md text-center">
+            <div className="p-4 rounded-2xl border border-white/5 bg-transparent text-center">
               <FolderGit2 className="h-5 w-5 text-blue-500 mx-auto mb-2" />
               <div className="text-2xl sm:text-3xl font-black text-blue-500 dark:text-blue-400">
                 {loading ? <Loader2 className="h-6 w-6 animate-spin mx-auto text-blue-500" /> : analytics?.publicReposCount}
@@ -137,7 +120,7 @@ export function LiveAnalytics() {
             </div>
 
             {/* 4. Real Form Inquiries Saved in MongoDB */}
-            <div className="p-4 rounded-2xl border border-[var(--border)] bg-white/50 dark:bg-white/[0.03] backdrop-blur-md text-center">
+            <div className="p-4 rounded-2xl border border-white/5 bg-transparent text-center">
               <MessageSquare className="h-5 w-5 text-emerald-500 mx-auto mb-2" />
               <div className="text-2xl sm:text-3xl font-black text-emerald-500 dark:text-emerald-400">
                 {loading ? <Loader2 className="h-6 w-6 animate-spin mx-auto text-emerald-500" /> : analytics?.totalInquiries}
