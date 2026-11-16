@@ -33,27 +33,12 @@ export function Projects({ initialProjects }: ProjectsProps = {}) {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
 
+  // Sync state when initialProjects from Payload CMS changes or mounts
   useEffect(() => {
-    let ignore = false;
-    const loadProjects = async () => {
-      try {
-        const res = await fetch("/api/projects");
-        if (res.ok) {
-          const data = await res.json();
-          if (!ignore && data.success && Array.isArray(data.projects) && data.projects.length > 0) {
-            setProjectsList(data.projects);
-          }
-        }
-      } catch (err) {
-        console.error("Failed to fetch dynamic projects from GitHub:", err);
-      }
-    };
-
-    loadProjects();
-    return () => {
-      ignore = true;
-    };
-  }, []);
+    if (initialProjects && initialProjects.length > 0) {
+      setProjectsList(initialProjects);
+    }
+  }, [initialProjects]);
 
   const handleManualSync = async () => {
     setIsSyncing(true);
@@ -66,7 +51,7 @@ export function Projects({ initialProjects }: ProjectsProps = {}) {
         }
       }
     } catch (err) {
-      console.error("Failed to fetch dynamic projects from GitHub:", err);
+      console.error("Failed to refresh projects from Payload CMS:", err);
     } finally {
       setTimeout(() => setIsSyncing(false), 500);
     }
@@ -145,27 +130,27 @@ export function Projects({ initialProjects }: ProjectsProps = {}) {
         <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
           <SectionHeader
             number="05."
-            badge="Featured Work & Repositories"
+            badge="Featured Projects & Architecture"
             title="Spatial Showcase ·"
             gradientText="3D Coverflow Systems"
-            description="Dynamically synchronized public engineering repositories and live cloud deployments presented with real-time 3D depth physics."
+            description="Verified enterprise software architectures, multi-tenant SaaS platforms, and cloud solutions managed in Payload CMS."
             className="mb-0 sm:mb-0"
           />
 
           <div className="flex flex-wrap items-center gap-3">
-            {/* Live GitHub Telemetry Indicator */}
+            {/* Live Payload CMS Indicator */}
             <div className="flex items-center gap-2 rounded-full border border-white/5 bg-transparent px-3.5 py-1.5 text-xs font-mono font-medium text-purple-300">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
               </span>
-              <span className="hidden sm:inline">LIVE SYNC</span>
-              <span className="text-[10px] text-slate-400">({projectsList.length} Repos)</span>
+              <span className="hidden sm:inline">PAYLOAD CMS</span>
+              <span className="text-[10px] text-slate-400">({projectsList.length} Projects)</span>
               <button
                 suppressHydrationWarning
                 onClick={handleManualSync}
                 disabled={isSyncing}
-                title="Refresh GitHub Repositories"
+                title="Refresh CMS Projects"
                 className="ml-1 text-slate-400 hover:text-cyan-300 transition-transform active:scale-90 cursor-pointer"
               >
                 <RefreshCw className={`h-3 w-3 ${isSyncing ? "animate-spin text-cyan-400" : ""}`} />
@@ -202,7 +187,7 @@ export function Projects({ initialProjects }: ProjectsProps = {}) {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search repositories..."
+              placeholder="Search projects..."
               className="w-full pl-10 pr-4 py-2 rounded-xl text-xs bg-transparent border border-white/10 focus:outline-none focus:border-purple-500 text-white placeholder:text-slate-500 transition-all shadow-inner"
             />
           </div>
@@ -211,7 +196,7 @@ export function Projects({ initialProjects }: ProjectsProps = {}) {
         {filteredProjects.length === 0 ? (
           <div className="p-12 text-center rounded-3xl border border-white/5 bg-transparent">
             <p className="text-sm font-semibold text-slate-400">
-              No repositories matched &quot;{searchQuery || selectedTag}&quot;.
+              No projects matched &quot;{searchQuery || selectedTag}&quot;.
             </p>
             <button
               onClick={() => {
