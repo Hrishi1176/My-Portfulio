@@ -1,17 +1,16 @@
 import { NextResponse } from "next/server";
-import { GitHubProjectsService, getGitHubUsername } from "@/services/GitHubProjectsService";
+import { PayloadService } from "@/services/payloadService";
 
 export async function GET() {
   try {
-    const projects = await GitHubProjectsService.getDynamicProjects();
-    const username = await getGitHubUsername();
+    const projects = await PayloadService.getProjects();
 
     return NextResponse.json(
       {
         success: true,
         projects,
         totalCount: projects.length,
-        username,
+        source: "payload-cms",
         lastSynced: new Date().toISOString(),
       },
       {
@@ -25,7 +24,7 @@ export async function GET() {
     return NextResponse.json(
       {
         success: false,
-        error: "Failed to fetch dynamic projects",
+        error: "Failed to fetch projects from Payload CMS",
       },
       { status: 500 }
     );
