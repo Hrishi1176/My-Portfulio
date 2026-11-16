@@ -9,6 +9,7 @@ import { TbApi } from "react-icons/tb";
 import { portfolioConfig, SkillCategoryConfig, SkillItemConfig } from "@/config/portfolioConfig";
 import { SectionHeader } from "@/components/ui";
 import { TiltCard } from "@/components/3d/TiltCard";
+import { useRobotCompanion } from "@/context/RobotCompanionContext";
 
 // Dynamic Icon Map Lookup
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
@@ -54,6 +55,7 @@ interface SkillsProps {
 }
 
 export function Skills({ categories, marquee }: SkillsProps = {}) {
+  const { setActiveSkillCategory, playSound } = useRobotCompanion();
   const skillCategories = categories && categories.length > 0 ? categories : portfolioConfig.skills.categories;
   const marqueeSkills =
     marquee && marquee.length > 0
@@ -111,7 +113,13 @@ export function Skills({ categories, marquee }: SkillsProps = {}) {
                   glareEffect={true}
                   className="h-full rounded-2xl"
                 >
-                  <div className="group relative h-full rounded-2xl border border-white/5 bg-transparent p-6 transition-all duration-300 hover:border-purple-500/30 hover:bg-white/[0.02] hover:shadow-[0_15px_35px_rgba(168,85,247,0.1)] flex flex-col justify-between overflow-hidden">
+                  <div
+                    onMouseEnter={() => {
+                      setActiveSkillCategory(cat.title);
+                      playSound("laser");
+                    }}
+                    className="group relative h-full rounded-2xl border border-white/5 bg-transparent p-6 transition-all duration-300 hover:border-purple-500/30 hover:bg-white/[0.02] hover:shadow-[0_15px_35px_rgba(168,85,247,0.1)] flex flex-col justify-between overflow-hidden"
+                  >
                     {/* Top ambient highlight */}
                     <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-purple-500/40 to-cyan-500/40 group-hover:via-purple-400 group-hover:to-cyan-400 transition-all duration-500" />
 

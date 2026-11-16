@@ -5,6 +5,12 @@ import { Bot, X, Send, Sparkles, AlertCircle, Loader2 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import Cookies from "js-cookie";
 import { useRobotCompanion } from "@/context/RobotCompanionContext";
+import dynamic from "next/dynamic";
+
+const ChatbotRobotCompanion = dynamic(
+  () => import("@/components/3d/ChatbotRobotCompanion").then((mod) => mod.ChatbotRobotCompanion),
+  { ssr: false }
+);
 
 interface ChatMessage {
   id: string;
@@ -177,9 +183,17 @@ export function AIChatbot({ aiConfig, developer }: AIChatbotProps = {}) {
   };
 
   const remaining = Math.max(0, MAX_DAILY_REQUESTS - requestsToday);
+  const chatbotCompanionState = loading
+    ? "responding"
+    : input.trim().length > 0
+    ? "listening"
+    : "idle";
 
   return (
     <>
+      {/* Dedicated 3D AI Robot Companion (AXIOM) */}
+      <ChatbotRobotCompanion isOpen={isOpen} state={chatbotCompanionState} />
+
       {/* Floating Trigger Button in Bottom Right */}
       <div className="fixed bottom-6 right-6 z-50">
         <motion.button

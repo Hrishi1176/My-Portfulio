@@ -17,6 +17,7 @@ import { GithubIcon } from "@/components/SocialIcons";
 import { portfolioConfig, ProjectConfig } from "@/config/portfolioConfig";
 import { SectionHeader } from "@/components/ui";
 import { TiltCard } from "@/components/3d/TiltCard";
+import { useRobotCompanion } from "@/context/RobotCompanionContext";
 
 const defaultProjects: ProjectConfig[] = portfolioConfig.projects;
 
@@ -25,6 +26,7 @@ interface ProjectsProps {
 }
 
 export function Projects({ initialProjects }: ProjectsProps = {}) {
+  const { triggerProjectShift } = useRobotCompanion();
   const [projectsList, setProjectsList] = useState<ProjectConfig[]>(
     initialProjects && initialProjects.length > 0 ? initialProjects : defaultProjects
   );
@@ -114,11 +116,13 @@ export function Projects({ initialProjects }: ProjectsProps = {}) {
   const handleNext = () => {
     if (filteredProjects.length === 0) return;
     setCurrentIndex((prev) => (prev + 1) % filteredProjects.length);
+    triggerProjectShift();
   };
 
   const handlePrev = () => {
     if (filteredProjects.length === 0) return;
     setCurrentIndex((prev) => (prev - 1 + filteredProjects.length) % filteredProjects.length);
+    triggerProjectShift();
   };
 
   const safeIndex = filteredProjects.length > 0 ? currentIndex % filteredProjects.length : 0;

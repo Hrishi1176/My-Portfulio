@@ -13,6 +13,8 @@ import { Contact } from "@/components/sections/Contact";
 import { ExperienceCanvas } from "@/components/3d/ExperienceCanvas";
 import { GlobalRobotCompanion } from "@/components/3d/GlobalRobotCompanion";
 import { RobotCompanionHUD } from "@/components/3d/RobotCompanionHUD";
+import { RobotStoryBanner } from "@/components/3d/RobotStoryBanner";
+import { RobotTourGuide } from "@/components/3d/RobotTourGuide";
 import { AIChatbot } from "@/components/AIChatbot";
 import { PayloadService } from "@/services/payloadService";
 
@@ -36,6 +38,8 @@ export default async function Home() {
       {/* ── 3D Interactive Cyber Robot Companion & Telemetry HUD ── */}
       <GlobalRobotCompanion />
       <RobotCompanionHUD />
+      <RobotStoryBanner />
+      <RobotTourGuide />
 
       {/* ── Navigation Header ── */}
       <Header navigation={siteContent.navigation} developer={siteContent.developer} />

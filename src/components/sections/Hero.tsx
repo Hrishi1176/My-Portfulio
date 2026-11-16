@@ -9,6 +9,7 @@ import { GithubIcon, LinkedinIcon } from "@/components/SocialIcons";
 import { portfolioConfig, HeroConfig, DeveloperConfig } from "@/config/portfolioConfig";
 import { Badge, Button, Dialog } from "@/components/ui";
 import { Hero3DCore } from "@/components/3d/Hero3DCore";
+import { useRobotCompanion } from "@/context/RobotCompanionContext";
 
 interface HeroProps {
   hero?: HeroConfig;
@@ -26,6 +27,7 @@ export function Hero({ hero: heroProp, developer: devProp }: HeroProps = {}) {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(true);
   const [activeStreamIdx, setActiveStreamIdx] = useState(0);
+  const { playSound } = useRobotCompanion();
 
   return (
     <>
@@ -96,19 +98,21 @@ export function Hero({ hero: heroProp, developer: devProp }: HeroProps = {}) {
 
               {/* CTA buttons */}
               <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-                <Link href="#contact">
+                <Link href="#contact" onMouseEnter={() => playSound("beep")}>
                   <Button variant="primary" size="md" leftIcon={<Mail className="h-4 w-4" />}>
                     Get In Touch
                   </Button>
                 </Link>
-                <Button
-                  variant="outline"
-                  size="md"
-                  leftIcon={<FileText className="h-4 w-4" />}
-                  onClick={() => setIsResumeModalOpen(true)}
-                >
-                  View Resume
-                </Button>
+                <div onMouseEnter={() => playSound("beep")}>
+                  <Button
+                    variant="outline"
+                    size="md"
+                    leftIcon={<FileText className="h-4 w-4" />}
+                    onClick={() => setIsResumeModalOpen(true)}
+                  >
+                    View Resume
+                  </Button>
+                </div>
               </div>
 
               {/* Social quick links */}
@@ -284,9 +288,8 @@ export function Hero({ hero: heroProp, developer: devProp }: HeroProps = {}) {
                   suppressHydrationWarning
                   key={s.name}
                   onClick={() => setActiveStreamIdx(idx)}
-                  className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
-                    activeStreamIdx === idx ? "w-8 bg-purple-500" : "w-2.5 bg-slate-700 hover:bg-slate-500"
-                  }`}
+                  className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${activeStreamIdx === idx ? "w-8 bg-purple-500" : "w-2.5 bg-slate-700 hover:bg-slate-500"
+                    }`}
                 />
               ))}
             </div>
