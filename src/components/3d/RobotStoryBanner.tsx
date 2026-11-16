@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Compass,
@@ -13,7 +13,11 @@ import {
   Users,
   ChevronRight,
 } from "lucide-react";
-import { useRobotCompanion, RobotAgentId } from "@/context/RobotCompanionContext";
+import {
+  useRobotCompanion,
+  RobotAgentId,
+  ROBOTVERSE_AGENTS,
+} from "@/context/RobotCompanionContext";
 
 interface StoryDialogue {
   id: RobotAgentId;
@@ -29,52 +33,78 @@ interface StoryDialogue {
 }
 
 export function RobotStoryBanner() {
-  const { activeAgentId, isEnabled, robots } = useRobotCompanion();
+  const { activeAgentId, activeScene, isEnabled, robots } = useRobotCompanion();
   const [displayedText, setDisplayedText] = useState("");
 
-  const activeBot = robots.find((r) => r.agentId === activeAgentId) || robots[0];
-  const currentStory: StoryDialogue = activeBot
-    ? {
-        id: (activeBot.agentId as RobotAgentId) || "nova",
-        name: activeBot.name,
-        codename: activeBot.codename,
-        role: activeBot.role,
-        sceneTitle: activeBot.sector,
-        badgeColor: activeBot.badgeColor,
-        borderColor: activeBot.borderColor,
-        glowColor: activeBot.glowRgba || "rgba(0,240,255,0.25)",
-        transmission: activeBot.transmission,
-        status: activeBot.status,
-      }
-    : {
-        id: "nova" as RobotAgentId,
-        name: "Nova",
-        codename: "ROBOT-01 // GUIDE",
-        role: "Portfolio Guide",
-        sceneTitle: "SCENE 01 // THE ARRIVAL",
-        badgeColor: "bg-cyan-500/20 text-cyan-300 border-cyan-500/40",
-        borderColor: "border-cyan-500/30",
-        glowColor: "rgba(0,240,255,0.25)",
-        transmission: "Welcome to Hrishi's technology universe.",
-        status: "ONLINE",
-      };
+  const fallbackAgent = useMemo(
+    () =>
+      ROBOTVERSE_AGENTS.find(
+        (a) =>
+          a.id === activeAgentId ||
+          (activeAgentId === "all" && a.id === "all") ||
+          a.sceneNumber === activeScene
+      ) || ROBOTVERSE_AGENTS[0],
+    [activeAgentId, activeScene]
+  );
 
-  // Typewriter effect on transmission change
+  const activeBot = useMemo(
+    () =>
+      robots.find(
+        (r) =>
+          r.agentId === activeAgentId ||
+          (activeAgentId === "all" && (r.agentId === "sentinel" || r.agentId === "all")) ||
+          (activeAgentId === "sentinel" && (r.agentId === "sentinel" || r.agentId === "all")) ||
+          r.sceneNumber === activeScene
+      ) || null,
+    [robots, activeAgentId, activeScene]
+  );
+
+  const currentStory: StoryDialogue = useMemo(() => {
+    const transmission =
+      activeBot?.transmission ||
+      fallbackAgent.speech ||
+      "Welcome to Hrishi's technology universe.";
+
+    return {
+      id: ((activeBot?.agentId || fallbackAgent.id) as RobotAgentId) || "nova",
+      name: activeBot?.name || fallbackAgent.name,
+      codename: activeBot?.codename || fallbackAgent.codename,
+      role: activeBot?.role || fallbackAgent.role,
+      sceneTitle: activeBot?.sector || fallbackAgent.sector,
+      badgeColor:
+        activeBot?.badgeColor ||
+        "bg-cyan-500/20 text-cyan-300 border-cyan-500/40",
+      borderColor:
+        activeBot?.borderColor ||
+        "border-cyan-500/30",
+      glowColor:
+        activeBot?.glowRgba ||
+        "rgba(0,240,255,0.25)",
+      transmission,
+      status: activeBot?.status || "ONLINE",
+    };
+  }, [activeBot, fallbackAgent]);
+
+  const currentTransmission = currentStory.transmission;
+
+  // Typewriter effect on transmission change - triggered only when dialogue text changes
   useEffect(() => {
-    if (!currentStory) return;
+    if (!currentTransmission) {
+      setDisplayedText("");
+      return;
+    }
     setDisplayedText("");
     let idx = 0;
-    const fullText = currentStory.transmission;
     const interval = setInterval(() => {
       idx++;
-      setDisplayedText(fullText.slice(0, idx));
-      if (idx >= fullText.length) {
+      setDisplayedText(currentTransmission.slice(0, idx));
+      if (idx >= currentTransmission.length) {
         clearInterval(interval);
       }
-    }, 16);
+    }, 18);
 
     return () => clearInterval(interval);
-  }, [currentStory]);
+  }, [currentTransmission]);
 
   if (!isEnabled) return null;
 
@@ -94,6 +124,7 @@ export function RobotStoryBanner() {
         return <Brain className="w-3.5 h-3.5 text-cyan-400" />;
       case "titan":
         return <Trophy className="w-3.5 h-3.5 text-amber-400" />;
+      case "sentinel":
       case "all":
       default:
         return <Users className="w-3.5 h-3.5 text-yellow-400" />;

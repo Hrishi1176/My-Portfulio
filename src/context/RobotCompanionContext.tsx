@@ -17,6 +17,7 @@ export type RobotAgentId =
   | "neura"
   | "titan"
   | "all"
+  | "sentinel"
   | "aegis"
   | "weaver"
   | "echo";

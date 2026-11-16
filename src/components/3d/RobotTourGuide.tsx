@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Compass,
@@ -17,7 +17,11 @@ import {
   X,
   Bot,
 } from "lucide-react";
-import { useRobotCompanion, RobotAgentId } from "@/context/RobotCompanionContext";
+import {
+  useRobotCompanion,
+  RobotAgentId,
+  ROBOTVERSE_AGENTS,
+} from "@/context/RobotCompanionContext";
 
 interface GuideStop {
   id: RobotAgentId;
@@ -45,64 +49,97 @@ export function RobotTourGuide() {
   const [isDismissed, setIsDismissed] = useState(false);
   const [displayedSpeech, setDisplayedSpeech] = useState("");
 
-  const activeBot = robots.find((r) => r.agentId === activeAgentId) || robots[0];
-  const nextSceneNum = activeBot ? (activeBot.sceneNumber >= 9 ? 1 : activeBot.sceneNumber + 1) : 1;
+  const fallbackAgent = useMemo(
+    () =>
+      ROBOTVERSE_AGENTS.find(
+        (a) =>
+          a.id === activeAgentId ||
+          (activeAgentId === "all" && a.id === "all") ||
+          a.sceneNumber === activeScene
+      ) || ROBOTVERSE_AGENTS[0],
+    [activeAgentId, activeScene]
+  );
 
-  const currentStop: GuideStop = activeBot
-    ? {
-        id: (activeBot.agentId as RobotAgentId) || "nova",
-        sceneNumber: activeBot.sceneNumber,
-        name: activeBot.name,
-        role: activeBot.role,
-        speech: activeBot.tourSpeech || activeBot.transmission,
-        actionLabel: activeBot.tourActionLabel || "Explore Next Lab",
-        nextScene: nextSceneNum,
-        color: activeBot.glowColor,
-      }
-    : {
-        id: "nova" as RobotAgentId,
-        sceneNumber: 1,
-        name: "Nova",
-        role: "Portfolio Guide",
-        speech: "Welcome to Hrishi's technology universe.",
-        actionLabel: "Explore Lab",
-        nextScene: 3,
-        color: "#00f0ff",
-      };
-  const autoTourTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const activeBot = useMemo(
+    () =>
+      robots.find(
+        (r) =>
+          r.agentId === activeAgentId ||
+          (activeAgentId === "all" && (r.agentId === "sentinel" || r.agentId === "all")) ||
+          (activeAgentId === "sentinel" && (r.agentId === "sentinel" || r.agentId === "all")) ||
+          r.sceneNumber === activeScene
+      ) || null,
+    [robots, activeAgentId, activeScene]
+  );
 
-  // Typewriter effect on dialogue change
+  const currentSceneNumber = activeBot?.sceneNumber ?? fallbackAgent.sceneNumber;
+  const nextSceneNum = useMemo(() => {
+    const SCENE_ORDER = [1, 3, 4, 5, 6, 7, 8, 9];
+    if (currentSceneNumber <= 1 || currentSceneNumber === 2) return 3;
+    const idx = SCENE_ORDER.indexOf(currentSceneNumber);
+    if (idx === -1 || idx === SCENE_ORDER.length - 1) return 1;
+    return SCENE_ORDER[idx + 1];
+  }, [currentSceneNumber]);
+
+  const currentStop: GuideStop = useMemo(() => {
+    const speech =
+      activeBot?.tourSpeech ||
+      activeBot?.transmission ||
+      fallbackAgent.speech ||
+      "Welcome to Hrishi's technology universe.";
+
+    const actionLabel =
+      activeBot?.tourActionLabel ||
+      (currentSceneNumber >= 8 ? "Proceed to Final Mission" : "Explore Next Lab");
+
+    const color =
+      activeBot?.glowColor ||
+      fallbackAgent.accentColor ||
+      "#00f0ff";
+
+    return {
+      id: ((activeBot?.agentId || fallbackAgent.id) as RobotAgentId) || "nova",
+      sceneNumber: currentSceneNumber,
+      name: activeBot?.name || fallbackAgent.name,
+      role: activeBot?.role || fallbackAgent.role,
+      speech,
+      actionLabel,
+      nextScene: nextSceneNum,
+      color,
+    };
+  }, [activeBot, fallbackAgent, currentSceneNumber, nextSceneNum]);
+
+  const currentSpeech = currentStop.speech;
+
+  // Typewriter effect on dialogue change - triggered only when dialogue text changes
   useEffect(() => {
-    if (!currentStop) return;
+    if (!currentSpeech) {
+      setDisplayedSpeech("");
+      return;
+    }
     setDisplayedSpeech("");
     let idx = 0;
-    const text = currentStop.speech;
     const interval = setInterval(() => {
       idx++;
-      setDisplayedSpeech(text.slice(0, idx));
-      if (idx >= text.length) {
+      setDisplayedSpeech(currentSpeech.slice(0, idx));
+      if (idx >= currentSpeech.length) {
         clearInterval(interval);
       }
-    }, 16);
+    }, 18);
 
     return () => clearInterval(interval);
-  }, [currentStop]);
+  }, [currentSpeech]);
 
   // Handle Auto-Tour progression
   useEffect(() => {
-    if (isTourPlaying) {
-      autoTourTimerRef.current = setTimeout(() => {
-        const nextSceneNum = currentStop.nextScene;
-        goToScene(nextSceneNum);
-      }, 7000);
-    } else {
-      if (autoTourTimerRef.current) clearTimeout(autoTourTimerRef.current);
-    }
+    if (!isTourPlaying) return;
 
-    return () => {
-      if (autoTourTimerRef.current) clearTimeout(autoTourTimerRef.current);
-    };
-  }, [isTourPlaying, currentStop, goToScene]);
+    const timer = setTimeout(() => {
+      goToScene(nextSceneNum);
+    }, 7000);
+
+    return () => clearTimeout(timer);
+  }, [isTourPlaying, nextSceneNum, goToScene]);
 
   if (!isEnabled) return null;
 
