@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "@/app/globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { RobotCompanionProvider } from "@/context/RobotCompanionContext";
 import { Analytics } from "@vercel/analytics/react";
 import { PayloadService } from "@/services/payloadService";
 
@@ -84,6 +85,18 @@ export async function generateMetadata(): Promise<Metadata> {
     alternates: {
       canonical: dev.github,
     },
+    icons: {
+      icon: [
+        { url: "/icon.svg", type: "image/svg+xml" },
+        { url: "/favicon.ico", sizes: "any" },
+        { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+        { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+      ],
+      shortcut: ["/favicon.ico"],
+      apple: [
+        { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+      ],
+    },
   };
 }
 
@@ -124,6 +137,9 @@ export default async function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth" className="dark scroll-smooth" suppressHydrationWarning>
       <head>
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -134,7 +150,9 @@ export default async function RootLayout({
         className={`${inter.variable} font-sans antialiased bg-[#030014] text-slate-100`}
       >
         <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark" enableSystem={false}>
-          {children}
+          <RobotCompanionProvider>
+            {children}
+          </RobotCompanionProvider>
         </ThemeProvider>
         <Analytics />
       </body>

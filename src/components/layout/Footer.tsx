@@ -41,8 +41,8 @@ export function Footer({ developer: devProp, navigation: navProp }: FooterProps 
   const featuredApps = projectsList.filter((p) => p.featured || p.live);
 
   return (
-    <footer className="mt-20 bg-transparent pt-16 pb-8 relative overflow-hidden">
-      <div className="w-full relative z-10 space-y-12">
+    <footer className="mt-20 w-full border-t border-purple-500/15 bg-slate-950/40 backdrop-blur-sm pt-16 pb-8 relative overflow-hidden">
+      <div className="mx-auto w-full max-w-[1600px] px-4 sm:px-8 lg:px-12 2xl:px-16 relative z-10 space-y-12">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-10 items-start">
           
           {/* ── Brand & Bio Column ── */}

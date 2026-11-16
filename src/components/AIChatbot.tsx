@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Bot, X, Send, Sparkles, AlertCircle, Loader2 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import Cookies from "js-cookie";
+import { useRobotCompanion } from "@/context/RobotCompanionContext";
 
 interface ChatMessage {
   id: string;
@@ -62,6 +63,17 @@ export function AIChatbot({ aiConfig, developer }: AIChatbotProps = {}) {
   const [loading, setLoading] = useState(false);
   const [requestsToday, setRequestsToday] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const { setActiveField, setState: setRobotState, triggerTyping: triggerRobotTyping } = useRobotCompanion();
+
+  // Sync open state with 3D robot companion telemetry
+  useEffect(() => {
+    if (isOpen) {
+      setActiveField("chat");
+    } else {
+      setActiveField("none");
+    }
+  }, [isOpen, setActiveField]);
 
   // Load request count from secure browser cookie
   useEffect(() => {
@@ -126,6 +138,7 @@ export function AIChatbot({ aiConfig, developer }: AIChatbotProps = {}) {
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setLoading(true);
+    setRobotState("verifying");
 
     try {
       const res = await fetch("/api/chat", {
@@ -159,6 +172,7 @@ export function AIChatbot({ aiConfig, developer }: AIChatbotProps = {}) {
       ]);
     } finally {
       setLoading(false);
+      setRobotState("idle");
     }
   };
 
@@ -297,11 +311,17 @@ export function AIChatbot({ aiConfig, developer }: AIChatbotProps = {}) {
                   className="flex items-center gap-2"
                 >
                   <input
+                    id="ai-chat-input"
                     suppressHydrationWarning
                     type="text"
                     placeholder="Ask AI about Hrishi..."
                     value={input}
-                    onChange={(e) => setInput(e.target.value)}
+                    onFocus={() => setActiveField("chat")}
+                    onBlur={() => setActiveField("none")}
+                    onChange={(e) => {
+                      setInput(e.target.value);
+                      triggerRobotTyping("chat");
+                    }}
                     disabled={loading}
                     className="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-colors"
                   />

@@ -7,6 +7,7 @@ import Cookies from "js-cookie";
 import { ToastNotification } from "@/components/common/ToastNotification";
 import { GithubIcon, LinkedinIcon, InstagramIcon, FacebookIcon } from "@/components/SocialIcons";
 import { SectionHeader, Input, Textarea, Button } from "@/components/ui";
+import { useRobotCompanion } from "@/context/RobotCompanionContext";
 
 import { portfolioConfig, DeveloperConfig } from "@/config/portfolioConfig";
 
@@ -108,6 +109,8 @@ export function Contact({ contactOptions: contactProp, developer: devProp }: Con
   const [isRefining, setIsRefining] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [aiProvider, setAiProvider] = useState<"gemini" | "groq">("gemini");
+
+  const { setActiveField, setState: setRobotState, triggerSuccess: triggerRobotSuccess, triggerError: triggerRobotError, triggerTyping: triggerRobotTyping } = useRobotCompanion();
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [refinementCountToday, setRefinementCountToday] = useState(0);
 
@@ -173,6 +176,7 @@ export function Contact({ contactOptions: contactProp, developer: devProp }: Con
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus({ submitting: true, success: null, message: "" });
+    setRobotState("verifying");
 
     const finalSubject =
       formData.subject === "Custom Subject (Specify Below)"
@@ -201,6 +205,7 @@ export function Contact({ contactOptions: contactProp, developer: devProp }: Con
           message: "Thank you! Your requirements have been received. A confirmation email has been dispatched to your inbox.",
         });
         setShowToast(true);
+        triggerRobotSuccess();
         setFormData({
           name: "",
           email: "",
@@ -216,6 +221,7 @@ export function Contact({ contactOptions: contactProp, developer: devProp }: Con
           message: data.error || "Failed to process your request. Please check your details and try again.",
         });
         setShowToast(true);
+        triggerRobotError();
       }
     } catch (err) {
       console.error(err);
@@ -225,6 +231,7 @@ export function Contact({ contactOptions: contactProp, developer: devProp }: Con
         message: "Network connection error. Please try emailing directly at hrishisgp97@gmail.com.",
       });
       setShowToast(true);
+      triggerRobotError();
     }
   };
 
@@ -367,18 +374,32 @@ export function Contact({ contactOptions: contactProp, developer: devProp }: Con
                   <Input
                     label="Your Name *"
                     required
+                    name="name"
+                    id="contact-name"
                     placeholder="John Doe"
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onFocus={() => setActiveField("name")}
+                    onBlur={() => setActiveField("none")}
+                    onChange={(e) => {
+                      setFormData({ ...formData, name: e.target.value });
+                      triggerRobotTyping("name");
+                    }}
                   />
 
                   <Input
                     label="Email Address *"
                     type="email"
                     required
+                    name="email"
+                    id="contact-email"
                     placeholder="john@example.com"
                     value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    onFocus={() => setActiveField("email")}
+                    onBlur={() => setActiveField("none")}
+                    onChange={(e) => {
+                      setFormData({ ...formData, email: e.target.value });
+                      triggerRobotTyping("email");
+                    }}
                   />
                 </div>
 
@@ -485,10 +506,17 @@ export function Contact({ contactOptions: contactProp, developer: devProp }: Con
 
                   <Textarea
                     required
+                    name="requirements"
+                    id="contact-requirements"
                     rows={4}
                     placeholder="Describe your project, feature requirements, scope, or timeline..."
                     value={formData.requirements}
-                    onChange={(e) => setFormData({ ...formData, requirements: e.target.value })}
+                    onFocus={() => setActiveField("requirements")}
+                    onBlur={() => setActiveField("none")}
+                    onChange={(e) => {
+                      setFormData({ ...formData, requirements: e.target.value });
+                      triggerRobotTyping("requirements");
+                    }}
                   />
                 </div>
 

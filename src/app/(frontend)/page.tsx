@@ -11,6 +11,8 @@ import { LiveAnalytics } from "@/components/sections/LiveAnalytics";
 import { Education } from "@/components/sections/Education";
 import { Contact } from "@/components/sections/Contact";
 import { ExperienceCanvas } from "@/components/3d/ExperienceCanvas";
+import { GlobalRobotCompanion } from "@/components/3d/GlobalRobotCompanion";
+import { RobotCompanionHUD } from "@/components/3d/RobotCompanionHUD";
 import { AIChatbot } from "@/components/AIChatbot";
 import { PayloadService } from "@/services/payloadService";
 
@@ -31,10 +33,14 @@ export default async function Home() {
       {/* ── Persistent Full-Screen Single 3D Experience Canvas ── */}
       <ExperienceCanvas />
 
+      {/* ── 3D Interactive Cyber Robot Companion & Telemetry HUD ── */}
+      <GlobalRobotCompanion />
+      <RobotCompanionHUD />
+
       {/* ── Navigation Header ── */}
       <Header navigation={siteContent.navigation} developer={siteContent.developer} />
 
-      <div className="mx-auto w-full max-w-[1600px] px-6 sm:px-10 lg:px-16 2xl:px-24 pb-16 pt-20 lg:pt-24">
+      <div className="mx-auto w-full max-w-[1600px] px-4 sm:px-8 lg:px-12 2xl:px-16 pt-20 lg:pt-24">
         <Hero hero={siteContent.hero} developer={siteContent.developer} />
 
         <About about={siteContent.about} />
@@ -57,11 +63,12 @@ export default async function Home() {
           contactOptions={siteContent.contactOptions}
           developer={siteContent.developer}
         />
-        <Footer
-          developer={siteContent.developer}
-          navigation={siteContent.navigation}
-        />
       </div>
+
+      <Footer
+        developer={siteContent.developer}
+        navigation={siteContent.navigation}
+      />
 
       {/* Floating AI Assistant Chatbot */}
       <AIChatbot
