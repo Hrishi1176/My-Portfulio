@@ -599,6 +599,18 @@ export function ThreeRobotCompanion({
     laserTargetReticle.visible = false;
     scene.add(laserTargetReticle);
 
+    // Glowing hand aperture energy node (beam origin)
+    const handEmitterGeom = new THREE.SphereGeometry(0.026, 16, 16);
+    const handEmitterMat = new THREE.MeshBasicMaterial({
+      color: 0x00f0ff,
+      transparent: true,
+      opacity: 0.0,
+      blending: THREE.AdditiveBlending,
+    });
+    const handEmitterNode = new THREE.Mesh(handEmitterGeom, handEmitterMat);
+    handEmitterNode.visible = false;
+    scene.add(handEmitterNode);
+
     const clickAuraRingMat = new THREE.MeshBasicMaterial({
       color: 0x00f0ff,
       transparent: true,
@@ -623,7 +635,13 @@ export function ThreeRobotCompanion({
       neckBone: THREE.Bone | null;
       spineBone: THREE.Bone | null;
       rightShoulderBone: THREE.Bone | null;
+      rightArmBone: THREE.Bone | null;
       rightForeArmBone: THREE.Bone | null;
+      rightHandBone: THREE.Bone | null;
+      leftShoulderBone: THREE.Bone | null;
+      leftArmBone: THREE.Bone | null;
+      leftForeArmBone: THREE.Bone | null;
+      leftHandBone: THREE.Bone | null;
       currentPos: THREE.Vector3;
       targetPos: THREE.Vector3;
       heading: number;
@@ -647,7 +665,13 @@ export function ThreeRobotCompanion({
         neckBone: null,
         spineBone: null,
         rightShoulderBone: null,
+        rightArmBone: null,
         rightForeArmBone: null,
+        rightHandBone: null,
+        leftShoulderBone: null,
+        leftArmBone: null,
+        leftForeArmBone: null,
+        leftHandBone: null,
         currentPos: new THREE.Vector3(-1.8, -0.2, 0.2),
         targetPos: new THREE.Vector3(-1.8, -0.2, 0.2),
         heading: 0,
@@ -667,7 +691,13 @@ export function ThreeRobotCompanion({
         neckBone: null,
         spineBone: null,
         rightShoulderBone: null,
+        rightArmBone: null,
         rightForeArmBone: null,
+        rightHandBone: null,
+        leftShoulderBone: null,
+        leftArmBone: null,
+        leftForeArmBone: null,
+        leftHandBone: null,
         currentPos: new THREE.Vector3(1.8, -0.1, -0.1),
         targetPos: new THREE.Vector3(1.8, -0.1, -0.1),
         heading: 0,
@@ -687,7 +717,13 @@ export function ThreeRobotCompanion({
         neckBone: null,
         spineBone: null,
         rightShoulderBone: null,
+        rightArmBone: null,
         rightForeArmBone: null,
+        rightHandBone: null,
+        leftShoulderBone: null,
+        leftArmBone: null,
+        leftForeArmBone: null,
+        leftHandBone: null,
         currentPos: new THREE.Vector3(1.7, -0.1, -0.1),
         targetPos: new THREE.Vector3(1.7, -0.1, -0.1),
         heading: 0,
@@ -707,7 +743,13 @@ export function ThreeRobotCompanion({
         neckBone: null,
         spineBone: null,
         rightShoulderBone: null,
+        rightArmBone: null,
         rightForeArmBone: null,
+        rightHandBone: null,
+        leftShoulderBone: null,
+        leftArmBone: null,
+        leftForeArmBone: null,
+        leftHandBone: null,
         currentPos: new THREE.Vector3(1.8, -0.1, -0.1),
         targetPos: new THREE.Vector3(1.8, -0.1, -0.1),
         heading: 0,
@@ -727,7 +769,13 @@ export function ThreeRobotCompanion({
         neckBone: null,
         spineBone: null,
         rightShoulderBone: null,
+        rightArmBone: null,
         rightForeArmBone: null,
+        rightHandBone: null,
+        leftShoulderBone: null,
+        leftArmBone: null,
+        leftForeArmBone: null,
+        leftHandBone: null,
         currentPos: new THREE.Vector3(1.8, -0.1, -0.1),
         targetPos: new THREE.Vector3(1.8, -0.1, -0.1),
         heading: 0,
@@ -747,7 +795,13 @@ export function ThreeRobotCompanion({
         neckBone: null,
         spineBone: null,
         rightShoulderBone: null,
+        rightArmBone: null,
         rightForeArmBone: null,
+        rightHandBone: null,
+        leftShoulderBone: null,
+        leftArmBone: null,
+        leftForeArmBone: null,
+        leftHandBone: null,
         currentPos: new THREE.Vector3(1.8, -0.1, -0.1),
         targetPos: new THREE.Vector3(1.8, -0.1, -0.1),
         heading: 0,
@@ -767,7 +821,13 @@ export function ThreeRobotCompanion({
         neckBone: null,
         spineBone: null,
         rightShoulderBone: null,
+        rightArmBone: null,
         rightForeArmBone: null,
+        rightHandBone: null,
+        leftShoulderBone: null,
+        leftArmBone: null,
+        leftForeArmBone: null,
+        leftHandBone: null,
         currentPos: new THREE.Vector3(-1.8, -0.2, 0.15),
         targetPos: new THREE.Vector3(-1.8, -0.2, 0.15),
         heading: 0,
@@ -829,9 +889,17 @@ export function ThreeRobotCompanion({
               if (bone.name.includes("Neck")) bones.neck = bone;
               if (bone.name.includes("Spine2")) bones.spine2 = bone;
               else if (!bones.spine2 && bone.name.includes("Spine1")) bones.spine2 = bone;
-              if (bone.name.includes("LeftShoulder")) bones.leftShoulder = bone;
+
+              // Arm & hand bones extraction
               if (bone.name.includes("RightShoulder")) bones.rightShoulder = bone;
-              if (bone.name.includes("RightForeArm")) bones.rightForeArm = bone;
+              else if (bone.name.includes("RightForeArm")) bones.rightForeArm = bone;
+              else if (bone.name.includes("RightArm")) bones.rightArm = bone;
+              else if (bone.name.includes("RightHand")) bones.rightHand = bone;
+
+              if (bone.name.includes("LeftShoulder")) bones.leftShoulder = bone;
+              else if (bone.name.includes("LeftForeArm")) bones.leftForeArm = bone;
+              else if (bone.name.includes("LeftArm")) bones.leftArm = bone;
+              else if (bone.name.includes("LeftHand")) bones.leftHand = bone;
             }
           });
 
@@ -854,7 +922,13 @@ export function ThreeRobotCompanion({
           novaBones.spine2.add(novaBadge);
         }
         robots.nova.rightShoulderBone = novaBones.rightShoulder || null;
+        robots.nova.rightArmBone = novaBones.rightArm || null;
         robots.nova.rightForeArmBone = novaBones.rightForeArm || null;
+        robots.nova.rightHandBone = novaBones.rightHand || null;
+        robots.nova.leftShoulderBone = novaBones.leftShoulder || null;
+        robots.nova.leftArmBone = novaBones.leftArm || null;
+        robots.nova.leftForeArmBone = novaBones.leftForeArm || null;
+        robots.nova.leftHandBone = novaBones.leftHand || null;
 
         // --- 2. SETUP CODEX (Electric Blue + Platinum) ---
         const modelCodex = SkeletonUtils.clone(gltf.scene) as THREE.Group;
@@ -866,7 +940,13 @@ export function ThreeRobotCompanion({
         if (codexBones.neck) robots.codex.neckBone = codexBones.neck;
         if (codexBones.spine2) robots.codex.spineBone = codexBones.spine2;
         robots.codex.rightShoulderBone = codexBones.rightShoulder || null;
+        robots.codex.rightArmBone = codexBones.rightArm || null;
         robots.codex.rightForeArmBone = codexBones.rightForeArm || null;
+        robots.codex.rightHandBone = codexBones.rightHand || null;
+        robots.codex.leftShoulderBone = codexBones.leftShoulder || null;
+        robots.codex.leftArmBone = codexBones.leftArm || null;
+        robots.codex.leftForeArmBone = codexBones.leftForeArm || null;
+        robots.codex.leftHandBone = codexBones.leftHand || null;
 
         // --- 3. SETUP MATRIX (Matte Black + Emerald) ---
         const modelMatrix = SkeletonUtils.clone(gltf.scene) as THREE.Group;
@@ -878,7 +958,13 @@ export function ThreeRobotCompanion({
         if (matrixBones.neck) robots.matrix.neckBone = matrixBones.neck;
         if (matrixBones.spine2) robots.matrix.spineBone = matrixBones.spine2;
         robots.matrix.rightShoulderBone = matrixBones.rightShoulder || null;
+        robots.matrix.rightArmBone = matrixBones.rightArm || null;
         robots.matrix.rightForeArmBone = matrixBones.rightForeArm || null;
+        robots.matrix.rightHandBone = matrixBones.rightHand || null;
+        robots.matrix.leftShoulderBone = matrixBones.leftShoulder || null;
+        robots.matrix.leftArmBone = matrixBones.leftArm || null;
+        robots.matrix.leftForeArmBone = matrixBones.leftForeArm || null;
+        robots.matrix.leftHandBone = matrixBones.leftHand || null;
 
         // --- 4. SETUP ORBIT (Purple + Chrome) ---
         const modelOrbit = SkeletonUtils.clone(gltf.scene) as THREE.Group;
@@ -890,7 +976,13 @@ export function ThreeRobotCompanion({
         if (orbitBones.neck) robots.orbit.neckBone = orbitBones.neck;
         if (orbitBones.spine2) robots.orbit.spineBone = orbitBones.spine2;
         robots.orbit.rightShoulderBone = orbitBones.rightShoulder || null;
+        robots.orbit.rightArmBone = orbitBones.rightArm || null;
         robots.orbit.rightForeArmBone = orbitBones.rightForeArm || null;
+        robots.orbit.rightHandBone = orbitBones.rightHand || null;
+        robots.orbit.leftShoulderBone = orbitBones.leftShoulder || null;
+        robots.orbit.leftArmBone = orbitBones.leftArm || null;
+        robots.orbit.leftForeArmBone = orbitBones.leftForeArm || null;
+        robots.orbit.leftHandBone = orbitBones.leftHand || null;
 
         // --- 5. SETUP CLOUD-X (White + Orange) ---
         const modelCloudx = SkeletonUtils.clone(gltf.scene) as THREE.Group;
@@ -902,7 +994,13 @@ export function ThreeRobotCompanion({
         if (cloudxBones.neck) robots.cloudx.neckBone = cloudxBones.neck;
         if (cloudxBones.spine2) robots.cloudx.spineBone = cloudxBones.spine2;
         robots.cloudx.rightShoulderBone = cloudxBones.rightShoulder || null;
+        robots.cloudx.rightArmBone = cloudxBones.rightArm || null;
         robots.cloudx.rightForeArmBone = cloudxBones.rightForeArm || null;
+        robots.cloudx.rightHandBone = cloudxBones.rightHand || null;
+        robots.cloudx.leftShoulderBone = cloudxBones.leftShoulder || null;
+        robots.cloudx.leftArmBone = cloudxBones.leftArm || null;
+        robots.cloudx.leftForeArmBone = cloudxBones.leftForeArm || null;
+        robots.cloudx.leftHandBone = cloudxBones.leftHand || null;
 
         // --- 6. SETUP NEURA (Cyan + Pearlescent) ---
         const modelNeura = SkeletonUtils.clone(gltf.scene) as THREE.Group;
@@ -914,7 +1012,13 @@ export function ThreeRobotCompanion({
         if (neuraBones.neck) robots.neura.neckBone = neuraBones.neck;
         if (neuraBones.spine2) robots.neura.spineBone = neuraBones.spine2;
         robots.neura.rightShoulderBone = neuraBones.rightShoulder || null;
+        robots.neura.rightArmBone = neuraBones.rightArm || null;
         robots.neura.rightForeArmBone = neuraBones.rightForeArm || null;
+        robots.neura.rightHandBone = neuraBones.rightHand || null;
+        robots.neura.leftShoulderBone = neuraBones.leftShoulder || null;
+        robots.neura.leftArmBone = neuraBones.leftArm || null;
+        robots.neura.leftForeArmBone = neuraBones.leftForeArm || null;
+        robots.neura.leftHandBone = neuraBones.leftHand || null;
 
         // --- 7. SETUP TITAN (Imperial Obsidian + 24k Gold) ---
         const modelTitan = SkeletonUtils.clone(gltf.scene) as THREE.Group;
@@ -929,7 +1033,13 @@ export function ThreeRobotCompanion({
         if (titanBones.rightShoulder) titanBones.rightShoulder.add(titanPauldronR);
         if (titanBones.rightForeArm) titanBones.rightForeArm.add(titanWristSlate);
         robots.titan.rightShoulderBone = titanBones.rightShoulder || null;
+        robots.titan.rightArmBone = titanBones.rightArm || null;
         robots.titan.rightForeArmBone = titanBones.rightForeArm || null;
+        robots.titan.rightHandBone = titanBones.rightHand || null;
+        robots.titan.leftShoulderBone = titanBones.leftShoulder || null;
+        robots.titan.leftArmBone = titanBones.leftArm || null;
+        robots.titan.leftForeArmBone = titanBones.leftForeArm || null;
+        robots.titan.leftHandBone = titanBones.leftHand || null;
 
         // Bind animation clips & attach advanced controllers
         if (gltf.animations && gltf.animations.length > 0) {
@@ -947,13 +1057,19 @@ export function ThreeRobotCompanion({
                 referenceRunSpeed: 3.6,
               });
 
-              // Procedural bone IK layer
+              // Procedural bone IK layer with full multi-axis arm kinematics
               bot.proceduralLayer = new RobotProceduralLayer({
                 headBone: bot.headBone,
                 neckBone: bot.neckBone,
                 spineBone: bot.spineBone,
                 rightShoulderBone: bot.rightShoulderBone,
+                rightArmBone: bot.rightArmBone,
                 rightForeArmBone: bot.rightForeArmBone,
+                rightHandBone: bot.rightHandBone,
+                leftShoulderBone: bot.leftShoulderBone,
+                leftArmBone: bot.leftArmBone,
+                leftForeArmBone: bot.leftForeArmBone,
+                leftHandBone: bot.leftHandBone,
               });
 
               // ── 360° Section-Entry Spin Director ──────────────────────────
@@ -1406,12 +1522,26 @@ export function ThreeRobotCompanion({
         laserBeam.visible = true;
         laserTargetReticle.visible = true;
 
-        const startX = activeBot.currentPos.x + (primaryAgentId === "titan" ? -0.15 : 0.15);
-        const startY = activeBot.currentPos.y + 0.35;
-        const startZ = activeBot.currentPos.z + 0.15;
+        // Position laser start and hand emitter node directly at the pointing hand / wrist
+        const pointingHand = activeBot.rightHandBone || activeBot.rightForeArmBone;
+        const handWorldPos = new THREE.Vector3();
+        if (pointingHand) {
+          pointingHand.getWorldPosition(handWorldPos);
+        } else {
+          handWorldPos.set(
+            activeBot.currentPos.x + (primaryAgentId === "titan" ? -0.15 : 0.15),
+            activeBot.currentPos.y + 0.35,
+            activeBot.currentPos.z + 0.15
+          );
+        }
+
+        handEmitterNode.visible = true;
+        handEmitterNode.position.copy(handWorldPos);
+        handEmitterMat.color.copy(laserBeamMat.color);
+        handEmitterMat.opacity = beamPulse;
 
         const posAttr = laserBeamGeom.getAttribute("position") as THREE.BufferAttribute;
-        posAttr.setXYZ(0, startX, startY, startZ);
+        posAttr.setXYZ(0, handWorldPos.x, handWorldPos.y, handWorldPos.z);
         posAttr.setXYZ(1, _scratchTarget.x, _scratchTarget.y, _scratchTarget.z);
         posAttr.needsUpdate = true;
 
@@ -1437,6 +1567,7 @@ export function ThreeRobotCompanion({
       } else {
         laserBeam.visible = false;
         laserTargetReticle.visible = false;
+        handEmitterNode.visible = false;
       }
 
       // ── Click Aura Ripple & Jump Decay ──────────────────────────────────
@@ -1633,7 +1764,10 @@ export function ThreeRobotCompanion({
             if (botIsSpinning) {
               // During spin: face neutral, no look-at fighting the Y rotation
               bot.proceduralLayer.reset();
-            } else if (currentPMode === "none" || currentPMode === "lookAt") {
+            } else if (isLaserActive) {
+              // Active targeting of card: smoothly aim arm & hand at target card!
+              bot.proceduralLayer.setMode("point", _scratchTarget);
+            } else if (currentPMode === "none" || currentPMode === "lookAt" || currentPMode === "point") {
               if (primaryAgentId === "titan" && projectShiftRef.current !== lastProjectCounter) {
                 bot.proceduralLayer.setMode("point", new THREE.Vector3(0, 0.5, 0));
               } else if (!isSleeping) {
@@ -1666,6 +1800,8 @@ export function ThreeRobotCompanion({
       laserBeamMat.dispose();
       laserTargetReticleGeom.dispose();
       laserTargetReticleMat.dispose();
+      handEmitterGeom.dispose();
+      handEmitterMat.dispose();
       clickAuraRingGeom.dispose();
       clickAuraRingMat.dispose();
 

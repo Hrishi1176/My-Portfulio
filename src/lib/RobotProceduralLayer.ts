@@ -5,7 +5,13 @@ export interface ProceduralBones {
   neckBone: THREE.Bone | null;
   spineBone: THREE.Bone | null;
   rightShoulderBone?: THREE.Bone | null;
+  rightArmBone?: THREE.Bone | null;
   rightForeArmBone?: THREE.Bone | null;
+  rightHandBone?: THREE.Bone | null;
+  leftShoulderBone?: THREE.Bone | null;
+  leftArmBone?: THREE.Bone | null;
+  leftForeArmBone?: THREE.Bone | null;
+  leftHandBone?: THREE.Bone | null;
 }
 
 export type ProceduralMode = "none" | "lookAt" | "point" | "type" | "wave" | "nod" | "think" | "salute" | "guard" | "wrist_check";
@@ -19,6 +25,12 @@ export class RobotProceduralLayer {
   private targetBlend: number = 0;
   private _scratchHead = new THREE.Vector3();
   private _scratchDir = new THREE.Vector3();
+  private _scratchAimQuat = new THREE.Quaternion();
+  private _scratchLocalTarget = new THREE.Vector3();
+  private _scratchLocalDir = new THREE.Vector3();
+  private _scratchWorldPos = new THREE.Vector3();
+  private _restDirRight = new THREE.Vector3(-1, 0, 0);
+  private _restDirLeft = new THREE.Vector3(1, 0, 0);
 
   // ── New mode state ──────────────────────────────────────────────
   private nodTimer = 0;           // counts up during nod gesture
@@ -124,10 +136,84 @@ export class RobotProceduralLayer {
   }
 
   private applyPoint(time: number): void {
-    const { rightShoulderBone, rightForeArmBone } = this.bones;
+    const {
+      rightShoulderBone,
+      rightArmBone,
+      rightForeArmBone,
+      rightHandBone,
+      leftArmBone,
+      leftForeArmBone,
+      leftHandBone,
+    } = this.bones;
     const w = this.blendWeight;
 
-    if (rightShoulderBone) {
+    // Check which arm to point with:
+    // When robot faces camera:
+    // Right arm is on screen-left; Left arm is on screen-right.
+    // Default to rightArm (matches user request & screenshot).
+    let useLeftArm = false;
+    if (leftArmBone && leftArmBone.parent && rightArmBone) {
+      this._scratchWorldPos.set(0, 0, 0);
+      leftArmBone.getWorldPosition(this._scratchWorldPos);
+      const distL = this._scratchWorldPos.distanceTo(this.pointTarget);
+      rightArmBone.getWorldPosition(this._scratchWorldPos);
+      const distR = this._scratchWorldPos.distanceTo(this.pointTarget);
+      if (distL < distR * 0.75) {
+        useLeftArm = true;
+      }
+    }
+
+    if (useLeftArm && leftArmBone && leftArmBone.parent) {
+      // Left arm aiming
+      this._scratchLocalTarget.copy(this.pointTarget);
+      leftArmBone.parent.worldToLocal(this._scratchLocalTarget);
+      this._scratchLocalDir.copy(this._scratchLocalTarget).sub(leftArmBone.position).normalize();
+
+      if (this._scratchLocalDir.lengthSq() > 0.001) {
+        this._scratchAimQuat.setFromUnitVectors(this._restDirLeft, this._scratchLocalDir);
+        leftArmBone.quaternion.slerp(this._scratchAimQuat, Math.min(1, w * 0.95));
+      }
+      if (leftForeArmBone) {
+        this._scratchAimQuat.setFromEuler(new THREE.Euler(0, 0, Math.sin(time * 3.0) * 0.015));
+        leftForeArmBone.quaternion.slerp(this._scratchAimQuat, w * 0.85);
+      }
+      if (leftHandBone) {
+        this._scratchAimQuat.identity();
+        leftHandBone.quaternion.slerp(this._scratchAimQuat, w * 0.85);
+      }
+    } else if (rightArmBone && rightArmBone.parent) {
+      // Right arm aiming (as in screenshot)
+      this._scratchLocalTarget.copy(this.pointTarget);
+      rightArmBone.parent.worldToLocal(this._scratchLocalTarget);
+      this._scratchLocalDir.copy(this._scratchLocalTarget).sub(rightArmBone.position).normalize();
+
+      if (this._scratchLocalDir.lengthSq() > 0.001) {
+        this._scratchAimQuat.setFromUnitVectors(this._restDirRight, this._scratchLocalDir);
+        rightArmBone.quaternion.slerp(this._scratchAimQuat, Math.min(1, w * 0.96));
+      }
+
+      if (rightForeArmBone) {
+        // Subtle micro-energy pulse on the forearm
+        this._scratchAimQuat.setFromEuler(new THREE.Euler(0, 0, Math.sin(time * 3.5) * 0.02));
+        rightForeArmBone.quaternion.slerp(this._scratchAimQuat, w * 0.88);
+      }
+
+      if (rightHandBone) {
+        // Wrist straightens to align beam forward
+        this._scratchAimQuat.identity();
+        rightHandBone.quaternion.slerp(this._scratchAimQuat, w * 0.88);
+      }
+
+      if (rightShoulderBone) {
+        // Slight clavicle elevation for natural posture
+        rightShoulderBone.rotation.z = THREE.MathUtils.lerp(
+          rightShoulderBone.rotation.z,
+          -0.12 * w,
+          0.1
+        );
+      }
+    } else if (rightShoulderBone && rightForeArmBone) {
+      // Fallback if rightArmBone wasn't bound
       rightShoulderBone.rotation.z = THREE.MathUtils.lerp(
         rightShoulderBone.rotation.z,
         -0.65 * w + Math.sin(time * 1.5) * 0.04,
@@ -138,9 +224,6 @@ export class RobotProceduralLayer {
         0.35 * w,
         0.12
       );
-    }
-
-    if (rightForeArmBone) {
       rightForeArmBone.rotation.z = THREE.MathUtils.lerp(
         rightForeArmBone.rotation.z,
         0.45 * w,
@@ -170,10 +253,15 @@ export class RobotProceduralLayer {
   }
 
   private applyWave(time: number): void {
-    const { rightShoulderBone, rightForeArmBone } = this.bones;
+    const { rightShoulderBone, rightArmBone, rightForeArmBone } = this.bones;
     const w = this.blendWeight;
 
-    if (rightShoulderBone) {
+    if (rightArmBone) {
+      this._scratchAimQuat.setFromEuler(
+        new THREE.Euler(0.2 * w, 0, -1.2 * w)
+      );
+      rightArmBone.quaternion.slerp(this._scratchAimQuat, 0.15);
+    } else if (rightShoulderBone) {
       rightShoulderBone.rotation.z = THREE.MathUtils.lerp(
         rightShoulderBone.rotation.z,
         (-0.75 + Math.sin(time * 4.0) * 0.25) * w,
@@ -184,8 +272,8 @@ export class RobotProceduralLayer {
     if (rightForeArmBone) {
       rightForeArmBone.rotation.x = THREE.MathUtils.lerp(
         rightForeArmBone.rotation.x,
-        Math.sin(time * 4.0 + 0.4) * 0.28 * w,
-        0.15
+        Math.sin(time * 4.5 + 0.4) * 0.35 * w,
+        0.2
       );
     }
   }
@@ -248,10 +336,15 @@ export class RobotProceduralLayer {
   }
 
   private applySalute(time: number): void {
-    const { rightShoulderBone, rightForeArmBone } = this.bones;
+    const { rightShoulderBone, rightArmBone, rightForeArmBone, rightHandBone } = this.bones;
     const w = this.blendWeight;
 
-    if (rightShoulderBone) {
+    if (rightArmBone) {
+      this._scratchAimQuat.setFromEuler(
+        new THREE.Euler(0.3 * w, 0.4 * w, -1.1 * w)
+      );
+      rightArmBone.quaternion.slerp(this._scratchAimQuat, 0.15);
+    } else if (rightShoulderBone) {
       // Raise arm up and inward toward head
       rightShoulderBone.rotation.z = THREE.MathUtils.lerp(
         rightShoulderBone.rotation.z,
@@ -264,13 +357,17 @@ export class RobotProceduralLayer {
         0.1
       );
     }
+
     if (rightForeArmBone) {
       // Forearm bends in toward forehead
       rightForeArmBone.rotation.z = THREE.MathUtils.lerp(
         rightForeArmBone.rotation.z,
-        0.55 * w + Math.sin(time * 1.2) * 0.02,
-        0.1
+        0.65 * w + Math.sin(time * 1.2) * 0.02,
+        0.12
       );
+    }
+    if (rightHandBone) {
+      rightHandBone.quaternion.identity();
     }
   }
 
@@ -295,7 +392,7 @@ export class RobotProceduralLayer {
   }
 
   private applyWristCheck(delta: number, time: number): void {
-    const { rightForeArmBone, rightShoulderBone } = this.bones;
+    const { rightForeArmBone, rightShoulderBone, rightArmBone } = this.bones;
     if (this.wristCheckPhase === "done") return;
 
     const RAISE_T = 0.4;
@@ -306,7 +403,10 @@ export class RobotProceduralLayer {
 
     if (this.wristCheckPhase === "raise") {
       const t = Math.min(1, this.wristCheckTimer / RAISE_T);
-      if (rightShoulderBone) {
+      if (rightArmBone) {
+        this._scratchAimQuat.setFromEuler(new THREE.Euler(0.4 * t, 0.2 * t, -0.6 * t));
+        rightArmBone.quaternion.slerp(this._scratchAimQuat, 0.2);
+      } else if (rightShoulderBone) {
         rightShoulderBone.rotation.z = THREE.MathUtils.lerp(rightShoulderBone.rotation.z, -0.5 * t, 0.2);
       }
       if (rightForeArmBone) {
@@ -325,7 +425,10 @@ export class RobotProceduralLayer {
       if (this.wristCheckTimer >= HOLD_T) { this.wristCheckTimer = 0; this.wristCheckPhase = "lower"; }
     } else {
       const t = Math.min(1, this.wristCheckTimer / LOWER_T);
-      if (rightShoulderBone) {
+      if (rightArmBone) {
+        this._scratchAimQuat.setFromEuler(new THREE.Euler(0.4 * (1 - t), 0.2 * (1 - t), -0.6 * (1 - t)));
+        rightArmBone.quaternion.slerp(this._scratchAimQuat, 0.2);
+      } else if (rightShoulderBone) {
         rightShoulderBone.rotation.z = THREE.MathUtils.lerp(rightShoulderBone.rotation.z, -0.5 * (1 - t), 0.2);
       }
       if (rightForeArmBone) {
