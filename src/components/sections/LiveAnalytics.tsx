@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Activity, Eye, ShieldCheck, Server, Star, FolderGit2, MessageSquare, Loader2 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import { soundFX } from "@/utils/audioFX";
 
 interface AnalyticsData {
   totalViews: number;
@@ -87,7 +88,7 @@ export function LiveAnalytics() {
           {/* Real Metrics Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             {/* 1. Real Page Views */}
-            <div className="p-4 rounded-2xl border border-white/5 bg-transparent text-center">
+            <div onMouseEnter={() => soundFX.neuraVoice(0.04)} className="p-4 rounded-2xl border border-white/5 bg-transparent text-center hover:border-cyan-500/30 transition-all cursor-default">
               <Eye className="h-5 w-5 text-purple-500 mx-auto mb-2" />
               <div className="text-2xl sm:text-3xl font-black gradient-text">
                 {loading ? <Loader2 className="h-6 w-6 animate-spin mx-auto text-purple-500" /> : analytics?.totalViews.toLocaleString()}
@@ -98,7 +99,7 @@ export function LiveAnalytics() {
             </div>
 
             {/* 2. Real GitHub Stars */}
-            <div className="p-4 rounded-2xl border border-white/5 bg-transparent text-center">
+            <div onMouseEnter={() => soundFX.neuraVoice(0.04)} className="p-4 rounded-2xl border border-white/5 bg-transparent text-center hover:border-cyan-500/30 transition-all cursor-default">
               <Star className="h-5 w-5 text-amber-500 mx-auto mb-2" />
               <div className="text-2xl sm:text-3xl font-black text-amber-500 dark:text-amber-400">
                 {loading ? <Loader2 className="h-6 w-6 animate-spin mx-auto text-amber-500" /> : analytics?.githubStars}
@@ -109,7 +110,7 @@ export function LiveAnalytics() {
             </div>
 
             {/* 3. Real GitHub Public Repos */}
-            <div className="p-4 rounded-2xl border border-white/5 bg-transparent text-center">
+            <div onMouseEnter={() => soundFX.neuraVoice(0.04)} className="p-4 rounded-2xl border border-white/5 bg-transparent text-center hover:border-cyan-500/30 transition-all cursor-default">
               <FolderGit2 className="h-5 w-5 text-blue-500 mx-auto mb-2" />
               <div className="text-2xl sm:text-3xl font-black text-blue-500 dark:text-blue-400">
                 {loading ? <Loader2 className="h-6 w-6 animate-spin mx-auto text-blue-500" /> : analytics?.publicReposCount}
@@ -120,7 +121,7 @@ export function LiveAnalytics() {
             </div>
 
             {/* 4. Real Form Inquiries Saved in MongoDB */}
-            <div className="p-4 rounded-2xl border border-white/5 bg-transparent text-center">
+            <div onMouseEnter={() => soundFX.neuraVoice(0.04)} className="p-4 rounded-2xl border border-white/5 bg-transparent text-center hover:border-cyan-500/30 transition-all cursor-default">
               <MessageSquare className="h-5 w-5 text-emerald-500 mx-auto mb-2" />
               <div className="text-2xl sm:text-3xl font-black text-emerald-500 dark:text-emerald-400">
                 {loading ? <Loader2 className="h-6 w-6 animate-spin mx-auto text-emerald-500" /> : analytics?.totalInquiries}

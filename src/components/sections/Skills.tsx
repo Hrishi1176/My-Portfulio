@@ -118,6 +118,9 @@ export function Skills({ categories, marquee }: SkillsProps = {}) {
                       setActiveSkillCategory(cat.title);
                       playSound("laser");
                     }}
+                    onMouseLeave={() => {
+                      setActiveSkillCategory("");
+                    }}
                     className="group relative h-full rounded-2xl border border-white/5 bg-transparent p-6 transition-all duration-300 hover:border-purple-500/30 hover:bg-white/[0.02] hover:shadow-[0_15px_35px_rgba(168,85,247,0.1)] flex flex-col justify-between overflow-hidden"
                   >
                     {/* Top ambient highlight */}

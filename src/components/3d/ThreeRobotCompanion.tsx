@@ -18,6 +18,8 @@ import { RobotPathNavigator } from "@/lib/RobotPathNavigator";
 import { RobotProceduralLayer } from "@/lib/RobotProceduralLayer";
 import { RobotInteractionDirector, SCENE_09_FINALE } from "@/lib/RobotInteractionDirector";
 import { CinematicCameraDirector } from "@/lib/CinematicCameraDirector";
+import { Robot360SpinDirector } from "@/lib/Robot360SpinDirector";
+import { RobotSceneActivityDirector } from "@/lib/RobotSceneActivityDirector";
 
 // Suppress internal R3F THREE.Clock deprecation warning
 if (typeof window !== "undefined" && typeof THREE.setConsoleFunction === "function") {
@@ -474,12 +476,14 @@ export function ThreeRobotCompanion({
     matrixServerRack.position.set(-0.4, 0, 0.35);
     const rackFrame = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.65, 0.18), industrialJointsMat);
     matrixServerRack.add(rackFrame);
+    const serverLeds: THREE.Mesh[] = [];
     for (let i = 0; i < 4; i++) {
       const blade = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.08, 0.16), blackMatrixMat);
       blade.position.set(0, (i - 1.5) * 0.12, 0.01);
       const led = new THREE.Mesh(new THREE.SphereGeometry(0.012, 8, 8), emeraldGlowMat);
       led.position.set(0.08, 0, 0.09);
       blade.add(led);
+      serverLeds.push(led);
       matrixServerRack.add(blade);
     }
     matrixRoot.add(matrixServerRack);
@@ -507,10 +511,12 @@ export function ThreeRobotCompanion({
     cloudxPipeline.position.set(0, 0.15, -0.18);
     const pipelineRing = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.012, 16, 48), orangeGlowMat);
     cloudxPipeline.add(pipelineRing);
+    const cloudxPods: THREE.Mesh[] = [];
     for (let i = 0; i < 3; i++) {
       const angle = (i * Math.PI * 2) / 3;
       const podBox = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 0.06), industrialJointsMat);
       podBox.position.set(Math.cos(angle) * 0.32, Math.sin(angle) * 0.32, 0);
+      cloudxPods.push(podBox);
       cloudxPipeline.add(podBox);
     }
     cloudxRoot.add(cloudxPipeline);
@@ -567,6 +573,45 @@ export function ThreeRobotCompanion({
     );
     scene.add(stardustParticles);
 
+    // ── PHASE 2: 3D Holographic Connector Beam, Reticle & Click Ripple ─────
+    const laserBeamPositions = new Float32Array(6); // 2 points x 3
+    const laserBeamGeom = new THREE.BufferGeometry();
+    laserBeamGeom.setAttribute("position", new THREE.BufferAttribute(laserBeamPositions, 3));
+    const laserBeamMat = new THREE.LineBasicMaterial({
+      color: 0x00f0ff,
+      transparent: true,
+      opacity: 0.0,
+      blending: THREE.AdditiveBlending,
+    });
+    const laserBeam = new THREE.Line(laserBeamGeom, laserBeamMat);
+    laserBeam.visible = false;
+    scene.add(laserBeam);
+
+    const laserTargetReticleMat = new THREE.MeshBasicMaterial({
+      color: 0x00f0ff,
+      transparent: true,
+      opacity: 0.0,
+      side: THREE.DoubleSide,
+      blending: THREE.AdditiveBlending,
+    });
+    const laserTargetReticleGeom = new THREE.RingGeometry(0.09, 0.13, 24);
+    const laserTargetReticle = new THREE.Mesh(laserTargetReticleGeom, laserTargetReticleMat);
+    laserTargetReticle.visible = false;
+    scene.add(laserTargetReticle);
+
+    const clickAuraRingMat = new THREE.MeshBasicMaterial({
+      color: 0x00f0ff,
+      transparent: true,
+      opacity: 0.0,
+      side: THREE.DoubleSide,
+      blending: THREE.AdditiveBlending,
+    });
+    const clickAuraRingGeom = new THREE.RingGeometry(0.2, 0.28, 32);
+    const clickAuraRing = new THREE.Mesh(clickAuraRingGeom, clickAuraRingMat);
+    clickAuraRing.rotation.x = Math.PI / 2;
+    clickAuraRing.visible = false;
+    scene.add(clickAuraRing);
+
     // 7. MULTI-ROBOT INSTANCES & ANIMATION RIGGING
     interface RobotInstance {
       id: RobotAgentId;
@@ -585,6 +630,10 @@ export function ThreeRobotCompanion({
       animController: RobotAnimController | null;
       pathNavigator: RobotPathNavigator;
       proceduralLayer: RobotProceduralLayer | null;
+      /** Section-wise 360° turntable spin director */
+      spinDirector: Robot360SpinDirector | null;
+      /** Which scene number triggers this robot's spin */
+      assignedScene: number;
     }
 
     const robots: Record<string, RobotInstance> = {
@@ -605,6 +654,8 @@ export function ThreeRobotCompanion({
         animController: null,
         pathNavigator: new RobotPathNavigator(),
         proceduralLayer: null,
+        spinDirector: null,
+        assignedScene: 1,
       },
       codex: {
         id: "codex",
@@ -623,6 +674,8 @@ export function ThreeRobotCompanion({
         animController: null,
         pathNavigator: new RobotPathNavigator(),
         proceduralLayer: null,
+        spinDirector: null,
+        assignedScene: 3,
       },
       matrix: {
         id: "matrix",
@@ -641,6 +694,8 @@ export function ThreeRobotCompanion({
         animController: null,
         pathNavigator: new RobotPathNavigator(),
         proceduralLayer: null,
+        spinDirector: null,
+        assignedScene: 4,
       },
       orbit: {
         id: "orbit",
@@ -659,6 +714,8 @@ export function ThreeRobotCompanion({
         animController: null,
         pathNavigator: new RobotPathNavigator(),
         proceduralLayer: null,
+        spinDirector: null,
+        assignedScene: 5,
       },
       cloudx: {
         id: "cloudx",
@@ -677,6 +734,8 @@ export function ThreeRobotCompanion({
         animController: null,
         pathNavigator: new RobotPathNavigator(),
         proceduralLayer: null,
+        spinDirector: null,
+        assignedScene: 6,
       },
       neura: {
         id: "neura",
@@ -695,6 +754,8 @@ export function ThreeRobotCompanion({
         animController: null,
         pathNavigator: new RobotPathNavigator(),
         proceduralLayer: null,
+        spinDirector: null,
+        assignedScene: 7,
       },
       titan: {
         id: "titan",
@@ -713,6 +774,8 @@ export function ThreeRobotCompanion({
         animController: null,
         pathNavigator: new RobotPathNavigator(),
         proceduralLayer: null,
+        spinDirector: null,
+        assignedScene: 8,
       },
     };
 
@@ -893,6 +956,22 @@ export function ThreeRobotCompanion({
                 rightForeArmBone: bot.rightForeArmBone,
               });
 
+              // ── 360° Section-Entry Spin Director ──────────────────────────
+              const isMobileAtLoad = window.innerWidth < 768;
+              bot.spinDirector = new Robot360SpinDirector({
+                root: bot.root,
+                baseY: bot.currentPos.y,
+                liftHeight: 0.22,
+                spinSpeed: isMobileAtLoad ? 0.9 : 0.68,
+                riseTime: 0.22,
+                landTime: 0.30,
+                skipSpin: isMobileAtLoad, // mobile: lift+land only, no full spin
+                onSpinComplete: () => {
+                  // Trigger GREET wave immediately after the spin lands
+                  bot.animController?.triggerGreet(1.6);
+                },
+              });
+
               // Register to multi-robot interaction director
               interactionDirector.registerAgent({
                 id: bot.id,
@@ -944,6 +1023,82 @@ export function ThreeRobotCompanion({
     window.addEventListener("mousemove", handlePointerMove, { passive: true });
     window.addEventListener("touchmove", handlePointerMove, { passive: true });
 
+    // ── PHASE 2: Two-Way Direct Interactive Clicks via Raycasting ────────
+    const clickRaycaster = new THREE.Raycaster();
+    const clickNdc = new THREE.Vector2();
+    let clickReactionTimer = 0;
+    let clickedAgentId: string | null = null;
+    let clickAuraScale = 0.2;
+    let clickAuraOpacity = 0.0;
+    let clickJumpOffset = 0;
+    let lastProjectShiftTime = 0;
+
+    const handlePointerDown = (e: MouseEvent | TouchEvent) => {
+      let cx = 0;
+      let cy = 0;
+      if ("touches" in e && e.touches.length > 0) {
+        cx = e.touches[0].clientX;
+        cy = e.touches[0].clientY;
+      } else if ("clientX" in e) {
+        cx = (e as MouseEvent).clientX;
+        cy = (e as MouseEvent).clientY;
+      }
+
+      clickNdc.x = (cx / window.innerWidth) * 2 - 1;
+      clickNdc.y = -(cy / window.innerHeight) * 2 + 1;
+      clickRaycaster.setFromCamera(clickNdc, camera);
+
+      const currentScene = activeSceneRef.current || 1;
+      let currentAgent = "nova";
+      if (currentScene === 3) currentAgent = "codex";
+      else if (currentScene === 4) currentAgent = "matrix";
+      else if (currentScene === 5) currentAgent = "orbit";
+      else if (currentScene === 6) currentAgent = "cloudx";
+      else if (currentScene === 7) currentAgent = "neura";
+      else if (currentScene === 8) currentAgent = "titan";
+
+      const bot = robots[currentAgent] || robots.nova;
+      if (!bot || !bot.root.visible) return;
+
+      const intersects = clickRaycaster.intersectObjects(bot.root.children, true);
+      if (intersects.length > 0) {
+        soundFX.playAgentVoice(currentAgent, 0.12);
+        clickReactionTimer = 1.8;
+        clickedAgentId = currentAgent;
+        clickAuraScale = 0.2;
+        clickAuraOpacity = 1.0;
+        clickAuraRing.position.copy(bot.currentPos);
+        clickAuraRing.position.y += 0.05;
+
+        // Custom reaction by character
+        if (currentAgent === "nova") {
+          bot.animController?.triggerGreet(1.8);
+          bot.proceduralLayer?.setSalute(true);
+          setTimeout(() => bot.proceduralLayer?.setSalute(false), 1400);
+        } else if (currentAgent === "codex") {
+          bot.animController?.triggerGreet(1.6);
+          bot.proceduralLayer?.setMode("type");
+          setTimeout(() => bot.proceduralLayer?.setMode("none"), 1600);
+        } else if (currentAgent === "matrix") {
+          bot.proceduralLayer?.triggerNod();
+          bot.proceduralLayer?.setGuard(true);
+        } else if (currentAgent === "orbit") {
+          bot.animController?.triggerGreet(1.6);
+        } else if (currentAgent === "cloudx") {
+          bot.animController?.triggerGreet(1.6);
+          clickJumpOffset = 0.45;
+        } else if (currentAgent === "neura") {
+          bot.proceduralLayer?.setThink(true);
+          setTimeout(() => bot.proceduralLayer?.setThink(false), 1500);
+        } else if (currentAgent === "titan") {
+          bot.animController?.triggerGreet(1.8);
+          bot.proceduralLayer?.triggerWristCheck();
+        }
+      }
+    };
+
+    window.addEventListener("pointerdown", handlePointerDown, { passive: true });
+
     // Scratch Vectors
     const _scratchV = new THREE.Vector3();
     const _scratchDir = new THREE.Vector3();
@@ -985,6 +1140,52 @@ export function ThreeRobotCompanion({
     let lastProjectCounter = projectShiftRef.current;
     let previousScene = activeSceneRef.current;
     let beamProgress = 0;
+
+    // ── Storyline Scene Activity Director ─────────────────────────────────
+    const sceneActivityDirector = new RobotSceneActivityDirector();
+    const storyTargetOverride = new THREE.Vector3();
+    let isStoryTargetActive = false;
+    let storyTargetRun = false;
+    let sceneInitialized = false;
+
+    const loadSceneTimeline = (sceneNum: number, agentId: string) => {
+      isStoryTargetActive = false;
+      const targetBot = robots[agentId] || robots.nova;
+      sceneActivityDirector.loadScene(sceneNum, {
+        triggerSpin: () => {
+          targetBot.spinDirector?.triggerSpin();
+        },
+        setTargetPos: (x, y, z, run) => {
+          isStoryTargetActive = true;
+          storyTargetOverride.set(x, y, z);
+          storyTargetRun = !!run;
+        },
+        clearTargetOverride: () => {
+          isStoryTargetActive = false;
+        },
+        setProceduralMode: (pMode, target) => {
+          targetBot.proceduralLayer?.setMode(pMode, target);
+        },
+        triggerGreet: (duration) => {
+          targetBot.animController?.triggerGreet(duration);
+        },
+        triggerNod: () => {
+          targetBot.proceduralLayer?.triggerNod();
+        },
+        setGuardMode: (active) => {
+          targetBot.proceduralLayer?.setGuard(active);
+        },
+        setThinkMode: (active) => {
+          targetBot.proceduralLayer?.setThink(active);
+        },
+        setSaluteMode: (active) => {
+          targetBot.proceduralLayer?.setSalute(active);
+        },
+        triggerWristCheck: () => {
+          targetBot.proceduralLayer?.triggerWristCheck();
+        },
+      });
+    };
 
     const animate = () => {
       if (!document.hasFocus() && document.hidden) {
@@ -1034,7 +1235,13 @@ export function ThreeRobotCompanion({
 
       const activeBot = robots[primaryAgentId] || robots.nova;
 
-      // Handle Scene Changes -> Trigger Multi-Vector UFO Entry & Tractor Beam
+      // First run initialization of scene activity director
+      if (!sceneInitialized) {
+        sceneInitialized = true;
+        loadSceneTimeline(currentSceneNum, primaryAgentId);
+      }
+
+      // Handle Scene Changes -> Trigger Multi-Vector UFO Entry & Tractor Beam & Activity Timeline
       if (previousScene !== currentSceneNum) {
         previousScene = currentSceneNum;
         beamProgress = 1.0;
@@ -1047,6 +1254,16 @@ export function ThreeRobotCompanion({
         ufoThrusterMat.color.setHex(cfg.glowColor);
         ufoDomeMat.color.setHex(cfg.glowColor);
         tractorBeamMat.color.setHex(cfg.beamColor);
+
+        // Reset all spin directors not on this scene
+        Object.values(robots).forEach((bot) => {
+          if (bot.assignedScene !== currentSceneNum) {
+            bot.spinDirector?.reset();
+          }
+        });
+
+        // Load scene activity timeline for the newly selected robot
+        loadSceneTimeline(currentSceneNum, primaryAgentId);
       }
 
       const ufoCfg = UFO_SECTION_CONFIGS[currentSceneNum] || UFO_SECTION_CONFIGS[1];
@@ -1072,17 +1289,175 @@ export function ThreeRobotCompanion({
       // Detect project shift
       if (projectShiftRef.current !== lastProjectCounter) {
         lastProjectCounter = projectShiftRef.current;
+        lastProjectShiftTime = time;
+        soundFX.laserConnector(0.08);
         crossFadeAction(robots.titan, "agree", 0.2);
         setTimeout(() => crossFadeAction(robots.titan, "walk", 0.4), 1800);
       }
 
-      // Animate Active Workbenches
+      // ── Storyline Scene Activity Director Update ──────────────────────────
+      sceneActivityDirector.update(delta);
+
+      // ── 360° Spin State of Active Robot ──────────────────────────────────
+      const activeBot360 = robots[primaryAgentId] || robots.nova;
+      const isActiveSpinning = activeBot360.spinDirector?.isSpinning() ?? false;
+
+      // ── PHASE 2: Interactive Easter Eggs & Active Workbenches ───────────
+      // --- Codex: Holographic desk & animated ripple keys ---
       codexHoloDesk.rotation.y = Math.sin(time * 1.5) * 0.1;
+      const isCodexActive = primaryAgentId === "codex";
+      if (isCodexActive) {
+        const isCodexClicked = clickReactionTimer > 0 && clickedAgentId === "codex";
+        const keySpeed = isCodexClicked ? 20.0 : 8.0;
+        keyRows.children.forEach((keyMesh, idx) => {
+          const row = Math.floor(idx / 8);
+          const col = idx % 8;
+          const keyWave = Math.sin(time * keySpeed + row * 0.5 + col * 0.2);
+          keyMesh.position.y = 0.01 + Math.max(0, keyWave * (isCodexClicked ? 0.016 : 0.008));
+        });
+      }
+
+      // --- Matrix: Server rack hover & sequential cascading LEDs ---
       matrixServerRack.position.y = Math.sin(time * 2.0) * 0.06;
-      orbitDBCylinders.rotation.y = time * 1.8;
-      cloudxPipeline.rotation.z = time * 1.2;
+      const isMatrixActive = primaryAgentId === "matrix";
+      const isMatrixClicked = clickReactionTimer > 0 && clickedAgentId === "matrix";
+      if (isMatrixActive) {
+        serverLeds.forEach((ledMesh, idx) => {
+          if (isMatrixClicked) {
+            ledMesh.scale.set(1.9, 1.9, 1.9);
+          } else {
+            const ledCycle = Math.sin(time * 10.0 - idx * 1.2);
+            const ledScale = ledCycle > 0.2 ? 1.35 : 0.85;
+            ledMesh.scale.set(ledScale, ledScale, ledScale);
+          }
+        });
+      }
+
+      // --- Orbit: Database cylinders dynamic orbiting & breathing ---
+      const isOrbitActive = primaryAgentId === "orbit";
+      const isOrbitClicked = clickReactionTimer > 0 && clickedAgentId === "orbit";
+      const orbitSpinRate = isOrbitClicked ? 9.5 : (isOrbitActive && isActiveSpinning ? 4.2 : 1.8);
+      orbitDBCylinders.rotation.y += delta * orbitSpinRate;
+      const orbitRadiusSpread = isOrbitClicked ? 0.08 : (isOrbitActive ? 0.03 * Math.sin(time * 3.0) : 0);
+      orbitDBCylinders.children.forEach((cylGroup, idx) => {
+        const baseOffsets = [-0.14, 0, 0.14];
+        cylGroup.position.x = baseOffsets[idx] + (idx === 0 ? -orbitRadiusSpread : idx === 2 ? orbitRadiusSpread : 0);
+        cylGroup.position.y = Math.sin(time * 2.0 + idx * 1.2) * 0.04;
+      });
+
+      // --- Cloud-X: Rotating Docker pods & CI/CD pipeline ring ---
+      const isCloudxActive = primaryAgentId === "cloudx";
+      const pipelineRate = isCloudxActive ? (isActiveSpinning ? 3.6 : 2.0) : 1.2;
+      cloudxPipeline.rotation.z += delta * pipelineRate;
+      if (isCloudxActive) {
+        cloudxPods.forEach((pod, idx) => {
+          const podPulse = Math.sin(time * 6.0 + idx * 2.1);
+          const s = 1.0 + Math.max(0, podPulse * 0.25);
+          pod.scale.set(s, s, s);
+        });
+      }
+
+      // --- Neura: Synaptic neural sphere breathe & pulse waves ---
       neuraSphere.rotation.y = time * 1.5;
       neuraSphere.rotation.x = Math.sin(time * 1.2) * 0.2;
+      const isNeuraActive = primaryAgentId === "neura";
+      const isNeuraClicked = clickReactionTimer > 0 && clickedAgentId === "neura";
+      const neuralCorePulse = isNeuraClicked ? 1.6 : (isNeuraActive ? 1.0 + Math.sin(time * 3.0) * 0.2 : 1.0);
+      neuralCore.scale.set(neuralCorePulse, neuralCorePulse, neuralCorePulse);
+      if (isNeuraActive) {
+        synapseNodes.forEach((node, i) => {
+          const phi = Math.acos(-1 + (2 * i) / 12);
+          const theta = Math.sqrt(12 * Math.PI) * phi;
+          const wave = Math.sin(time * 4.0 - i * 0.4);
+          const baseRadius = isNeuraClicked ? 0.38 : 0.24;
+          const rad = baseRadius + Math.max(0, wave * 0.09);
+          node.position.setFromSphericalCoords(rad, phi, theta);
+        });
+      }
+
+      // --- Titan: Wrist slate screen & pauldrons gleam ---
+      const isTitanActive = primaryAgentId === "titan";
+      if (isTitanActive) {
+        const slateIntensity = (isActiveSpinning || activeBot.proceduralLayer?.getMode() === "wrist_check" || (time - lastProjectShiftTime < 3.0)) ? 1.0 : 0.7;
+        amberGlowMat.opacity = slateIntensity;
+        const pauldronGleam = 0.92 + Math.sin(time * 2.5) * 0.08;
+        titanPauldronL.scale.set(pauldronGleam, pauldronGleam, pauldronGleam);
+        titanPauldronR.scale.set(pauldronGleam, pauldronGleam, pauldronGleam);
+      }
+
+      // ── PHASE 2: 3D Holographic Connector Beam Update ──────────────────
+      const isTargetingSkill = !!activeSkillCatRef.current && (primaryAgentId === "codex" || primaryAgentId === "matrix" || primaryAgentId === "orbit");
+      const isTargetingProject = primaryAgentId === "titan" && (time - lastProjectShiftTime < 3.2);
+      const isLaserActive = isTargetingSkill || isTargetingProject;
+
+      if (isLaserActive) {
+        if (isTargetingSkill) {
+          _scratchTarget.set(-0.9, -0.05 + Math.sin(time * 2.5) * 0.08, 0.4);
+        } else if (isTargetingProject) {
+          _scratchTarget.set(0.65, -0.15, 0.45);
+        }
+      }
+
+      const beamPulse = (isLaserActive ? 0.85 : 0.0) * (0.75 + Math.sin(time * 18.0) * 0.25);
+      laserBeamMat.opacity = beamPulse;
+      laserTargetReticleMat.opacity = beamPulse;
+
+      if (isLaserActive) {
+        laserBeam.visible = true;
+        laserTargetReticle.visible = true;
+
+        const startX = activeBot.currentPos.x + (primaryAgentId === "titan" ? -0.15 : 0.15);
+        const startY = activeBot.currentPos.y + 0.35;
+        const startZ = activeBot.currentPos.z + 0.15;
+
+        const posAttr = laserBeamGeom.getAttribute("position") as THREE.BufferAttribute;
+        posAttr.setXYZ(0, startX, startY, startZ);
+        posAttr.setXYZ(1, _scratchTarget.x, _scratchTarget.y, _scratchTarget.z);
+        posAttr.needsUpdate = true;
+
+        laserTargetReticle.position.copy(_scratchTarget);
+        laserTargetReticle.rotation.z += delta * 3.5;
+
+        if (primaryAgentId === "codex") {
+          laserBeamMat.color.setHex(0x38bdf8);
+          laserTargetReticleMat.color.setHex(0x38bdf8);
+        } else if (primaryAgentId === "matrix") {
+          laserBeamMat.color.setHex(0x10b981);
+          laserTargetReticleMat.color.setHex(0x10b981);
+        } else if (primaryAgentId === "orbit") {
+          laserBeamMat.color.setHex(0xa855f7);
+          laserTargetReticleMat.color.setHex(0xa855f7);
+        } else if (primaryAgentId === "titan") {
+          laserBeamMat.color.setHex(0xf59e0b);
+          laserTargetReticleMat.color.setHex(0xf59e0b);
+        } else {
+          laserBeamMat.color.setHex(0x00f0ff);
+          laserTargetReticleMat.color.setHex(0x00f0ff);
+        }
+      } else {
+        laserBeam.visible = false;
+        laserTargetReticle.visible = false;
+      }
+
+      // ── Click Aura Ripple & Jump Decay ──────────────────────────────────
+      if (clickAuraOpacity > 0.01) {
+        clickAuraScale += delta * 2.4;
+        clickAuraOpacity = Math.max(0, clickAuraOpacity - delta * 1.6);
+        clickAuraRing.scale.set(clickAuraScale, clickAuraScale, clickAuraScale);
+        clickAuraRingMat.opacity = clickAuraOpacity;
+        clickAuraRing.visible = true;
+      } else {
+        clickAuraRing.visible = false;
+      }
+
+      if (clickReactionTimer > 0) {
+        clickReactionTimer = Math.max(0, clickReactionTimer - delta);
+      }
+
+      if (clickJumpOffset > 0) {
+        clickJumpOffset = Math.max(0, clickJumpOffset - delta * 1.4);
+        activeBot.root.position.y += Math.sin(clickJumpOffset * Math.PI) * 0.35;
+      }
 
       // Check if user is scrolled into footer area
       const scrollBottom = typeof window !== "undefined" ? window.scrollY + window.innerHeight : 0;
@@ -1110,12 +1485,26 @@ export function ThreeRobotCompanion({
 
       // Light breathing intensity in sleep
       const sleepBreathing = isSleeping ? 0.4 + Math.sin(time * 1.5) * 0.25 : 1.0;
-      cyanGlowMat.opacity = 0.95 * sleepBreathing;
-      blueGlowMat.opacity = 0.95 * sleepBreathing;
-      emeraldGlowMat.opacity = 0.95 * sleepBreathing;
-      violetGlowMat.opacity = 0.95 * sleepBreathing;
-      orangeGlowMat.opacity = 0.95 * sleepBreathing;
-      amberGlowMat.opacity = 0.95 * sleepBreathing;
+
+      // ── 360° Spin Directors: tick all & pulse active robot's accent glow ──
+      // During a spin: fast 3Hz brightness pulse. Otherwise: gentle sleep breathing.
+      const spinPulse = isActiveSpinning
+        ? 0.65 + 0.35 * Math.sin(time * Math.PI * 6)
+        : sleepBreathing;
+
+      cyanGlowMat.opacity   = 0.95 * spinPulse;
+      blueGlowMat.opacity   = 0.95 * spinPulse;
+      emeraldGlowMat.opacity = 0.95 * spinPulse;
+      violetGlowMat.opacity = 0.95 * spinPulse;
+      orangeGlowMat.opacity = 0.95 * spinPulse;
+      amberGlowMat.opacity  = 0.95 * spinPulse;
+
+      // Advance each visible robot's spin director (handles cooldown + spin phases)
+      Object.values(robots).forEach((bot) => {
+        if (bot.spinDirector && bot.root.visible) {
+          bot.spinDirector.update(delta);
+        }
+      });
 
       // Camera Director Auto Shot & Smooth Transition
       cameraDirector.autoShot(currentSceneNum, isScene9Finale, activeBot.currentPos);
@@ -1165,42 +1554,61 @@ export function ThreeRobotCompanion({
       } else {
         hasPlayedScene9Finale = false;
         // =========================================================
-        // SCENES 01-08: SOLO PRESENTER FULL-SCREEN MOUSE ROAMING
+        // SCENES 01-08: SOLO PRESENTER FULL-SCREEN MOUSE ROAMING & STORYLINE
         // =========================================================
         const bot = robots[primaryAgentId] || robots.nova;
         if (bot && bot.mixer && bot.root.visible) {
-          // Direct mouse targeting across the ENTIRE viewport width and height
-          if (!isSleeping && inactiveDuration < 3.5) {
-            bot.targetPos.x = cursorX;
-            bot.targetPos.y = cursorY;
-          } else {
-            // Gentle ambient idle breathing sway when user is inactive
-            const baseAnchorX = (primaryAgentId === "nova" || primaryAgentId === "titan") ? -roamRangeX * 0.45 : roamRangeX * 0.45;
-            bot.targetPos.x = baseAnchorX + Math.sin(time * 0.5) * 0.25;
-            bot.targetPos.y = -0.15 + Math.sin(time * 0.8) * 0.12;
+          // ── Spin guard: freeze mouse-follow while spin is active ──────────
+          const botIsSpinning = bot.spinDirector?.isSpinning() ?? false;
+
+          if (!botIsSpinning) {
+            if (isStoryTargetActive) {
+              // Activity timeline overrides position target (e.g. walk_to, run_to)
+              bot.targetPos.copy(storyTargetOverride);
+            } else if (!isSleeping && inactiveDuration < 3.5) {
+              // Direct mouse targeting across the ENTIRE viewport width and height
+              bot.targetPos.x = cursorX;
+              bot.targetPos.y = cursorY;
+            } else {
+              // Gentle ambient idle breathing sway when user is inactive
+              const baseAnchorX = (primaryAgentId === "nova" || primaryAgentId === "titan") ? -roamRangeX * 0.45 : roamRangeX * 0.45;
+              bot.targetPos.x = baseAnchorX + Math.sin(time * 0.5) * 0.25;
+              bot.targetPos.y = -0.15 + Math.sin(time * 0.8) * 0.12;
+            }
           }
+          // While spinning: target stays frozen at last position (robot lifts in place)
 
           const vx = bot.targetPos.x - bot.currentPos.x;
           const vy = bot.targetPos.y - bot.currentPos.y;
           const dist = Math.hypot(vx, vy);
 
           // Face the exact direction of travel when moving
-          if (dist > 0.08) {
-            const targetHeading = Math.atan2(vx, 0.95);
-            bot.heading = THREE.MathUtils.lerp(bot.heading, THREE.MathUtils.clamp(targetHeading, -1.2, 1.2), 0.14);
-          } else {
-            // Turn smoothly forward to face visitor when stopped
-            bot.heading = THREE.MathUtils.lerp(bot.heading, 0, 0.1);
+          if (!botIsSpinning) {
+            if (dist > 0.08) {
+              const targetHeading = Math.atan2(vx, 0.95);
+              bot.heading = THREE.MathUtils.lerp(bot.heading, THREE.MathUtils.clamp(targetHeading, -1.2, 1.2), 0.14);
+            } else {
+              // Turn smoothly forward to face visitor when stopped
+              bot.heading = THREE.MathUtils.lerp(bot.heading, 0, 0.1);
+            }
           }
 
           // Smooth kinematic position update (responsive travel across screen)
-          const moveLerpSpeed = dist > 1.2 ? 0.08 : 0.055;
+          const moveLerpSpeed = (isStoryTargetActive && storyTargetRun) ? 0.09 : (dist > 1.2 ? 0.08 : 0.055);
           bot.currentPos.lerp(bot.targetPos, moveLerpSpeed);
           bot.root.position.copy(bot.currentPos);
-          bot.root.rotation.y = THREE.MathUtils.lerp(bot.root.rotation.y, bot.heading, 0.12);
+
+          // During spin: rotation is controlled by spinDirector — don't overwrite it
+          if (!botIsSpinning) {
+            bot.root.rotation.y = THREE.MathUtils.lerp(bot.root.rotation.y, bot.heading, 0.12);
+          }
 
           // Speed-synchronized locomotion (locks footsteps to actual displacement speed)
-          const actualSpeed = (dist / Math.max(delta, 0.001)) * 0.1;
+          const computedSpeed = (dist / Math.max(delta, 0.001)) * 0.1;
+          const actualSpeed = botIsSpinning
+            ? 0
+            : (isStoryTargetActive && storyTargetRun && dist > 0.15 ? Math.max(computedSpeed, 2.4) : computedSpeed);
+
           if (bot.animController) {
             if (isSleeping) {
               bot.animController.triggerSleep();
@@ -1215,20 +1623,24 @@ export function ThreeRobotCompanion({
           } else {
             bot.mixer.update(delta);
             if (isSleeping) crossFadeAction(bot, "idle", 0.5);
-            else if (dist > 0.08) crossFadeAction(bot, "walk", 0.35);
+            else if (dist > 0.08 && !botIsSpinning) crossFadeAction(bot, (isStoryTargetActive && storyTargetRun) ? "run" : "walk", 0.35);
             else crossFadeAction(bot, "idle", 0.35);
           }
 
-          // Procedural Bone IK Layer (Typing / Pointing / Look-At)
+          // Procedural Bone IK Layer (Story Activities / Pointing / Look-At)
           if (bot.proceduralLayer) {
-            if (primaryAgentId === "codex") {
-              bot.proceduralLayer.setMode("type");
-            } else if (primaryAgentId === "titan" && projectShiftRef.current !== lastProjectCounter) {
-              bot.proceduralLayer.setMode("point", new THREE.Vector3(0, 0.5, 0));
-            } else if (!isSleeping) {
-              bot.proceduralLayer.setMode("lookAt", _scratchTarget);
-            } else {
+            const currentPMode = bot.proceduralLayer.getMode();
+            if (botIsSpinning) {
+              // During spin: face neutral, no look-at fighting the Y rotation
               bot.proceduralLayer.reset();
+            } else if (currentPMode === "none" || currentPMode === "lookAt") {
+              if (primaryAgentId === "titan" && projectShiftRef.current !== lastProjectCounter) {
+                bot.proceduralLayer.setMode("point", new THREE.Vector3(0, 0.5, 0));
+              } else if (!isSleeping) {
+                bot.proceduralLayer.setMode("lookAt", _scratchTarget);
+              } else {
+                bot.proceduralLayer.reset();
+              }
             }
             bot.proceduralLayer.update(delta, time);
           }
@@ -1244,9 +1656,18 @@ export function ThreeRobotCompanion({
     // 10. Strict Cleanup Routine
     return () => {
       cancelAnimationFrame(animationFrameId);
+      sceneActivityDirector.reset();
       window.removeEventListener("mousemove", handlePointerMove);
       window.removeEventListener("touchmove", handlePointerMove);
+      window.removeEventListener("pointerdown", handlePointerDown);
       window.removeEventListener("resize", handleResize);
+
+      laserBeamGeom.dispose();
+      laserBeamMat.dispose();
+      laserTargetReticleGeom.dispose();
+      laserTargetReticleMat.dispose();
+      clickAuraRingGeom.dispose();
+      clickAuraRingMat.dispose();
 
       pmremGenerator.dispose();
       roomEnv.dispose();

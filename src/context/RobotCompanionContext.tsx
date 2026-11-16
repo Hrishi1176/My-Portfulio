@@ -46,11 +46,25 @@ export const ROBOTVERSE_AGENTS: RobotAgentMember[] = [
     codename: "ROBOT-01 // GUIDE",
     role: "Portfolio Guide",
     techDomain: "React, JavaScript, HTML, CSS",
-    sector: "Scene 01 // The Arrival & About",
+    sector: "Scene 01 // The Arrival Deck",
     targetElementId: "hero",
     accentColor: "#00f0ff",
     speech:
-      "👋 Hello! I am Nova, your portfolio guide. Welcome to Hrishi's digital universe. Let my team show you what we build.",
+      "👋 Welcome to Hrishi's digital engineering facility. We've been expecting you. Let my team demonstrate what we build.",
+    status: "active",
+  },
+  {
+    id: "nova",
+    sceneNumber: 2,
+    name: "Nova",
+    codename: "ROBOT-01 // ARCHIVE",
+    role: "System Guide",
+    techDomain: "Engineering Philosophy",
+    sector: "Scene 02 // The Developer Archive",
+    targetElementId: "about",
+    accentColor: "#00f0ff",
+    speech:
+      "👤 Nova at the Archive. Behind every system is an engineer with relentless dedication. Let me show you who built all of this.",
     status: "active",
   },
   {
@@ -64,7 +78,7 @@ export const ROBOTVERSE_AGENTS: RobotAgentMember[] = [
     targetElementId: "skills",
     accentColor: "#38bdf8",
     speech:
-      "⚡ Codex active. Assembling modular UI components, reactive design systems, and high-frequency Next.js micro-frontends.",
+      "⚡ Codex active in the Frontend Lab. Watch closely — assembling reactive micro-frontends and sub-millisecond interfaces.",
     status: "active",
   },
   {
@@ -78,7 +92,7 @@ export const ROBOTVERSE_AGENTS: RobotAgentMember[] = [
     targetElementId: "skills",
     accentColor: "#10b981",
     speech:
-      "🛡️ Matrix online. Routing microservice traffic, synchronizing REST API endpoints, and orchestrating distributed compute clusters.",
+      "🛡️ Matrix online at the Command Center. High-throughput distributed nodes, zero-downtime microservices, and secured REST endpoints.",
     status: "active",
   },
   {
@@ -92,7 +106,7 @@ export const ROBOTVERSE_AGENTS: RobotAgentMember[] = [
     targetElementId: "skills",
     accentColor: "#a855f7",
     speech:
-      "🔮 Orbit initialized. Structuring ACID data relational schemas, high-throughput MongoDB pipelines, and cache replication.",
+      "🔮 Orbit synchronized at the Database Core. Data doesn't just sit still — it orbits and flows. ACID transactions and schemas locked.",
     status: "active",
   },
   {
@@ -106,7 +120,7 @@ export const ROBOTVERSE_AGENTS: RobotAgentMember[] = [
     targetElementId: "experience",
     accentColor: "#f97316",
     speech:
-      "🚀 Cloud-X deployed. Containerizing Docker application pods, triggering GitHub Actions CI/CD workflows, and managing AWS infrastructure.",
+      "🚀 Cloud-X deployed. Every project we ship lives in production. Automated CI/CD pipelines, containerized pods, and cloud infrastructure live.",
     status: "active",
   },
   {
@@ -120,7 +134,7 @@ export const ROBOTVERSE_AGENTS: RobotAgentMember[] = [
     targetElementId: "analytics",
     accentColor: "#06b6d4",
     speech:
-      "🧠 Neura connected. Activating deep neural network synapses, intelligent automation pipelines, and multi-agent LLM workflows.",
+      "🧠 Neura connected. Synaptic neural nodes firing. Intelligent autonomous agents, LLM orchestration, and deep predictive pipelines.",
     status: "active",
   },
   {
@@ -134,7 +148,7 @@ export const ROBOTVERSE_AGENTS: RobotAgentMember[] = [
     targetElementId: "projects",
     accentColor: "#f59e0b",
     speech:
-      "🏆 Titan taking the stage. Presenting Hrishi's production applications, verified GitHub repositories, and architectural milestones.",
+      "🏆 Titan taking center stage. Presenting Hrishi's verified production applications, scalable architectures, and flagship systems.",
     status: "active",
   },
   {
@@ -148,7 +162,7 @@ export const ROBOTVERSE_AGENTS: RobotAgentMember[] = [
     targetElementId: "contact",
     accentColor: "#eab308",
     speech:
-      "🤝 The next mission starts with you. All seven specialists are ready. Let's build something extraordinary together.",
+      "🤝 All seven specialized agents assembled. The next mission starts with you. Let's engineer something extraordinary together.",
     status: "assembled",
   },
 ];

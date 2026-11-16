@@ -22,6 +22,7 @@ import {
   RobotAgentId,
   ROBOTVERSE_AGENTS,
 } from "@/context/RobotCompanionContext";
+import { soundFX } from "@/utils/audioFX";
 
 interface GuideStop {
   id: RobotAgentId;
@@ -74,8 +75,7 @@ export function RobotTourGuide() {
 
   const currentSceneNumber = activeBot?.sceneNumber ?? fallbackAgent.sceneNumber;
   const nextSceneNum = useMemo(() => {
-    const SCENE_ORDER = [1, 3, 4, 5, 6, 7, 8, 9];
-    if (currentSceneNumber <= 1 || currentSceneNumber === 2) return 3;
+    const SCENE_ORDER = [1, 2, 3, 4, 5, 6, 7, 8, 9];
     const idx = SCENE_ORDER.indexOf(currentSceneNumber);
     if (idx === -1 || idx === SCENE_ORDER.length - 1) return 1;
     return SCENE_ORDER[idx + 1];
@@ -118,6 +118,7 @@ export function RobotTourGuide() {
       return;
     }
     setDisplayedSpeech("");
+    soundFX.playAgentVoice(currentStop.id, 0.045);
     let idx = 0;
     const interval = setInterval(() => {
       idx++;
@@ -128,7 +129,7 @@ export function RobotTourGuide() {
     }, 18);
 
     return () => clearInterval(interval);
-  }, [currentSpeech]);
+  }, [currentSpeech, currentStop.id]);
 
   // Handle Auto-Tour progression
   useEffect(() => {
