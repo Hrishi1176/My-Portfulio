@@ -56,7 +56,7 @@ export function Dialog({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-2.5 sm:p-6 overflow-y-auto">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -77,14 +77,14 @@ export function Dialog({
             transition={{ type: "spring", duration: 0.35, bounce: 0 }}
             role="dialog"
             aria-modal="true"
-            className={`relative z-10 w-full ${maxWidthStyles[maxWidth]} rounded-3xl border border-[var(--border-strong)] bg-white/95 dark:bg-[#0c0919]/95 backdrop-blur-2xl shadow-2xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto`}
+            className={`relative z-10 w-full ${maxWidthStyles[maxWidth]} rounded-2xl sm:rounded-3xl border border-[var(--border-strong)] bg-white/95 dark:bg-[#0c0919]/95 backdrop-blur-2xl shadow-2xl p-4 sm:p-8 max-h-[92vh] sm:max-h-[90vh] overflow-y-auto`}
           >
             {/* Header */}
             {(title || showCloseButton) && (
-              <div className="flex items-start justify-between gap-4 pb-4 border-b border-[var(--border)] mb-5">
-                <div>
+              <div className="flex items-start justify-between gap-3 pb-3.5 sm:pb-4 border-b border-[var(--border)] mb-4 sm:mb-5">
+                <div className="min-w-0 pr-1">
                   {title && (
-                    <div className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                    <div className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight break-words">
                       {title}
                     </div>
                   )}
@@ -100,7 +100,7 @@ export function Dialog({
                     suppressHydrationWarning
                     onClick={onClose}
                     aria-label="Close dialog"
-                    className="p-2 -mr-2 -mt-2 rounded-xl text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                    className="p-2 sm:p-2 -mr-1 -mt-1 sm:-mr-2 sm:-mt-2 rounded-xl text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors cursor-pointer min-w-[36px] min-h-[36px] flex items-center justify-center shrink-0"
                   >
                     <X className="h-5 w-5" />
                   </button>

@@ -1138,6 +1138,7 @@ export function ThreeRobotCompanion({
 
     window.addEventListener("mousemove", handlePointerMove, { passive: true });
     window.addEventListener("touchmove", handlePointerMove, { passive: true });
+    window.addEventListener("touchstart", handlePointerMove, { passive: true });
 
     // ── PHASE 2: Two-Way Direct Interactive Clicks via Raycasting ────────
     const clickRaycaster = new THREE.Raycaster();
@@ -1501,17 +1502,14 @@ export function ThreeRobotCompanion({
         titanPauldronR.scale.set(pauldronGleam, pauldronGleam, pauldronGleam);
       }
 
-      // ── PHASE 2: 3D Holographic Connector Beam Update ──────────────────
-      const isTargetingSkill = !!activeSkillCatRef.current && (primaryAgentId === "codex" || primaryAgentId === "matrix" || primaryAgentId === "orbit");
-      const isTargetingProject = primaryAgentId === "titan" && (time - lastProjectShiftTime < 3.2);
-      const isLaserActive = isTargetingSkill || isTargetingProject;
+      // ── PHASE 2: Dynamic Holographic Pointer Tracking across ALL Sections ──
+      const botIsSpinning = activeBot.spinDirector?.isSpinning() ?? false;
+      // Laser is active whenever user is interacting on the page (not sleeping and not spinning)
+      const isLaserActive = !isSleeping && inactiveDuration < 3.2 && !botIsSpinning;
 
       if (isLaserActive) {
-        if (isTargetingSkill) {
-          _scratchTarget.set(-0.9, -0.05 + Math.sin(time * 2.5) * 0.08, 0.4);
-        } else if (isTargetingProject) {
-          _scratchTarget.set(0.65, -0.15, 0.45);
-        }
+        // Point dynamically at the mouse pointer's real-time 3D coordinate on the content plane!
+        _scratchTarget.set(cursorX, cursorY, 0.25);
       }
 
       const beamPulse = (isLaserActive ? 0.85 : 0.0) * (0.75 + Math.sin(time * 18.0) * 0.25);
@@ -1522,14 +1520,20 @@ export function ThreeRobotCompanion({
         laserBeam.visible = true;
         laserTargetReticle.visible = true;
 
-        // Position laser start and hand emitter node directly at the pointing hand / wrist
-        const pointingHand = activeBot.rightHandBone || activeBot.rightForeArmBone;
+        // Dynamic Bilateral Arm Selection:
+        // If target is to the right of the robot, point with left arm (facing screen-right).
+        // If target is to the left of the robot, point with right arm (facing screen-left).
+        const isTargetToRight = _scratchTarget.x > activeBot.currentPos.x;
+        const pointingHand = (isTargetToRight && activeBot.leftHandBone)
+          ? activeBot.leftHandBone
+          : (activeBot.rightHandBone || activeBot.rightForeArmBone);
+
         const handWorldPos = new THREE.Vector3();
         if (pointingHand) {
           pointingHand.getWorldPosition(handWorldPos);
         } else {
           handWorldPos.set(
-            activeBot.currentPos.x + (primaryAgentId === "titan" ? -0.15 : 0.15),
+            activeBot.currentPos.x + (isTargetToRight ? 0.15 : -0.15),
             activeBot.currentPos.y + 0.35,
             activeBot.currentPos.z + 0.15
           );
@@ -1557,6 +1561,12 @@ export function ThreeRobotCompanion({
         } else if (primaryAgentId === "orbit") {
           laserBeamMat.color.setHex(0xa855f7);
           laserTargetReticleMat.color.setHex(0xa855f7);
+        } else if (primaryAgentId === "cloudx") {
+          laserBeamMat.color.setHex(0xf97316);
+          laserTargetReticleMat.color.setHex(0xf97316);
+        } else if (primaryAgentId === "neura") {
+          laserBeamMat.color.setHex(0x06b6d4);
+          laserTargetReticleMat.color.setHex(0x06b6d4);
         } else if (primaryAgentId === "titan") {
           laserBeamMat.color.setHex(0xf59e0b);
           laserTargetReticleMat.color.setHex(0xf59e0b);
@@ -1693,13 +1703,18 @@ export function ThreeRobotCompanion({
           const botIsSpinning = bot.spinDirector?.isSpinning() ?? false;
 
           if (!botIsSpinning) {
-            if (isStoryTargetActive) {
-              // Activity timeline overrides position target (e.g. walk_to, run_to)
+            if (isStoryTargetActive && inactiveDuration > 1.2) {
+              // Activity timeline overrides position target (e.g. walk_to, run_to) during initial entrance
               bot.targetPos.copy(storyTargetOverride);
             } else if (!isSleeping && inactiveDuration < 3.5) {
-              // Direct mouse targeting across the ENTIRE viewport width and height
-              bot.targetPos.x = cursorX;
-              bot.targetPos.y = cursorY;
+              // Presenter companion positioning:
+              // The robot travels alongside the user to an optimal presenter vantage point,
+              // maintaining an offset so it never covers the text and has a clean line of sight to aim!
+              const offsetX = cursorX > 0 ? -1.15 : 1.15;
+              const targetX = THREE.MathUtils.clamp(cursorX + offsetX, -roamRangeX, roamRangeX);
+              const targetY = THREE.MathUtils.clamp(cursorY - 0.45, -roamRangeY * 0.85, -0.15);
+              bot.targetPos.x = targetX;
+              bot.targetPos.y = targetY;
             } else {
               // Gentle ambient idle breathing sway when user is inactive
               const baseAnchorX = (primaryAgentId === "nova" || primaryAgentId === "titan") ? -roamRangeX * 0.45 : roamRangeX * 0.45;
@@ -1793,6 +1808,7 @@ export function ThreeRobotCompanion({
       sceneActivityDirector.reset();
       window.removeEventListener("mousemove", handlePointerMove);
       window.removeEventListener("touchmove", handlePointerMove);
+      window.removeEventListener("touchstart", handlePointerMove);
       window.removeEventListener("pointerdown", handlePointerDown);
       window.removeEventListener("resize", handleResize);
 

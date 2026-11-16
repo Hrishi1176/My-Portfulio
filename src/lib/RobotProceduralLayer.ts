@@ -141,6 +141,7 @@ export class RobotProceduralLayer {
       rightArmBone,
       rightForeArmBone,
       rightHandBone,
+      leftShoulderBone,
       leftArmBone,
       leftForeArmBone,
       leftHandBone,
@@ -150,15 +151,18 @@ export class RobotProceduralLayer {
     // Check which arm to point with:
     // When robot faces camera:
     // Right arm is on screen-left; Left arm is on screen-right.
-    // Default to rightArm (matches user request & screenshot).
     let useLeftArm = false;
-    if (leftArmBone && leftArmBone.parent && rightArmBone) {
+    if (leftArmBone && leftArmBone.parent && rightArmBone && rightArmBone.parent) {
+      this._scratchWorldPos.set(0, 0, 0);
+      rightArmBone.getWorldPosition(this._scratchWorldPos);
+      const rightArmX = this._scratchWorldPos.x;
+
       this._scratchWorldPos.set(0, 0, 0);
       leftArmBone.getWorldPosition(this._scratchWorldPos);
-      const distL = this._scratchWorldPos.distanceTo(this.pointTarget);
-      rightArmBone.getWorldPosition(this._scratchWorldPos);
-      const distR = this._scratchWorldPos.distanceTo(this.pointTarget);
-      if (distL < distR * 0.75) {
+      const leftArmX = this._scratchWorldPos.x;
+
+      const robotCenterX = (rightArmX + leftArmX) * 0.5;
+      if (this.pointTarget.x > robotCenterX) {
         useLeftArm = true;
       }
     }
@@ -171,15 +175,24 @@ export class RobotProceduralLayer {
 
       if (this._scratchLocalDir.lengthSq() > 0.001) {
         this._scratchAimQuat.setFromUnitVectors(this._restDirLeft, this._scratchLocalDir);
-        leftArmBone.quaternion.slerp(this._scratchAimQuat, Math.min(1, w * 0.95));
+        leftArmBone.quaternion.slerp(this._scratchAimQuat, Math.min(1, w * 0.96));
       }
       if (leftForeArmBone) {
-        this._scratchAimQuat.setFromEuler(new THREE.Euler(0, 0, Math.sin(time * 3.0) * 0.015));
-        leftForeArmBone.quaternion.slerp(this._scratchAimQuat, w * 0.85);
+        this._scratchAimQuat.setFromEuler(new THREE.Euler(0, 0, Math.sin(time * 3.5) * 0.02));
+        leftForeArmBone.quaternion.slerp(this._scratchAimQuat, w * 0.88);
       }
       if (leftHandBone) {
         this._scratchAimQuat.identity();
-        leftHandBone.quaternion.slerp(this._scratchAimQuat, w * 0.85);
+        leftHandBone.quaternion.slerp(this._scratchAimQuat, w * 0.88);
+      }
+      if (leftShoulderBone) {
+        leftShoulderBone.rotation.z = THREE.MathUtils.lerp(leftShoulderBone.rotation.z, 0.12 * w, 0.1);
+      }
+
+      // Smoothly relax right arm when left arm is aiming
+      if (rightArmBone) {
+        this._scratchAimQuat.identity();
+        rightArmBone.quaternion.slerp(this._scratchAimQuat, 0.12);
       }
     } else if (rightArmBone && rightArmBone.parent) {
       // Right arm aiming (as in screenshot)
@@ -211,6 +224,12 @@ export class RobotProceduralLayer {
           -0.12 * w,
           0.1
         );
+      }
+
+      // Smoothly relax left arm when right arm is aiming
+      if (leftArmBone) {
+        this._scratchAimQuat.identity();
+        leftArmBone.quaternion.slerp(this._scratchAimQuat, 0.12);
       }
     } else if (rightShoulderBone && rightForeArmBone) {
       // Fallback if rightArmBone wasn't bound

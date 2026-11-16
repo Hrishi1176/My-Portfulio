@@ -60,7 +60,7 @@ export function Hero({ hero: heroProp, developer: devProp }: HeroProps = {}) {
       <section id="hero" className="scroll-mt-24 min-h-[calc(100vh-6rem)] lg:min-h-[85vh] flex flex-col justify-center py-6 sm:py-10 lg:py-14 relative w-full">
         <div className="relative w-full">
           {/* Top HUD Telemetry Ribbon */}
-          <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 pb-4 mb-6 text-xs font-mono">
+          <div className="relative z-10 flex flex-wrap items-center justify-between gap-2.5 pb-3 mb-5 text-[11px] sm:text-xs font-mono">
             <div className="flex items-center gap-2">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
@@ -71,10 +71,10 @@ export function Hero({ hero: heroProp, developer: devProp }: HeroProps = {}) {
               <span className="text-slate-400 tracking-wider">NODE: {dev.location || "BENGALURU, INDIA"}</span>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <span className="text-purple-400 tracking-wider font-semibold">CORE LATENCY: 24ms</span>
-              <span className="text-slate-600">·</span>
-              <span className="text-cyan-400 tracking-wider font-semibold">STACK: NEXT 16 / PAYLOAD 3</span>
+              <span className="text-slate-600 hidden sm:inline">·</span>
+              <span className="text-cyan-400 tracking-wider font-semibold hidden sm:inline">STACK: NEXT 16 / PAYLOAD 3</span>
             </div>
           </div>
 
@@ -104,7 +104,7 @@ export function Hero({ hero: heroProp, developer: devProp }: HeroProps = {}) {
               </div>
 
               {/* Heading */}
-              <h1 className="text-4xl font-extrabold leading-[1.1] tracking-tight text-slate-900 dark:text-white sm:text-5xl md:text-6xl lg:text-[4.25rem]">
+              <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-[4.25rem] font-extrabold leading-[1.1] tracking-tight text-slate-900 dark:text-white break-words">
                 Hi, I&apos;m{" "}
                 <span className="gradient-text">{dev.firstName}</span>
                 <br />
@@ -261,47 +261,47 @@ export function Hero({ hero: heroProp, developer: devProp }: HeroProps = {}) {
         }
         description="Interactive Technical Architecture Stream"
       >
-        <div className="relative h-72 sm:h-96 w-full rounded-2xl bg-slate-950 flex flex-col justify-between p-6 sm:p-8 overflow-hidden">
+        <div className="relative h-auto min-h-[340px] sm:h-96 w-full rounded-2xl bg-slate-950 flex flex-col justify-between p-4 sm:p-8 overflow-hidden">
           {/* Background Tech Stream Animation */}
           <div
             className={`absolute inset-0 bg-gradient-to-br ${TECH_VIDEO_STREAMS[activeStreamIdx].color} opacity-15 blur-2xl transition-all duration-700 pointer-events-none`}
           />
 
-          <div className="relative z-10 flex items-center justify-between">
+          <div className="relative z-10 flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <span className="relative flex h-2.5 w-2.5">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
               </span>
-              <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest">
+              <span className="text-[11px] sm:text-xs font-bold text-emerald-400 uppercase tracking-widest">
                 LIVE ARCHITECTURE STREAM
               </span>
             </div>
 
-            <span className="text-xs font-mono text-purple-400 bg-purple-500/10 border border-purple-500/20 px-3 py-1 rounded-full">
+            <span className="text-[10px] sm:text-xs font-mono text-purple-400 bg-purple-500/10 border border-purple-500/20 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full">
               {TECH_VIDEO_STREAMS[activeStreamIdx].speed}
             </span>
           </div>
 
           {/* Active Tech Video Card Info */}
-          <div className="relative z-10 space-y-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+          <div className="relative z-10 space-y-2 sm:space-y-3 my-4 sm:my-0">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400">
               {TECH_VIDEO_STREAMS[activeStreamIdx].tag}
             </span>
-            <h2 className="text-3xl sm:text-4xl font-black text-white gradient-text">
+            <h2 className="text-2xl sm:text-4xl font-black text-white gradient-text">
               {TECH_VIDEO_STREAMS[activeStreamIdx].name}
             </h2>
-            <p className="text-sm text-slate-300 max-w-lg leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-300 max-w-lg leading-relaxed">
               Designed for high-throughput enterprise performance, multi-tenant RBAC security, and scalable cloud deployment.
             </p>
           </div>
 
           {/* Player Controls Bar */}
-          <div className="relative z-10 flex items-center justify-between pt-4 border-t border-slate-800/80">
+          <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 pt-3.5 sm:pt-4 border-t border-slate-800/80">
             <button
               suppressHydrationWarning
               onClick={() => setIsPlaying(!isPlaying)}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition-colors shadow-lg cursor-pointer"
+              className="flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition-colors shadow-lg cursor-pointer"
             >
               {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
               {isPlaying ? "Pause Stream" : "Play Stream"}
@@ -314,6 +314,7 @@ export function Hero({ hero: heroProp, developer: devProp }: HeroProps = {}) {
                   suppressHydrationWarning
                   key={s.name}
                   onClick={() => setActiveStreamIdx(idx)}
+                  aria-label={`Select stream channel ${idx + 1}`}
                   className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${activeStreamIdx === idx ? "w-8 bg-purple-500" : "w-2.5 bg-slate-700 hover:bg-slate-500"
                     }`}
                 />

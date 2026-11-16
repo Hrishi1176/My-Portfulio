@@ -65,27 +65,22 @@ export const SCENE_ACTIVITIES: Record<number, ActivityBeat[]> = {
 
   // ── Scene 3: Codex — Frontend Lab ───────────────────────────────
   // "Watch closely. I'll build it right in front of you."
-  // Codex spins, runs to keyboard, types furiously, jumps back, points at skill cards.
+  // Codex spins, runs to position, greets, and transitions to dynamic mouse presenter.
   3: [
     { timeOffset: 0.5,  type: "spin" },
-    { timeOffset: 2.5,  type: "run_to",         params: { x: 0.9, y: -0.1, z: 0.1 } },
-    { timeOffset: 3.2,  type: "type_start" },
-    { timeOffset: 5.0,  type: "type_stop" },
-    { timeOffset: 5.1,  type: "greet" },
-    { timeOffset: 6.0,  type: "point_content" },
-    { timeOffset: 7.5,  type: "type_start" },
+    { timeOffset: 2.2,  type: "run_to",         params: { x: 0.6, y: -0.3, z: 0.1 } },
+    { timeOffset: 3.0,  type: "greet" },
+    { timeOffset: 4.2,  type: "idle_reset" },
   ],
 
   // ── Scene 4: Matrix — Backend Command Center ─────────────────────
   // "I keep the systems alive. 24/7. Zero downtime."
-  // Matrix marches in, halts, scan-spins, inspects rack, nods, guard stance.
+  // Matrix marches in, halts, scan-spins, inspects, and resumes mouse follow.
   4: [
-    { timeOffset: 0.0,  type: "run_to",         params: { x: 1.4, y: -0.1, z: 0.1 } },
+    { timeOffset: 0.0,  type: "run_to",         params: { x: 0.8, y: -0.2, z: 0.1 } },
     { timeOffset: 1.2,  type: "spin" },
-    { timeOffset: 2.8,  type: "guard_start" },
-    { timeOffset: 3.5,  type: "nod" },
-    { timeOffset: 4.5,  type: "point_content" },
-    { timeOffset: 5.5,  type: "guard_start" },
+    { timeOffset: 2.8,  type: "nod" },
+    { timeOffset: 4.0,  type: "idle_reset" },
   ],
 
   // ── Scene 5: Orbit — Database Core ──────────────────────────────
@@ -95,19 +90,17 @@ export const SCENE_ACTIVITIES: Record<number, ActivityBeat[]> = {
     { timeOffset: 0.5,  type: "spin" },
     { timeOffset: 2.5,  type: "point_up" },
     { timeOffset: 3.8,  type: "nod" },
-    { timeOffset: 4.5,  type: "point_content" },
-    { timeOffset: 5.5,  type: "idle_reset" },
+    { timeOffset: 4.5,  type: "idle_reset" },
   ],
 
   // ── Scene 6: Cloud-X — DevOps Station ───────────────────────────
   // "Every project I've shipped has lived in production. This is the ops board."
-  // Cloud-X rockets in, spins, checks wrist panel, greet fist-pump, points.
+  // Cloud-X rockets in, spins, checks wrist panel, greet fist-pump, and resumes follow.
   6: [
     { timeOffset: 0.5,  type: "spin" },
     { timeOffset: 2.5,  type: "wrist_check" },
     { timeOffset: 3.5,  type: "greet" },
-    { timeOffset: 4.5,  type: "point_content" },
-    { timeOffset: 5.8,  type: "wrist_check" },
+    { timeOffset: 4.5,  type: "idle_reset" },
   ],
 
   // ── Scene 7: Neura — AI Universe ────────────────────────────────
@@ -116,21 +109,19 @@ export const SCENE_ACTIVITIES: Record<number, ActivityBeat[]> = {
   7: [
     { timeOffset: 0.3,  type: "spin" },
     { timeOffset: 2.0,  type: "think_start" },
-    { timeOffset: 4.0,  type: "think_stop" },
-    { timeOffset: 4.3,  type: "greet" },
-    { timeOffset: 5.2,  type: "point_up" },
-    { timeOffset: 6.0,  type: "idle_reset" },
+    { timeOffset: 3.8,  type: "think_stop" },
+    { timeOffset: 4.2,  type: "greet" },
+    { timeOffset: 5.2,  type: "idle_reset" },
   ],
 
   // ── Scene 8: Titan — Project Arena ──────────────────────────────
   // "These aren't just projects. These are production systems."
-  // Titan strides to centre, 360° imperial spin, raises wrist slate, points.
+  // Titan strides to centre, 360° imperial spin, raises wrist slate, resumes follow.
   8: [
-    { timeOffset: 0.0,  type: "walk_to",        params: { x: -0.2, y: -0.2, z: 0.3 } },
+    { timeOffset: 0.0,  type: "walk_to",        params: { x: -0.4, y: -0.2, z: 0.2 } },
     { timeOffset: 1.5,  type: "spin" },
-    { timeOffset: 3.0,  type: "wrist_check" },
-    { timeOffset: 3.8,  type: "point_content" },
-    { timeOffset: 5.0,  type: "guard_start" },
+    { timeOffset: 3.2,  type: "wrist_check" },
+    { timeOffset: 4.5,  type: "idle_reset" },
   ],
 
   // ── Scene 9: Finale — All Squad Assembled ───────────────────────

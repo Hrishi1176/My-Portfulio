@@ -75,7 +75,7 @@ export function Header({ navigation: navProp, developer: devProp }: HeaderProps 
           : "py-4 bg-transparent"
       }`}
     >
-      <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between px-6 sm:px-10 lg:px-16 2xl:px-24">
+      <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between px-4 sm:px-10 lg:px-16 2xl:px-24">
         {/* Brand Logo */}
         <Link
           href="#hero"

@@ -43,27 +43,27 @@ export function ImpactSlider({ metrics = [] }: ImpactSliderProps = {}) {
 
         {/* ── Interactive Split Comparison Deck ── */}
         <div className="mt-10">
-          <TiltCard maxTilt={6} perspective={1400} scale={1.01} glareEffect={true} className="rounded-3xl">
-            <div className="relative p-0 sm:p-2 lg:p-4 overflow-hidden">
+          <TiltCard maxTilt={6} perspective={1400} scale={1.01} glareEffect={true} className="rounded-2xl sm:rounded-3xl">
+            <div className="relative p-2 sm:p-4 lg:p-6 overflow-hidden">
               {/* Top Control Bar */}
-              <div className="flex flex-wrap items-center justify-between gap-4 pb-4 mb-6">
+              <div className="flex flex-wrap items-center justify-between gap-3 pb-3 sm:pb-4 mb-5 sm:mb-6">
                 <div className="flex items-center gap-2">
                   <span className="h-2.5 w-2.5 rounded-full bg-cyan-400 animate-ping" />
-                  <span className="text-xs font-mono font-bold tracking-widest text-cyan-400 uppercase">
+                  <span className="text-[11px] sm:text-xs font-mono font-bold tracking-widest text-cyan-400 uppercase">
                     ARCHITECTURE IMPACT TELEMETRY
                   </span>
                 </div>
 
-                <div className="flex items-center gap-3 text-xs font-mono text-slate-400">
-                  <span>DRAG TO COMPARE</span>
+                <div className="flex items-center gap-2 sm:gap-3 text-xs font-mono text-slate-400">
+                  <span className="hidden sm:inline">DRAG TO COMPARE</span>
                   <span className="text-purple-400 font-bold">{sliderPos}% NOW</span>
                 </div>
               </div>
 
               {/* Split Cards Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-8 items-stretch">
                 {/* Left: Legacy Monolith */}
-                <div className="rounded-2xl border border-rose-500/20 bg-transparent p-6 sm:p-8 flex flex-col justify-between space-y-6">
+                <div className="rounded-2xl border border-rose-500/20 bg-transparent p-4 sm:p-8 flex flex-col justify-between space-y-6">
                   <div>
                     <div className="flex items-center justify-between mb-4">
                       <span className="text-xs font-mono font-bold uppercase tracking-wider text-rose-400 bg-rose-950/50 border border-rose-500/30 px-3 py-1 rounded-full">
@@ -97,7 +97,7 @@ export function ImpactSlider({ metrics = [] }: ImpactSliderProps = {}) {
                 </div>
 
                 {/* Right: Modern Distributed Cloud */}
-                <div className="rounded-2xl border border-cyan-500/30 bg-transparent p-6 sm:p-8 flex flex-col justify-between space-y-6 relative overflow-hidden">
+                <div className="rounded-2xl border border-cyan-500/30 bg-transparent p-4 sm:p-8 flex flex-col justify-between space-y-6 relative overflow-hidden">
 
                   <div>
                     <div className="flex items-center justify-between mb-4">
@@ -146,7 +146,7 @@ export function ImpactSlider({ metrics = [] }: ImpactSliderProps = {}) {
               </div>
 
               {/* Metric Counter Grid */}
-              <div className="mt-8 grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 {metrics.map((m) => (
                   <div
                     key={m.label}

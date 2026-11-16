@@ -73,7 +73,7 @@ export function RobotCompanionHUD() {
   };
 
   return (
-    <div className="fixed bottom-6 left-6 z-40 select-none">
+    <div className="fixed bottom-4 sm:bottom-6 left-2.5 sm:left-6 z-40 select-none">
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -81,7 +81,7 @@ export function RobotCompanionHUD() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 15, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="mb-3 w-84 rounded-2xl border border-cyan-500/25 bg-slate-950/94 p-4 shadow-[0_16px_50px_rgba(0,0,0,0.85)] backdrop-blur-2xl font-mono text-xs max-h-[82vh] overflow-y-auto"
+            className="mb-3 w-[calc(100vw-5rem)] sm:w-84 max-w-sm rounded-2xl border border-cyan-500/25 bg-slate-950/94 p-4 shadow-[0_16px_50px_rgba(0,0,0,0.85)] backdrop-blur-2xl font-mono text-xs max-h-[82vh] overflow-y-auto"
           >
             {/* Header */}
             <div className="flex items-center justify-between pb-3 border-b border-slate-800">

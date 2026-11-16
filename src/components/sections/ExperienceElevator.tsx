@@ -174,7 +174,7 @@ export function ExperienceElevator({ roles: initialRoles }: ExperienceProps = {}
 
                 {/* 3D Glass Floor Container */}
                 <div
-                  className={`group relative rounded-2xl border transition-all duration-500 overflow-hidden p-6 sm:p-8 ${
+                  className={`group relative rounded-2xl border transition-all duration-500 overflow-hidden p-4 sm:p-6 md:p-8 ${
                     isActive
                       ? "border-purple-500/40 bg-white/[0.02] shadow-[0_15px_35px_rgba(168,85,247,0.1)]"
                       : "border-white/5 bg-transparent hover:border-purple-500/30 hover:bg-white/[0.01]"

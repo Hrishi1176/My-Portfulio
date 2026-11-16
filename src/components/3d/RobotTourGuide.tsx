@@ -147,7 +147,7 @@ export function RobotTourGuide() {
   return (
     <aside
       aria-label="Interactive Tour Guide"
-      className="fixed bottom-24 left-6 z-40 max-w-sm sm:max-w-md select-none font-mono"
+      className="fixed bottom-4 sm:bottom-24 left-2.5 sm:left-6 z-40 max-w-[calc(100vw-5rem)] sm:max-w-md select-none font-mono"
     >
       <AnimatePresence>
         {!isDismissed ? (

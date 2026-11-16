@@ -294,17 +294,17 @@ export function Contact({ contactOptions: contactProp, developer: devProp }: Con
                       href={method.href}
                       target={method.href.startsWith("http") ? "_blank" : undefined}
                       rel={method.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                      className="flex items-center justify-between p-4 rounded-2xl border border-white/5 bg-transparent hover:border-purple-500/30 hover:bg-white/[0.01] transition-all group"
+                      className="flex items-center justify-between p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border border-white/5 bg-transparent hover:border-purple-500/30 hover:bg-white/[0.01] transition-all group gap-2"
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center group-hover:scale-110 transition-transform">
-                          <Icon className="h-5 w-5" />
+                      <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 pr-1">
+                        <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+                          <Icon className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
                         </div>
-                        <div>
-                          <div className="text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                        <div className="min-w-0">
+                          <div className="text-[10px] sm:text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                             {method.label}
                           </div>
-                          <div className="text-sm font-extrabold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors">
+                          <div className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors truncate">
                             {method.value}
                           </div>
                         </div>

@@ -218,20 +218,20 @@ export function AIChatbot({ aiConfig, developer }: AIChatbotProps = {}) {
       <ChatbotRobotCompanion isOpen={isOpen} state={chatbotCompanionState} />
 
       {/* Floating Trigger Button in Bottom Right */}
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-4 sm:bottom-6 right-3.5 sm:right-6 z-50">
         <motion.button
           suppressHydrationWarning
           onClick={() => setIsOpen(!isOpen)}
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.95 }}
-          className="relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-purple-600 via-violet-600 to-blue-600 text-white shadow-[0_8px_30px_rgba(124,58,237,0.5)] transition-all hover:shadow-[0_12px_40px_rgba(124,58,237,0.7)]"
+          className="relative flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-gradient-to-r from-purple-600 via-violet-600 to-blue-600 text-white shadow-[0_8px_30px_rgba(124,58,237,0.5)] transition-all hover:shadow-[0_12px_40px_rgba(124,58,237,0.7)]"
           aria-label="AI Portfolio Assistant Chat"
         >
           {isOpen ? (
-            <X className="h-6 w-6" />
+            <X className="h-5 w-5 sm:h-6 sm:w-6" />
           ) : (
             <>
-              <Bot className="h-7 w-7" />
+              <Bot className="h-6 w-6 sm:h-7 sm:w-7" />
               <span className="absolute -top-1 -right-1 flex h-4 w-4">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[9px] font-bold text-white">
@@ -251,7 +251,7 @@ export function AIChatbot({ aiConfig, developer }: AIChatbotProps = {}) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 350, damping: 28 }}
-            className="fixed bottom-24 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[380px] h-[520px] max-h-[80vh] flex flex-col rounded-3xl glass-raised overflow-hidden shadow-2xl border border-purple-500/30 bg-slate-950/90 backdrop-blur-2xl"
+            className="fixed bottom-4 sm:bottom-24 right-2 sm:right-6 z-50 w-[calc(100vw-1rem)] sm:w-[380px] h-[520px] max-h-[85vh] flex flex-col rounded-2xl sm:rounded-3xl glass-raised overflow-hidden shadow-2xl border border-purple-500/30 bg-slate-950/90 backdrop-blur-2xl"
           >
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3.5 border-b border-[var(--border)] bg-white/5 dark:bg-black/30">

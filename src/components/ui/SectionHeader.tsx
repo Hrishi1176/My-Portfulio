@@ -44,7 +44,7 @@ export function SectionHeader({
       )}
 
       {/* Main Title */}
-      <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl md:text-5xl leading-tight">
+      <h2 className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
         {title}{" "}
         {gradientText && <span className="gradient-text">{gradientText}</span>}
       </h2>

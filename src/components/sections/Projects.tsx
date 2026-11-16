@@ -168,11 +168,10 @@ export function Projects({ initialProjects }: ProjectsProps = {}) {
                 suppressHydrationWarning
                 key={tag}
                 onClick={() => setSelectedTag(tag)}
-                className={`text-xs px-3 py-1 rounded-full font-bold transition-all cursor-pointer ${
-                  selectedTag === tag
+                className={`text-xs px-3 py-1 rounded-full font-bold transition-all cursor-pointer ${selectedTag === tag
                     ? "bg-purple-600 text-white shadow-sm"
                     : "border border-slate-800 bg-slate-900/60 text-slate-400 hover:text-white hover:border-purple-500/30"
-                }`}
+                  }`}
               >
                 {tag}
               </button>
@@ -269,9 +268,9 @@ export function Projects({ initialProjects }: ProjectsProps = {}) {
                     perspective={1200}
                     scale={1.01}
                     glareEffect={true}
-                    className="w-full rounded-3xl"
+                    className="w-full rounded-2xl sm:rounded-3xl"
                   >
-                    <div className="relative rounded-3xl border border-white/10 bg-transparent p-7 sm:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden">
+                    <div className="relative rounded-2xl sm:rounded-3xl border border-white/10 bg-transparent p-5 sm:p-8 md:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden">
                       {/* Ambient Glowing Gradient */}
                       <div
                         className={`absolute inset-0 bg-gradient-to-br ${activeProject.gradient} opacity-25 pointer-events-none transition-all duration-700`}
@@ -282,17 +281,17 @@ export function Projects({ initialProjects }: ProjectsProps = {}) {
                         style={{ transform: "translateZ(30px)" }}
                         className="relative z-10 flex flex-wrap items-center justify-between gap-3 mb-6"
                       >
-                        <div className="flex items-center gap-3">
-                          <span className="text-3xl sm:text-4xl font-black font-mono gradient-text">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <span className="text-2xl sm:text-4xl font-black font-mono gradient-text">
                             {activeProject.number}
                           </span>
                           {activeProject.featured && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-bold text-amber-300 border border-amber-500/30">
-                              <Sparkles className="h-3.5 w-3.5" /> Featured Architecture
+                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 sm:px-2.5 py-0.5 text-[10px] sm:text-xs font-bold text-amber-300 border border-amber-500/30">
+                              <Sparkles className="h-3 w-3 sm:h-3.5 sm:w-3.5" /> Featured
                             </span>
                           )}
                           {typeof activeProject.stars === "number" && activeProject.stars > 0 && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-bold text-amber-400 border border-amber-500/20">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 sm:px-2.5 py-0.5 text-[10px] sm:text-xs font-bold text-amber-400 border border-amber-500/20">
                               <Star className="h-3 w-3 fill-amber-400 text-amber-400" /> {activeProject.stars}
                             </span>
                           )}
@@ -338,21 +337,21 @@ export function Projects({ initialProjects }: ProjectsProps = {}) {
                       </div>
 
                       {/* Title & Description in Z-Depth */}
-                      <div style={{ transform: "translateZ(20px)" }} className="relative z-10 space-y-3 mb-6">
-                        <h3 className="text-2xl sm:text-3xl font-extrabold text-white">
+                      <div style={{ transform: "translateZ(20px)" }} className="relative z-10 space-y-2.5 sm:space-y-3 mb-5 sm:mb-6">
+                        <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white">
                           {activeProject.title}
                         </h3>
-                        <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-normal">
+                        <p className="text-xs sm:text-base text-slate-300 leading-relaxed font-normal">
                           {activeProject.description}
                         </p>
                       </div>
 
                       {/* Tech Stack Tags in Z-Depth */}
-                      <div style={{ transform: "translateZ(15px)" }} className="relative z-10 flex flex-wrap gap-2 pt-2">
+                      <div style={{ transform: "translateZ(15px)" }} className="relative z-10 flex flex-wrap gap-1.5 sm:gap-2 pt-2">
                         {activeProject.tech.map((t) => (
                           <span
                             key={t}
-                            className="text-xs font-mono font-medium px-3 py-1 rounded-lg border border-white/5 bg-transparent text-slate-200"
+                            className="text-[11px] sm:text-xs font-mono font-medium px-2.5 py-1 rounded-lg border border-white/5 bg-transparent text-slate-200"
                           >
                             {t}
                           </span>
@@ -399,22 +398,22 @@ export function Projects({ initialProjects }: ProjectsProps = {}) {
                     suppressHydrationWarning
                     key={dotIdx}
                     onClick={() => setCurrentIndex(dotIdx)}
-                    className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                      dotIdx === safeIndex
+                    className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${dotIdx === safeIndex
                         ? "w-8 bg-purple-500"
                         : "w-2 bg-slate-700 hover:bg-slate-500"
-                    }`}
+                      }`}
                   />
                 ))}
               </div>
 
               {/* Slider Arrows */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 shrink-0 ml-3">
                 <button
                   suppressHydrationWarning
                   onClick={handlePrev}
                   className="flex h-10 w-10 items-center justify-center rounded-full border border-white/5 bg-transparent text-slate-300 hover:bg-purple-600 hover:text-white transition-colors cursor-pointer"
                   title="Previous project"
+                  aria-label="Previous project"
                 >
                   <ChevronLeft className="h-5 w-5" />
                 </button>
@@ -423,6 +422,7 @@ export function Projects({ initialProjects }: ProjectsProps = {}) {
                   onClick={handleNext}
                   className="flex h-10 w-10 items-center justify-center rounded-full border border-white/5 bg-transparent text-slate-300 hover:bg-purple-600 hover:text-white transition-colors cursor-pointer"
                   title="Next project"
+                  aria-label="Next project"
                 >
                   <ChevronRight className="h-5 w-5" />
                 </button>

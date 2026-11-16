@@ -265,22 +265,22 @@ export function Reviews({ initialReviews }: ReviewsProps = {}) {
                       </p>
 
                       {/* Client Info Bar */}
-                      <div className="flex items-center justify-between pt-4 border-t border-[var(--border)]">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 pt-4 border-t border-[var(--border)]">
                         <div className="flex items-center gap-3">
-                          <div className="h-11 w-11 rounded-full bg-gradient-to-tr from-purple-600 to-blue-500 flex items-center justify-center text-white font-black text-lg shadow-md">
+                          <div className="h-10 w-10 sm:h-11 sm:w-11 shrink-0 rounded-full bg-gradient-to-tr from-purple-600 to-blue-500 flex items-center justify-center text-white font-black text-base sm:text-lg shadow-md">
                             {currentReview.clientName.charAt(0)}
                           </div>
 
-                          <div>
-                            <div className="font-bold text-slate-900 dark:text-white text-base flex items-center gap-2">
-                              {currentReview.clientName}
+                          <div className="min-w-0">
+                            <div className="font-bold text-slate-900 dark:text-white text-sm sm:text-base flex flex-wrap items-center gap-1.5 sm:gap-2">
+                              <span>{currentReview.clientName}</span>
                               {currentReview.isVerified && (
                                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                                  <ShieldCheck className="h-3 w-3" /> Verified Client
+                                  <ShieldCheck className="h-3 w-3" /> Verified
                                 </span>
                               )}
                             </div>
-                            <div className="text-xs text-slate-500 dark:text-slate-400">
+                            <div className="text-xs text-slate-500 dark:text-slate-400 truncate">
                               {currentReview.clientRole} {currentReview.company ? `• ${currentReview.company}` : ""}
                             </div>
                           </div>
@@ -288,12 +288,12 @@ export function Reviews({ initialReviews }: ReviewsProps = {}) {
 
                         {/* Navigation Controls */}
                         {reviews.length > 1 && (
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center justify-end gap-2 shrink-0">
                             <button
                               suppressHydrationWarning
                               onClick={handlePrev}
                               aria-label="Previous review"
-                              className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] bg-white/70 dark:bg-white/[0.06] text-slate-600 dark:text-slate-300 hover:bg-purple-500 hover:text-white dark:hover:bg-purple-600 transition-colors shadow-sm"
+                              className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] bg-white/70 dark:bg-white/[0.06] text-slate-600 dark:text-slate-300 hover:bg-purple-500 hover:text-white dark:hover:bg-purple-600 transition-colors shadow-sm cursor-pointer"
                             >
                               <ChevronLeft className="h-5 w-5" />
                             </button>
@@ -301,7 +301,7 @@ export function Reviews({ initialReviews }: ReviewsProps = {}) {
                               suppressHydrationWarning
                               onClick={handleNext}
                               aria-label="Next review"
-                              className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] bg-white/70 dark:bg-white/[0.06] text-slate-600 dark:text-slate-300 hover:bg-purple-500 hover:text-white dark:hover:bg-purple-600 transition-colors shadow-sm"
+                              className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] bg-white/70 dark:bg-white/[0.06] text-slate-600 dark:text-slate-300 hover:bg-purple-500 hover:text-white dark:hover:bg-purple-600 transition-colors shadow-sm cursor-pointer"
                             >
                               <ChevronRight className="h-5 w-5" />
                             </button>
@@ -372,14 +372,15 @@ export function Reviews({ initialReviews }: ReviewsProps = {}) {
             <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
               Rating (1 to 5 Stars)
             </label>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               {[1, 2, 3, 4, 5].map((starNum) => (
                 <button
                   suppressHydrationWarning
                   key={starNum}
                   type="button"
                   onClick={() => setNewReview({ ...newReview, rating: starNum })}
-                  className="p-1 text-amber-400 hover:scale-125 transition-transform cursor-pointer"
+                  className="p-2 sm:p-1.5 min-w-[38px] min-h-[38px] flex items-center justify-center text-amber-400 hover:scale-125 transition-transform cursor-pointer"
+                  aria-label={`Rate ${starNum} stars`}
                 >
                   <Star
                     className={`h-6 w-6 ${starNum <= newReview.rating

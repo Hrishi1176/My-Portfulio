@@ -99,7 +99,7 @@ export function WhatsAppToggle({ developer }: WhatsAppToggleProps) {
   return (
     <>
       {/* ── Floating WhatsApp Action Button ── */}
-      <div className="fixed bottom-24 right-6 z-40">
+      <div className="fixed bottom-20 sm:bottom-24 right-3.5 sm:right-6 z-40">
         <div className="relative group">
           {/* Tooltip on hover */}
           <AnimatePresence>
@@ -108,7 +108,7 @@ export function WhatsAppToggle({ developer }: WhatsAppToggleProps) {
                 initial={{ opacity: 0, x: 10, scale: 0.9 }}
                 animate={{ opacity: 1, x: 0, scale: 1 }}
                 exit={{ opacity: 0, x: 10, scale: 0.9 }}
-                className="absolute right-16 top-1/2 -translate-y-1/2 whitespace-nowrap bg-slate-900/95 border border-emerald-500/30 text-emerald-400 text-xs font-semibold px-3 py-1.5 rounded-xl shadow-xl backdrop-blur-md pointer-events-none flex items-center gap-2"
+                className="absolute right-16 top-1/2 -translate-y-1/2 whitespace-nowrap bg-slate-900/95 border border-emerald-500/30 text-emerald-400 text-xs font-semibold px-3 py-1.5 rounded-xl shadow-xl backdrop-blur-md pointer-events-none flex items-center gap-2 hidden sm:flex"
               >
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
                 Chat on WhatsApp
@@ -123,7 +123,7 @@ export function WhatsAppToggle({ developer }: WhatsAppToggleProps) {
             onMouseLeave={() => setIsHovered(false)}
             whileHover={{ scale: 1.08 }}
             whileTap={{ scale: 0.94 }}
-            className={`relative flex h-14 w-14 items-center justify-center rounded-full text-white shadow-lg transition-all duration-300 ${
+            className={`relative flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full text-white shadow-lg transition-all duration-300 ${
               isOpen
                 ? "bg-slate-800 border border-emerald-500/40 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.4)]"
                 : "bg-gradient-to-tr from-[#128C7E] to-[#25D366] shadow-[0_8px_25px_rgba(37,211,102,0.45)] hover:shadow-[0_12px_35px_rgba(37,211,102,0.65)]"
@@ -167,7 +167,7 @@ export function WhatsAppToggle({ developer }: WhatsAppToggleProps) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 350, damping: 28 }}
-            className="fixed bottom-[10.5rem] right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[380px] flex flex-col rounded-3xl overflow-hidden shadow-2xl border border-emerald-500/30 bg-slate-950/95 backdrop-blur-2xl"
+            className="fixed bottom-4 sm:bottom-[10.5rem] right-2 sm:right-6 z-50 w-[calc(100vw-1rem)] sm:w-[380px] max-h-[88vh] flex flex-col rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-emerald-500/30 bg-slate-950/95 backdrop-blur-2xl"
           >
             {/* 1. Header Banner */}
             <div className="bg-gradient-to-r from-emerald-800 via-teal-700 to-emerald-900 p-4 border-b border-emerald-600/30 text-white">

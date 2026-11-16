@@ -55,7 +55,7 @@ interface SkillsProps {
 }
 
 export function Skills({ categories, marquee }: SkillsProps = {}) {
-  const { setActiveSkillCategory, playSound } = useRobotCompanion();
+  const { setActiveSkillCategory, activeSkillCategory, playSound } = useRobotCompanion();
   const skillCategories = categories || [];
   const marqueeSkills =
     marquee && marquee.length > 0
@@ -121,7 +121,15 @@ export function Skills({ categories, marquee }: SkillsProps = {}) {
                     onMouseLeave={() => {
                       setActiveSkillCategory("");
                     }}
-                    className="group relative h-full rounded-2xl border border-white/5 bg-transparent p-6 transition-all duration-300 hover:border-purple-500/30 hover:bg-white/[0.02] hover:shadow-[0_15px_35px_rgba(168,85,247,0.1)] flex flex-col justify-between overflow-hidden"
+                    onTouchStart={() => {
+                      setActiveSkillCategory(cat.title);
+                      playSound("laser");
+                    }}
+                    onClick={() => {
+                      setActiveSkillCategory(activeSkillCategory === cat.title ? "" : cat.title);
+                      playSound("laser");
+                    }}
+                    className="group relative h-full rounded-2xl border border-white/5 bg-transparent p-4 sm:p-6 transition-all duration-300 hover:border-purple-500/30 hover:bg-white/[0.02] hover:shadow-[0_15px_35px_rgba(168,85,247,0.1)] flex flex-col justify-between overflow-hidden cursor-pointer"
                   >
                     {/* Top ambient highlight */}
                     <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-purple-500/40 to-cyan-500/40 group-hover:via-purple-400 group-hover:to-cyan-400 transition-all duration-500" />
