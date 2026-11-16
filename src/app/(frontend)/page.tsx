@@ -16,6 +16,7 @@ import { RobotCompanionHUD } from "@/components/3d/RobotCompanionHUD";
 import { RobotStoryBanner } from "@/components/3d/RobotStoryBanner";
 import { RobotTourGuide } from "@/components/3d/RobotTourGuide";
 import { AIChatbot } from "@/components/AIChatbot";
+import { WhatsAppToggle } from "@/components/WhatsAppToggle";
 import { PayloadService } from "@/services/payloadService";
 
 export const revalidate = 60;
@@ -74,6 +75,9 @@ export default async function Home() {
         developer={siteContent.developer}
         navigation={siteContent.navigation}
       />
+
+      {/* Direct WhatsApp Chat Quick Toggle */}
+      <WhatsAppToggle developer={siteContent.developer} />
 
       {/* Floating AI Assistant Chatbot */}
       <AIChatbot
