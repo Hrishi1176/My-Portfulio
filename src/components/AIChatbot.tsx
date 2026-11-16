@@ -12,39 +12,67 @@ interface ChatMessage {
   timestamp: string;
 }
 
-import { portfolioConfig } from "@/config/portfolioConfig";
+import { portfolioConfig, DeveloperConfig } from "@/config/portfolioConfig";
 
-const MAX_DAILY_REQUESTS = portfolioConfig.aiChat.maxDailyChats;
-const SUGGESTED_PROMPTS = portfolioConfig.aiChat.suggestedPrompts;
+interface AIChatbotProps {
+  aiConfig?: {
+    maxDailyChats: number;
+    maxDailyRefinements: number;
+    suggestedPrompts: string[];
+  };
+  developer?: DeveloperConfig;
+}
 
-export function AIChatbot() {
+function getTodayCookieKey() {
+  const d = new Date();
+  return `chat_req_${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function getFormattedTime() {
+  return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+}
+
+function generateMessageId() {
+  if (typeof crypto !== "undefined" && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return `msg_${Math.random().toString(36).substring(2, 9)}`;
+}
+
+export function AIChatbot({ aiConfig, developer }: AIChatbotProps = {}) {
+  const dev = developer || portfolioConfig.developer;
+  const MAX_DAILY_REQUESTS = aiConfig?.maxDailyChats || portfolioConfig.aiChat.maxDailyChats;
+  const SUGGESTED_PROMPTS =
+    aiConfig?.suggestedPrompts && aiConfig.suggestedPrompts.length > 0
+      ? aiConfig.suggestedPrompts
+      : portfolioConfig.aiChat.suggestedPrompts;
+
+  const INITIAL_MESSAGES: ChatMessage[] = [
+    {
+      id: "welcome",
+      sender: "bot",
+      text: `Hi! I am ${dev.firstName}'s AI Portfolio Assistant 🤖. Ask me anything about his ${dev.experienceYears} years of experience, Next.js & Python projects, or technical skills!`,
+      timestamp: "Online",
+    },
+  ];
+
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>(INITIAL_MESSAGES);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [requestsToday, setRequestsToday] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Get today's cookie key name format: YYYY-MM-DD
-  const getTodayCookieKey = () => {
-    const d = new Date();
-    return `chat_req_${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-  };
-
   // Load request count from secure browser cookie
   useEffect(() => {
     const key = getTodayCookieKey();
     const count = Cookies.get(key);
-    setRequestsToday(count ? parseInt(count, 10) : 0);
-
-    setMessages([
-      {
-        id: "welcome",
-        sender: "bot",
-        text: "Hi! I am Hrishi's AI Portfolio Assistant 🤖. Ask me anything about his 4.4 years of experience, Next.js & Python projects, or technical skills!",
-        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      },
-    ]);
+    if (count) {
+      const parsed = parseInt(count, 10);
+      queueMicrotask(() => {
+        setRequestsToday(parsed);
+      });
+    }
   }, []);
 
   // Auto-scroll chat history
@@ -66,16 +94,16 @@ export function AIChatbot() {
       setMessages((prev) => [
         ...prev,
         {
-          id: String(Date.now()),
+          id: generateMessageId(),
           sender: "user",
           text: query,
-          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          timestamp: getFormattedTime(),
         },
         {
-          id: String(Date.now() + 1),
+          id: generateMessageId(),
           sender: "bot",
-          text: "⚠️ Daily free AI chat limit reached (10/10 requests for today). Please contact Hrishi directly using the Contact Form below or via WhatsApp (+91 62946 60141)!",
-          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          text: `⚠️ Daily free AI chat limit reached (${MAX_DAILY_REQUESTS}/${MAX_DAILY_REQUESTS} requests for today). Please contact ${dev.firstName} directly using the Contact Form below or via WhatsApp (${dev.whatsapp})!`,
+          timestamp: getFormattedTime(),
         },
       ]);
       setInput("");
@@ -89,10 +117,10 @@ export function AIChatbot() {
 
     // Add user message
     const userMsg: ChatMessage = {
-      id: String(Date.now()),
+      id: generateMessageId(),
       sender: "user",
       text: query,
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      timestamp: getFormattedTime(),
     };
 
     setMessages((prev) => [...prev, userMsg]);
@@ -112,10 +140,10 @@ export function AIChatbot() {
       setMessages((prev) => [
         ...prev,
         {
-          id: String(Date.now() + 1),
+          id: generateMessageId(),
           sender: "bot",
           text: botReply,
-          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          timestamp: getFormattedTime(),
         },
       ]);
     } catch (err) {
@@ -123,10 +151,10 @@ export function AIChatbot() {
       setMessages((prev) => [
         ...prev,
         {
-          id: String(Date.now() + 1),
+          id: generateMessageId(),
           sender: "bot",
           text: "Network error processing AI query. Please contact Hrishi at hrishisgp97@gmail.com.",
-          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          timestamp: getFormattedTime(),
         },
       ]);
     } finally {
@@ -141,6 +169,7 @@ export function AIChatbot() {
       {/* Floating Trigger Button in Bottom Right */}
       <div className="fixed bottom-6 right-6 z-50">
         <motion.button
+          suppressHydrationWarning
           onClick={() => setIsOpen(!isOpen)}
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.95 }}
@@ -241,6 +270,7 @@ export function AIChatbot() {
               <div className="px-3 py-2 border-t border-[var(--border)] bg-slate-950/40 flex flex-wrap gap-1.5">
                 {SUGGESTED_PROMPTS.map((prompt) => (
                   <button
+                    suppressHydrationWarning
                     key={prompt}
                     onClick={() => handleSendMessage(prompt)}
                     className="text-[10px] font-semibold text-purple-400 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 px-2.5 py-1 rounded-full transition-colors truncate max-w-full"
@@ -267,6 +297,7 @@ export function AIChatbot() {
                   className="flex items-center gap-2"
                 >
                   <input
+                    suppressHydrationWarning
                     type="text"
                     placeholder="Ask AI about Hrishi..."
                     value={input}
@@ -275,6 +306,7 @@ export function AIChatbot() {
                     className="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition-colors"
                   />
                   <button
+                    suppressHydrationWarning
                     type="submit"
                     disabled={!input.trim() || loading}
                     className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-600 hover:bg-purple-500 text-white disabled:opacity-50 transition-colors shrink-0"

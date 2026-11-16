@@ -113,6 +113,13 @@ export interface EducationConfig {
   border: string;
 }
 
+export interface CertificateConfig {
+  title?: string;
+  issuer?: string;
+  url?: string;
+  date?: string;
+}
+
 export interface PortfolioConfig {
   developer: DeveloperConfig;
   navigation: NavigationItem[];
@@ -121,7 +128,7 @@ export interface PortfolioConfig {
   skills: SkillsConfig;
   experience: {
     roles: RoleConfig[];
-    certificate?: any;
+    certificate?: CertificateConfig;
   };
   projects: ProjectConfig[];
   education: EducationConfig[];

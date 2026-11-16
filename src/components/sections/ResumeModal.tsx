@@ -4,9 +4,17 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FileText, X, Download, ExternalLink } from "lucide-react";
 import { useEffect } from "react";
 
-export function ResumeModal({ onClose }: { onClose: () => void }) {
-  const resumeUrl = "/resume/Hrishi_Bhattacharyya_Resume.pdf";
+interface ResumeModalProps {
+  onClose: () => void;
+  resumeUrl?: string;
+  developerName?: string;
+}
 
+export function ResumeModal({
+  onClose,
+  resumeUrl = "/resume/Hrishi_Bhattacharyya_Resume.pdf",
+  developerName = "Hrishi Bhattacharyya",
+}: ResumeModalProps) {
   // Prevent body scroll when modal is open
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -50,7 +58,7 @@ export function ResumeModal({ onClose }: { onClose: () => void }) {
                 <FileText className="h-4 w-4 text-purple-600 dark:text-purple-400" />
               </div>
               <h3 className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white">
-                Resume — Hrishi Bhattacharyya
+                Resume — {developerName}
               </h3>
             </div>
 
@@ -67,13 +75,14 @@ export function ResumeModal({ onClose }: { onClose: () => void }) {
               </a>
               <a
                 href={resumeUrl}
-                download="Hrishi_Bhattacharyya_Resume.pdf"
+                download={`${developerName.replace(/\s+/g, "_")}_Resume.pdf`}
                 className="btn-primary text-xs sm:text-sm py-1.5 px-3 sm:px-4 rounded-xl flex items-center gap-1.5"
               >
                 <Download className="h-3.5 w-3.5" />
                 <span>Download</span>
               </a>
               <button
+                suppressHydrationWarning
                 onClick={onClose}
                 aria-label="Close Modal"
                 className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--border)] bg-white/60 dark:bg-white/[0.04] text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
@@ -88,7 +97,7 @@ export function ResumeModal({ onClose }: { onClose: () => void }) {
             <iframe
               src={`${resumeUrl}#toolbar=1&navpanes=0&scrollbar=1`}
               className="w-full h-full border-0"
-              title="Hrishi Bhattacharyya Resume"
+              title={`${developerName} Resume`}
             />
           </div>
         </motion.div>

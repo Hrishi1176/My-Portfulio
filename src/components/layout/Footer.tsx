@@ -1,24 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { Heart, ArrowUp, ShieldCheck, Mail, Phone, MapPin, ExternalLink, Sparkles } from "lucide-react";
+import { Heart, ArrowUp, ShieldCheck, Mail, Phone, ExternalLink, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
 import { GithubIcon, LinkedinIcon, InstagramIcon, FacebookIcon } from "@/components/SocialIcons";
-import { portfolioConfig, ProjectConfig } from "@/config/portfolioConfig";
+import { portfolioConfig, ProjectConfig, DeveloperConfig, NavigationItem } from "@/config/portfolioConfig";
 
-const dev = portfolioConfig.developer;
-const navLinks = portfolioConfig.navigation;
-const initialProjects = portfolioConfig.projects;
+interface FooterProps {
+  developer?: DeveloperConfig;
+  navigation?: NavigationItem[];
+}
 
-const socialMap = [
-  { name: "GitHub", url: dev.github, icon: GithubIcon, hoverColor: "hover:text-slate-900 dark:hover:text-white hover:border-slate-400/60" },
-  { name: "LinkedIn", url: dev.linkedin, icon: LinkedinIcon, hoverColor: "hover:text-[#0A66C2] hover:border-[#0A66C2]/40" },
-  { name: "Instagram", url: dev.instagram, icon: InstagramIcon, hoverColor: "hover:text-[#E1306C] hover:border-[#E1306C]/40" },
-  { name: "Facebook", url: dev.facebook, icon: FacebookIcon, hoverColor: "hover:text-[#1877F2] hover:border-[#1877F2]/40" },
-];
+export function Footer({ developer: devProp, navigation: navProp }: FooterProps = {}) {
+  const dev = devProp || portfolioConfig.developer;
+  const navLinks = navProp && navProp.length > 0 ? navProp : portfolioConfig.navigation;
+  const [projectsList, setProjectsList] = useState<ProjectConfig[]>(portfolioConfig.projects);
 
-export function Footer() {
-  const [projectsList, setProjectsList] = useState<ProjectConfig[]>(initialProjects);
+  const socialMap = [
+    { name: "GitHub", url: dev.github, icon: GithubIcon, hoverColor: "hover:text-slate-900 dark:hover:text-white hover:border-slate-400/60" },
+    { name: "LinkedIn", url: dev.linkedin, icon: LinkedinIcon, hoverColor: "hover:text-[#0A66C2] hover:border-[#0A66C2]/40" },
+    { name: "Instagram", url: dev.instagram, icon: InstagramIcon, hoverColor: "hover:text-[#E1306C] hover:border-[#E1306C]/40" },
+    { name: "Facebook", url: dev.facebook, icon: FacebookIcon, hoverColor: "hover:text-[#1877F2] hover:border-[#1877F2]/40" },
+  ];
 
   useEffect(() => {
     fetch("/api/projects")
@@ -38,11 +41,8 @@ export function Footer() {
   const featuredApps = projectsList.filter((p) => p.featured || p.live);
 
   return (
-    <footer className="mt-20 border-t border-[var(--border)] bg-gradient-to-b from-transparent via-purple-950/5 to-purple-950/25 pt-16 pb-8 relative overflow-hidden">
-      {/* Background Ambient Glow */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-40 bg-purple-500/10 blur-3xl pointer-events-none" />
-
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10 space-y-12">
+    <footer className="mt-20 bg-transparent pt-16 pb-8 relative overflow-hidden">
+      <div className="w-full relative z-10 space-y-12">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-10 items-start">
           
           {/* ── Brand & Bio Column ── */}
@@ -168,6 +168,7 @@ export function Footer() {
           </p>
 
           <button
+            suppressHydrationWarning
             onClick={scrollToTop}
             className="flex items-center gap-2 px-4 py-2 rounded-full border border-purple-500/30 bg-purple-500/10 text-xs font-bold text-purple-600 dark:text-purple-300 hover:bg-purple-500/20 transition-all shadow-sm group"
           >

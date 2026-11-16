@@ -82,6 +82,7 @@ export function ToastNotification({
 
             {/* Close Button */}
             <button
+              suppressHydrationWarning
               onClick={onClose}
               className="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10"
               aria-label="Close notification"
