@@ -29,8 +29,13 @@ export class RobotProceduralLayer {
   private _scratchLocalTarget = new THREE.Vector3();
   private _scratchLocalDir = new THREE.Vector3();
   private _scratchWorldPos = new THREE.Vector3();
+  // Cached rest-pose world directions for each arm bone.
+  // We compute them once from the actual bone transform on first point call,
+  // so they always match the GLB's real T-pose regardless of model orientation.
   private _restDirRight = new THREE.Vector3(-1, 0, 0);
-  private _restDirLeft = new THREE.Vector3(1, 0, 0);
+  private _restDirLeft  = new THREE.Vector3(1, 0, 0);
+  private _restDirRightCached = false;
+  private _restDirLeftCached  = false;
 
   // ── New mode state ──────────────────────────────────────────────
   private nodTimer = 0;           // counts up during nod gesture
@@ -148,77 +153,107 @@ export class RobotProceduralLayer {
     } = this.bones;
     const w = this.blendWeight;
 
-    // Check which arm to point with:
-    // When robot faces camera:
-    // Right arm is on screen-left; Left arm is on screen-right.
+    // ── Cache actual T-pose rest directions from live bone world transforms ──
+    // We do this ONCE per arm on the first valid frame so IK always uses the
+    // real GLB rest-pose orientation instead of an assumed (-1,0,0)/(1,0,0).
+    if (!this._restDirRightCached && rightArmBone && rightArmBone.parent) {
+      // The arm bone's local +X axis in world space defines the rest direction.
+      this._restDirRight.set(1, 0, 0).transformDirection(rightArmBone.matrixWorld).normalize();
+      this._restDirRightCached = true;
+    }
+    if (!this._restDirLeftCached && leftArmBone && leftArmBone.parent) {
+      this._restDirLeft.set(1, 0, 0).transformDirection(leftArmBone.matrixWorld).normalize();
+      this._restDirLeftCached = true;
+    }
+
+    // ── Which arm to use: pick the one CLOSER to the target side ─────────
+    // Both arms get their world-space shoulder position compared to target.x.
+    // The arm whose shoulder is FURTHER from the target needs to reach across —
+    // instead, we always pick the arm on the SAME side as the target.
     let useLeftArm = false;
     if (leftArmBone && leftArmBone.parent && rightArmBone && rightArmBone.parent) {
       this._scratchWorldPos.set(0, 0, 0);
       rightArmBone.getWorldPosition(this._scratchWorldPos);
-      const rightArmX = this._scratchWorldPos.x;
+      const rightArmWorldX = this._scratchWorldPos.x;
 
       this._scratchWorldPos.set(0, 0, 0);
       leftArmBone.getWorldPosition(this._scratchWorldPos);
-      const leftArmX = this._scratchWorldPos.x;
+      const leftArmWorldX = this._scratchWorldPos.x;
 
-      const robotCenterX = (rightArmX + leftArmX) * 0.5;
-      if (this.pointTarget.x > robotCenterX) {
-        useLeftArm = true;
-      }
+      // Pick the arm whose shoulder is on the same side of the robot center as the target.
+      const robotCenterX = (rightArmWorldX + leftArmWorldX) * 0.5;
+      // Left arm world-X is typically > robotCenterX (screen-right for viewer).
+      // Right arm world-X is typically < robotCenterX (screen-left for viewer).
+      // → target to the right of center: use left arm  (extends to screen-right)
+      // → target to the left of center:  use right arm (extends to screen-left)
+      useLeftArm = this.pointTarget.x > robotCenterX;
     }
 
     if (useLeftArm && leftArmBone && leftArmBone.parent) {
-      // Left arm aiming
+      // ── LEFT ARM AIMING (target is to the right of robot center) ────────
       this._scratchLocalTarget.copy(this.pointTarget);
       leftArmBone.parent.worldToLocal(this._scratchLocalTarget);
       this._scratchLocalDir.copy(this._scratchLocalTarget).sub(leftArmBone.position).normalize();
 
       if (this._scratchLocalDir.lengthSq() > 0.001) {
-        this._scratchAimQuat.setFromUnitVectors(this._restDirLeft, this._scratchLocalDir);
-        leftArmBone.quaternion.slerp(this._scratchAimQuat, Math.min(1, w * 0.96));
+        // Convert cached world rest-dir into parent local space for setFromUnitVectors
+        const leftRestLocal = new THREE.Vector3().copy(this._restDirLeft);
+        leftArmBone.parent.worldToLocal(
+          leftRestLocal.add(leftArmBone.getWorldPosition(new THREE.Vector3()))
+        );
+        leftRestLocal.sub(leftArmBone.position).normalize();
+        if (leftRestLocal.lengthSq() < 0.001) leftRestLocal.set(1, 0, 0);
+
+        this._scratchAimQuat.setFromUnitVectors(leftRestLocal, this._scratchLocalDir);
+        leftArmBone.quaternion.slerp(this._scratchAimQuat, Math.min(1, w * 0.92));
       }
       if (leftForeArmBone) {
         this._scratchAimQuat.setFromEuler(new THREE.Euler(0, 0, Math.sin(time * 3.5) * 0.02));
-        leftForeArmBone.quaternion.slerp(this._scratchAimQuat, w * 0.88);
+        leftForeArmBone.quaternion.slerp(this._scratchAimQuat, w * 0.85);
       }
       if (leftHandBone) {
         this._scratchAimQuat.identity();
-        leftHandBone.quaternion.slerp(this._scratchAimQuat, w * 0.88);
+        leftHandBone.quaternion.slerp(this._scratchAimQuat, w * 0.85);
       }
       if (leftShoulderBone) {
         leftShoulderBone.rotation.z = THREE.MathUtils.lerp(leftShoulderBone.rotation.z, 0.12 * w, 0.1);
       }
 
-      // Smoothly relax right arm when left arm is aiming
+      // Smoothly relax idle arm
       if (rightArmBone) {
         this._scratchAimQuat.identity();
-        rightArmBone.quaternion.slerp(this._scratchAimQuat, 0.12);
+        rightArmBone.quaternion.slerp(this._scratchAimQuat, 0.1);
+      }
+      if (rightShoulderBone) {
+        rightShoulderBone.rotation.z = THREE.MathUtils.lerp(rightShoulderBone.rotation.z, 0, 0.08);
       }
     } else if (rightArmBone && rightArmBone.parent) {
-      // Right arm aiming (as in screenshot)
+      // ── RIGHT ARM AIMING (target is to the left of robot center) ────────
       this._scratchLocalTarget.copy(this.pointTarget);
       rightArmBone.parent.worldToLocal(this._scratchLocalTarget);
       this._scratchLocalDir.copy(this._scratchLocalTarget).sub(rightArmBone.position).normalize();
 
       if (this._scratchLocalDir.lengthSq() > 0.001) {
-        this._scratchAimQuat.setFromUnitVectors(this._restDirRight, this._scratchLocalDir);
-        rightArmBone.quaternion.slerp(this._scratchAimQuat, Math.min(1, w * 0.96));
+        const rightRestLocal = new THREE.Vector3().copy(this._restDirRight);
+        rightArmBone.parent.worldToLocal(
+          rightRestLocal.add(rightArmBone.getWorldPosition(new THREE.Vector3()))
+        );
+        rightRestLocal.sub(rightArmBone.position).normalize();
+        if (rightRestLocal.lengthSq() < 0.001) rightRestLocal.set(-1, 0, 0);
+
+        this._scratchAimQuat.setFromUnitVectors(rightRestLocal, this._scratchLocalDir);
+        rightArmBone.quaternion.slerp(this._scratchAimQuat, Math.min(1, w * 0.92));
       }
 
       if (rightForeArmBone) {
-        // Subtle micro-energy pulse on the forearm
         this._scratchAimQuat.setFromEuler(new THREE.Euler(0, 0, Math.sin(time * 3.5) * 0.02));
-        rightForeArmBone.quaternion.slerp(this._scratchAimQuat, w * 0.88);
+        rightForeArmBone.quaternion.slerp(this._scratchAimQuat, w * 0.85);
       }
-
       if (rightHandBone) {
-        // Wrist straightens to align beam forward
         this._scratchAimQuat.identity();
-        rightHandBone.quaternion.slerp(this._scratchAimQuat, w * 0.88);
+        rightHandBone.quaternion.slerp(this._scratchAimQuat, w * 0.85);
       }
-
       if (rightShoulderBone) {
-        // Slight clavicle elevation for natural posture
         rightShoulderBone.rotation.z = THREE.MathUtils.lerp(
           rightShoulderBone.rotation.z,
           -0.12 * w,
@@ -226,13 +261,16 @@ export class RobotProceduralLayer {
         );
       }
 
-      // Smoothly relax left arm when right arm is aiming
+      // Smoothly relax idle arm
       if (leftArmBone) {
         this._scratchAimQuat.identity();
-        leftArmBone.quaternion.slerp(this._scratchAimQuat, 0.12);
+        leftArmBone.quaternion.slerp(this._scratchAimQuat, 0.1);
+      }
+      if (leftShoulderBone) {
+        leftShoulderBone.rotation.z = THREE.MathUtils.lerp(leftShoulderBone.rotation.z, 0, 0.08);
       }
     } else if (rightShoulderBone && rightForeArmBone) {
-      // Fallback if rightArmBone wasn't bound
+      // ── Bone-fallback: shoulder + forearm euler approximation ────────────
       rightShoulderBone.rotation.z = THREE.MathUtils.lerp(
         rightShoulderBone.rotation.z,
         -0.65 * w + Math.sin(time * 1.5) * 0.04,

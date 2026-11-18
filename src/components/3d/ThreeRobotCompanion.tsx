@@ -1330,7 +1330,7 @@ export function ThreeRobotCompanion({
         soundFX.powerDown();
       }
 
-      screenToWorld(currentMousePixelX, currentMousePixelY, 0.2, _scratchTarget);
+      screenToWorld(currentMousePixelX, currentMousePixelY, 0.0, _scratchTarget);
       const roamRangeX = boundX * (mobileMode ? 0.72 : 0.82);
       const roamRangeY = boundY * (mobileMode ? 0.65 : 0.72);
       const cursorX = THREE.MathUtils.clamp(_scratchTarget.x, -roamRangeX, roamRangeX);
@@ -1508,8 +1508,10 @@ export function ThreeRobotCompanion({
       const isLaserActive = !isSleeping && inactiveDuration < 3.2 && !botIsSpinning;
 
       if (isLaserActive) {
-        // Point dynamically at the mouse pointer's real-time 3D coordinate on the content plane!
-        _scratchTarget.set(cursorX, cursorY, 0.25);
+        // Project mouse pixel → real-time 3D coordinate on the robot's standing plane (z=0)
+        // Using z=0 ensures arm IK stays in the same depth plane as the robot body,
+        // preventing the arm from pointing "through" or "behind" the content.
+        screenToWorld(currentMousePixelX, currentMousePixelY, 0.0, _scratchTarget);
       }
 
       const beamPulse = (isLaserActive ? 0.85 : 0.0) * (0.75 + Math.sin(time * 18.0) * 0.25);
