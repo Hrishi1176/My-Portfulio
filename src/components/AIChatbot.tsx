@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Bot, X, Send, Sparkles, AlertCircle, Loader2 } from "lucide-react";
+import { Bot, X, Send, Sparkles, AlertCircle, Loader2, Cpu } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import Cookies from "js-cookie";
 import { useRobotCompanion } from "@/context/RobotCompanionContext";
@@ -17,7 +17,18 @@ interface ChatMessage {
   sender: "user" | "bot";
   text: string;
   timestamp: string;
+  provider?: string;
+  latencyMs?: number;
 }
+
+const AVAILABLE_AI_MODELS = [
+  { id: "auto", name: "Auto", badge: "⚡ Smart Router", color: "border-cyan-500/40 text-cyan-300 bg-cyan-500/10" },
+  { id: "llama-3.3-70b", name: "Llama 3.3", badge: "Groq 70B", color: "border-emerald-500/40 text-emerald-300 bg-emerald-500/10" },
+  { id: "gemini-2.0-flash", name: "Gemini 2.0", badge: "Google AI", color: "border-sky-500/40 text-sky-300 bg-sky-500/10" },
+  { id: "deepseek-r1", name: "DeepSeek R1", badge: "Reasoning", color: "border-purple-500/40 text-purple-300 bg-purple-500/10" },
+  { id: "claude-3-5-sonnet", name: "Claude 3.5", badge: "Anthropic", color: "border-amber-500/40 text-amber-300 bg-amber-500/10" },
+  { id: "gpt-4o-mini", name: "GPT-4o", badge: "OpenAI", color: "border-blue-500/40 text-blue-300 bg-blue-500/10" },
+];
 
 import type { DeveloperConfig } from "@/config/portfolioConfig";
 
@@ -91,6 +102,7 @@ export function AIChatbot({ aiConfig, developer }: AIChatbotProps = {}) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [requestsToday, setRequestsToday] = useState(0);
+  const [selectedModel, setSelectedModel] = useState<string>("auto");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { setActiveField, setState: setRobotState, triggerTyping: triggerRobotTyping } = useRobotCompanion();
@@ -173,7 +185,7 @@ export function AIChatbot({ aiConfig, developer }: AIChatbotProps = {}) {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: query }),
+        body: JSON.stringify({ message: query, model: selectedModel }),
       });
 
       const data = await res.json();
@@ -186,6 +198,8 @@ export function AIChatbot({ aiConfig, developer }: AIChatbotProps = {}) {
           sender: "bot",
           text: botReply,
           timestamp: getFormattedTime(),
+          provider: data.provider,
+          latencyMs: data.latencyMs,
         },
       ]);
     } catch (err) {
@@ -279,6 +293,30 @@ export function AIChatbot({ aiConfig, developer }: AIChatbotProps = {}) {
               </button>
             </div>
 
+            {/* Model Selector Pill Bar */}
+            <div className="px-3 py-1.5 border-b border-white/5 bg-slate-950/60 flex items-center gap-1.5 overflow-x-auto no-scrollbar text-[10px] font-mono">
+              <span className="text-slate-500 shrink-0 flex items-center gap-1 pl-1">
+                <Cpu className="w-3 h-3 text-purple-400" /> Model:
+              </span>
+              {AVAILABLE_AI_MODELS.map((m) => {
+                const isSelected = selectedModel === m.id;
+                return (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => setSelectedModel(m.id)}
+                    className={`shrink-0 px-2.5 py-0.5 rounded-lg border transition-all cursor-pointer ${
+                      isSelected
+                        ? `${m.color} font-bold shadow-sm ring-1 ring-white/10`
+                        : "border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700 bg-slate-900/40"
+                    }`}
+                  >
+                    <span>{m.name}</span>
+                  </button>
+                );
+              })}
+            </div>
+
             {/* Chat Messages Body */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3.5 text-xs">
               {messages.map((msg) => (
@@ -294,13 +332,23 @@ export function AIChatbot({ aiConfig, developer }: AIChatbotProps = {}) {
                     }`}
                   >
                     {msg.text}
-                    <div
-                      className={`text-[9px] mt-1 text-right ${
-                        msg.sender === "user" ? "text-purple-200" : "text-slate-500"
-                      }`}
-                    >
-                      {msg.timestamp}
-                    </div>
+                    {msg.sender === "bot" && msg.provider ? (
+                      <div className="flex items-center justify-between text-[9px] mt-2 pt-1 border-t border-slate-800/60 text-slate-400 font-mono">
+                        <span className="flex items-center gap-1 text-cyan-400 font-semibold">
+                          <Sparkles className="w-2.5 h-2.5" /> {msg.provider}
+                          {msg.latencyMs && <span className="text-slate-500 font-normal">· {msg.latencyMs}ms</span>}
+                        </span>
+                        <span>{msg.timestamp}</span>
+                      </div>
+                    ) : (
+                      <div
+                        className={`text-[9px] mt-1 text-right ${
+                          msg.sender === "user" ? "text-purple-200" : "text-slate-500"
+                        }`}
+                      >
+                        {msg.timestamp}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

@@ -195,59 +195,111 @@ export function ThreeRobotCompanion({
     emeraldAccentLight.position.set(6, -10, 4);
     scene.add(emeraldAccentLight);
 
-    // 3. Materials Library for the 7 Agents
-    const silverNovaMat = new THREE.MeshPhysicalMaterial({
-      color: new THREE.Color(0xf1f5f9),
-      metalness: 0.85,
-      roughness: 0.12,
-      clearcoat: 1.0,
-      clearcoatRoughness: 0.05,
+    // 3. CYBER-AVENGERS MATERIALS LIBRARY
+    // Captain Nova (Captain America First Sentinel)
+    const captainNavyMat = new THREE.MeshPhysicalMaterial({
+      color: new THREE.Color(0x0c2340),
+      metalness: 0.88,
+      roughness: 0.15,
+      clearcoat: 0.95,
       envMapIntensity: 2.6,
     });
+    const captainSilverMat = new THREE.MeshPhysicalMaterial({
+      color: new THREE.Color(0xf1f5f9),
+      metalness: 0.92,
+      roughness: 0.1,
+      clearcoat: 1.0,
+      envMapIntensity: 2.8,
+    });
 
-    const blueCodexMat = new THREE.MeshPhysicalMaterial({
-      color: new THREE.Color(0x0284c7),
-      metalness: 0.75,
-      roughness: 0.2,
+    // Cyber Spider (Codex Web Architect)
+    const spiderCobaltMat = new THREE.MeshPhysicalMaterial({
+      color: new THREE.Color(0x0369a1),
+      metalness: 0.82,
+      roughness: 0.15,
+      clearcoat: 1.0,
+      envMapIntensity: 2.6,
+    });
+    const spiderCrimsonMat = new THREE.MeshPhysicalMaterial({
+      color: new THREE.Color(0xbe123c),
+      metalness: 0.85,
+      roughness: 0.16,
       clearcoat: 0.8,
+      envMapIntensity: 2.5,
+    });
+
+    // Thor Matrix (God of Systems & Cloud)
+    const thorAsgardianMat = new THREE.MeshStandardMaterial({
+      color: new THREE.Color(0x0a0f1d),
+      metalness: 0.95,
+      roughness: 0.14,
+      envMapIntensity: 2.8,
+    });
+    const thorSilverMat = new THREE.MeshStandardMaterial({
+      color: new THREE.Color(0x94a3b8),
+      metalness: 0.9,
+      roughness: 0.18,
       envMapIntensity: 2.4,
     });
 
-    const blackMatrixMat = new THREE.MeshStandardMaterial({
-      color: new THREE.Color(0x090d16),
-      metalness: 0.95,
-      roughness: 0.15,
-      envMapIntensity: 2.5,
-    });
-
-    const purpleOrbitMat = new THREE.MeshPhysicalMaterial({
-      color: new THREE.Color(0x7c3aed),
-      metalness: 0.82,
-      roughness: 0.18,
-      clearcoat: 0.9,
-      envMapIntensity: 2.5,
-    });
-
-    const whiteCloudXMat = new THREE.MeshPhysicalMaterial({
-      color: new THREE.Color(0xffffff),
-      metalness: 0.2,
-      roughness: 0.1,
+    // Vision Orbit (Mind Core Synthezoid)
+    const visionEmeraldMat = new THREE.MeshPhysicalMaterial({
+      color: new THREE.Color(0x047857),
+      metalness: 0.85,
+      roughness: 0.14,
       clearcoat: 1.0,
+      envMapIntensity: 2.8,
+    });
+    const visionChromeMat = new THREE.MeshStandardMaterial({
+      color: new THREE.Color(0xe2e8f0),
+      metalness: 0.96,
+      roughness: 0.08,
+      envMapIntensity: 2.9,
+    });
+
+    // Vibranium Cloud-X (Wakandan DevOps)
+    const pantherBlackMat = new THREE.MeshStandardMaterial({
+      color: new THREE.Color(0x030712),
+      metalness: 0.96,
+      roughness: 0.12,
+      envMapIntensity: 2.8,
+    });
+    const vibraniumPurpleMat = new THREE.MeshStandardMaterial({
+      color: new THREE.Color(0x9333ea),
+      metalness: 0.85,
+      roughness: 0.2,
       envMapIntensity: 2.5,
     });
 
-    const cyanNeuraMat = new THREE.MeshPhysicalMaterial({
-      color: new THREE.Color(0x06b6d4),
+    // Doctor Neura (Neural Sorcerer Supreme)
+    const mysticTealMat = new THREE.MeshPhysicalMaterial({
+      color: new THREE.Color(0x0891b2),
       metalness: 0.88,
       roughness: 0.12,
       clearcoat: 1.0,
       envMapIntensity: 2.8,
     });
+    const mysticPurpleMat = new THREE.MeshPhysicalMaterial({
+      color: new THREE.Color(0x6b21a8),
+      metalness: 0.78,
+      roughness: 0.22,
+      clearcoat: 0.7,
+      envMapIntensity: 2.4,
+    });
 
-    const goldTitanMat = new THREE.MeshStandardMaterial({
-      color: 0xf59e0b,
-      metalness: 0.94,
-      roughness: 0.18,
+    // Iron Titan (Iron Man Mark-HB Nano-Armor)
+    const ironManCrimsonMat = new THREE.MeshPhysicalMaterial({
+      color: new THREE.Color(0x991b1b),
+      metalness: 0.92,
+      roughness: 0.14,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.05,
+      envMapIntensity: 2.8,
+    });
+    const ironManGoldMat = new THREE.MeshStandardMaterial({
+      color: new THREE.Color(0xf59e0b),
+      metalness: 0.95,
+      roughness: 0.12,
       envMapIntensity: 2.8,
     });
 
@@ -272,6 +324,9 @@ export function ThreeRobotCompanion({
     const violetGlowMat = new THREE.MeshBasicMaterial({ color: 0xa855f7, transparent: true, opacity: 0.95 });
     const orangeGlowMat = new THREE.MeshBasicMaterial({ color: 0xf97316, transparent: true, opacity: 0.95 });
     const amberGlowMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b, transparent: true, opacity: 0.95 });
+    const redGlowMat = new THREE.MeshBasicMaterial({ color: 0xef4444, transparent: true, opacity: 0.95 });
+    const goldGlowMat = new THREE.MeshBasicMaterial({ color: 0xffd700, transparent: true, opacity: 0.95 });
+    const whiteGlowMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.95 });
 
     // 4. UFO DROPSHIP & MULTI-VECTOR SECTION-WISE TRACTOR BEAM LANDING
     const ufoGlowRingMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.95 });
@@ -437,9 +492,9 @@ export function ThreeRobotCompanion({
     };
     updateScales();
 
-    // 6. PROPS & DRESSING FOR THE 7 SPECIALIZED AGENTS
+    // 6. CYBER-AVENGERS PROPS & DRESSING FOR THE 7 SPECIALIZED AGENTS
 
-    // --- NOVA PROPS: Cyan Visor & Developer Tech Coat Hood ---
+    // --- CYBER-AVENGER 01: CAPTAIN NOVA // Holographic Vibranium Energy Shield ---
     const novaVisor = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.04, 0.16), cyanGlowMat);
     novaVisor.position.set(0, 0.08, 0.11);
 
@@ -451,7 +506,35 @@ export function ThreeRobotCompanion({
     novaBadge.position.set(0.1, 0.16, 0.16);
     novaBadge.rotation.set(-0.15, 0.2, 0);
 
-    // --- CODEX PROPS: Floating 3D Holographic Keyboard & UI Mesh ---
+    const vibraniumShield = new THREE.Group();
+    vibraniumShield.position.set(0.08, 0.05, 0.04);
+    vibraniumShield.rotation.set(0, Math.PI / 2, 0);
+
+    const shieldOuterRed = new THREE.Mesh(new THREE.TorusGeometry(0.24, 0.024, 16, 48), redGlowMat);
+    const shieldMidSilver = new THREE.Mesh(new THREE.TorusGeometry(0.18, 0.024, 16, 48), captainSilverMat);
+    const shieldInnerRed = new THREE.Mesh(new THREE.TorusGeometry(0.12, 0.024, 16, 48), redGlowMat);
+    const shieldCoreBlue = new THREE.Mesh(new THREE.CircleGeometry(0.085, 32), captainNavyMat);
+    const shieldStar = new THREE.Mesh(new THREE.CircleGeometry(0.048, 5), whiteGlowMat);
+    shieldStar.position.z = 0.005;
+
+    vibraniumShield.add(shieldOuterRed);
+    vibraniumShield.add(shieldMidSilver);
+    vibraniumShield.add(shieldInnerRed);
+    vibraniumShield.add(shieldCoreBlue);
+    vibraniumShield.add(shieldStar);
+
+    // --- CYBER-AVENGER 02: CYBER SPIDER (CODEX) // Iron Spider Waldoes & Web Desk ---
+    const spiderWaldoes = new THREE.Group();
+    spiderWaldoes.position.set(0, 0.12, -0.15);
+    for (let i = 0; i < 4; i++) {
+      const side = i % 2 === 0 ? 1 : -1;
+      const vertical = i < 2 ? 1 : -0.4;
+      const waldo = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.015, 8, 24, Math.PI * 0.8), ironManGoldMat);
+      waldo.position.set(side * 0.14, vertical * 0.1, 0);
+      waldo.rotation.set(0.25, side * 0.45, vertical * 0.5);
+      spiderWaldoes.add(waldo);
+    }
+
     const codexHoloDesk = new THREE.Group();
     codexHoloDesk.position.set(0, -0.2, 0.45);
     const keyboardBase = new THREE.Mesh(
@@ -471,14 +554,25 @@ export function ThreeRobotCompanion({
     codexHoloDesk.add(keyboardBase);
     codexRoot.add(codexHoloDesk);
 
-    // --- MATRIX PROPS: Floating 3D Server Blade Rack & Pulsing API Cable Rays ---
+    // --- CYBER-AVENGER 03: THOR MATRIX // Mjolnir Energy Mallet & Lightning Grid ---
+    const thorMjolnir = new THREE.Group();
+    thorMjolnir.position.set(0.04, 0.08, -0.04);
+    thorMjolnir.rotation.set(0, 0, Math.PI / 6);
+    const hammerHandle = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.38, 12), thorSilverMat);
+    hammerHandle.position.y = -0.09;
+    thorMjolnir.add(hammerHandle);
+    const hammerHead = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.11, 0.2), thorAsgardianMat);
+    thorMjolnir.add(hammerHead);
+    const runeBand = new THREE.Mesh(new THREE.BoxGeometry(0.135, 0.08, 0.04), cyanGlowMat);
+    thorMjolnir.add(runeBand);
+
     const matrixServerRack = new THREE.Group();
     matrixServerRack.position.set(-0.4, 0, 0.35);
     const rackFrame = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.65, 0.18), industrialJointsMat);
     matrixServerRack.add(rackFrame);
     const serverLeds: THREE.Mesh[] = [];
     for (let i = 0; i < 4; i++) {
-      const blade = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.08, 0.16), blackMatrixMat);
+      const blade = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.08, 0.16), thorAsgardianMat);
       blade.position.set(0, (i - 1.5) * 0.12, 0.01);
       const led = new THREE.Mesh(new THREE.SphereGeometry(0.012, 8, 8), emeraldGlowMat);
       led.position.set(0.08, 0, 0.09);
@@ -488,7 +582,10 @@ export function ThreeRobotCompanion({
     }
     matrixRoot.add(matrixServerRack);
 
-    // --- ORBIT PROPS: 3 Glowing Database Cylinders ---
+    // --- CYBER-AVENGER 04: VISION ORBIT // Mind Stone & Database Cylinders ---
+    const mindStone = new THREE.Mesh(new THREE.IcosahedronGeometry(0.03, 0), goldGlowMat);
+    mindStone.position.set(0, 0.12, 0.11);
+
     const orbitDBCylinders = new THREE.Group();
     orbitDBCylinders.position.set(0.35, -0.1, 0.35);
     const createDBCylinder = (x: number, y: number, colorMat: THREE.Material) => {
@@ -506,7 +603,7 @@ export function ThreeRobotCompanion({
     orbitDBCylinders.add(createDBCylinder(0.14, -0.04, blueGlowMat));
     orbitRoot.add(orbitDBCylinders);
 
-    // --- CLOUD-X PROPS: Rotating Docker Pod & CI/CD Pipeline Ring ---
+    // --- CYBER-AVENGER 05: VIBRANIUM CLOUD-X // Kinetic Absorption Ring ---
     const cloudxPipeline = new THREE.Group();
     cloudxPipeline.position.set(0, 0.15, -0.18);
     const pipelineRing = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.012, 16, 48), orangeGlowMat);
@@ -521,7 +618,21 @@ export function ThreeRobotCompanion({
     }
     cloudxRoot.add(cloudxPipeline);
 
-    // --- NEURA PROPS: Pulsing 3D Synaptic Neural Network Sphere ---
+    // --- CYBER-AVENGER 06: DOCTOR NEURA // Tao Mandala Sacred Spell Shields ---
+    const createTaoMandala = () => {
+      const g = new THREE.Group();
+      const inner = new THREE.Mesh(new THREE.RingGeometry(0.06, 0.12, 8), orangeGlowMat);
+      const outer = new THREE.Mesh(new THREE.RingGeometry(0.14, 0.22, 12), cyanGlowMat);
+      outer.position.z = 0.002;
+      g.add(inner);
+      g.add(outer);
+      return g;
+    };
+    const taoMandalaR = createTaoMandala();
+    taoMandalaR.position.set(0.05, 0.08, 0.04);
+    const taoMandalaL = createTaoMandala();
+    taoMandalaL.position.set(-0.05, 0.08, 0.04);
+
     const neuraSphere = new THREE.Group();
     neuraSphere.position.set(0, 0.25, 0.4);
     const neuralCore = new THREE.Mesh(new THREE.SphereGeometry(0.12, 16, 16), cyanGlowMat);
@@ -537,8 +648,30 @@ export function ThreeRobotCompanion({
     }
     neuraRoot.add(neuraSphere);
 
-    // --- TITAN PROPS: Imperial Gold Pauldrons, Arc Reactor & Project Holo-Stage ---
-    const titanPauldronL = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.12, 0.2), goldTitanMat);
+    // --- CYBER-AVENGER 07: IRON TITAN // Chest Arc Reactor & Repulsors ---
+    const ironArcReactor = new THREE.Group();
+    ironArcReactor.position.set(0, 0.14, 0.14);
+    const reactorOuter = new THREE.Mesh(new THREE.TorusGeometry(0.07, 0.014, 16, 32), amberGlowMat);
+    const reactorCore = new THREE.Mesh(new THREE.CircleGeometry(0.048, 24), cyanGlowMat);
+    reactorCore.position.z = 0.005;
+    ironArcReactor.add(reactorOuter);
+    ironArcReactor.add(reactorCore);
+
+    const createRepulsorDisc = () => {
+      const g = new THREE.Group();
+      const outer = new THREE.Mesh(new THREE.TorusGeometry(0.026, 0.006, 12, 24), amberGlowMat);
+      const core = new THREE.Mesh(new THREE.CircleGeometry(0.02, 16), cyanGlowMat);
+      core.position.z = 0.002;
+      g.add(outer);
+      g.add(core);
+      return g;
+    };
+    const repulsorHandR = createRepulsorDisc();
+    repulsorHandR.position.set(0, 0.04, 0.02);
+    const repulsorHandL = createRepulsorDisc();
+    repulsorHandL.position.set(0, 0.04, 0.02);
+
+    const titanPauldronL = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.12, 0.2), ironManGoldMat);
     titanPauldronL.position.set(-0.18, 0.1, 0);
     const titanPauldronR = titanPauldronL.clone();
     titanPauldronR.position.set(0.18, 0.1, 0);
@@ -906,12 +1039,12 @@ export function ThreeRobotCompanion({
           return bones;
         };
 
-        // --- 1. SETUP NOVA (Silver/White + Cyan) ---
+        // --- 1. SETUP CAPTAIN NOVA (Midnight Navy + Brushed Silver) ---
         const modelNova = SkeletonUtils.clone(gltf.scene) as THREE.Group;
         modelNova.position.set(0, -1.6, 0);
         novaRoot.add(modelNova);
         robots.nova.mixer = new THREE.AnimationMixer(modelNova);
-        const novaBones = dressRobot(modelNova, silverNovaMat, industrialJointsMat);
+        const novaBones = dressRobot(modelNova, captainNavyMat, captainSilverMat);
         if (novaBones.head) {
           robots.nova.headBone = novaBones.head;
           novaBones.head.add(novaVisor);
@@ -920,6 +1053,9 @@ export function ThreeRobotCompanion({
         if (novaBones.spine2) {
           robots.nova.spineBone = novaBones.spine2;
           novaBones.spine2.add(novaBadge);
+        }
+        if (novaBones.leftForeArm) {
+          novaBones.leftForeArm.add(vibraniumShield);
         }
         robots.nova.rightShoulderBone = novaBones.rightShoulder || null;
         robots.nova.rightArmBone = novaBones.rightArm || null;
@@ -930,15 +1066,18 @@ export function ThreeRobotCompanion({
         robots.nova.leftForeArmBone = novaBones.leftForeArm || null;
         robots.nova.leftHandBone = novaBones.leftHand || null;
 
-        // --- 2. SETUP CODEX (Electric Blue + Platinum) ---
+        // --- 2. SETUP CYBER SPIDER (CODEX) (Cobalt + Iron Spider Crimson & Waldoes) ---
         const modelCodex = SkeletonUtils.clone(gltf.scene) as THREE.Group;
         modelCodex.position.set(0, -1.6, 0);
         codexRoot.add(modelCodex);
         robots.codex.mixer = new THREE.AnimationMixer(modelCodex);
-        const codexBones = dressRobot(modelCodex, blueCodexMat, silverNovaMat);
+        const codexBones = dressRobot(modelCodex, spiderCobaltMat, spiderCrimsonMat);
         if (codexBones.head) robots.codex.headBone = codexBones.head;
         if (codexBones.neck) robots.codex.neckBone = codexBones.neck;
-        if (codexBones.spine2) robots.codex.spineBone = codexBones.spine2;
+        if (codexBones.spine2) {
+          robots.codex.spineBone = codexBones.spine2;
+          codexBones.spine2.add(spiderWaldoes);
+        }
         robots.codex.rightShoulderBone = codexBones.rightShoulder || null;
         robots.codex.rightArmBone = codexBones.rightArm || null;
         robots.codex.rightForeArmBone = codexBones.rightForeArm || null;
@@ -948,15 +1087,18 @@ export function ThreeRobotCompanion({
         robots.codex.leftForeArmBone = codexBones.leftForeArm || null;
         robots.codex.leftHandBone = codexBones.leftHand || null;
 
-        // --- 3. SETUP MATRIX (Matte Black + Emerald) ---
+        // --- 3. SETUP THOR MATRIX (Asgardian Armor + Mjolnir Mallet) ---
         const modelMatrix = SkeletonUtils.clone(gltf.scene) as THREE.Group;
         modelMatrix.position.set(0, -1.6, 0);
         matrixRoot.add(modelMatrix);
         robots.matrix.mixer = new THREE.AnimationMixer(modelMatrix);
-        const matrixBones = dressRobot(modelMatrix, blackMatrixMat, industrialJointsMat);
+        const matrixBones = dressRobot(modelMatrix, thorAsgardianMat, thorSilverMat);
         if (matrixBones.head) robots.matrix.headBone = matrixBones.head;
         if (matrixBones.neck) robots.matrix.neckBone = matrixBones.neck;
         if (matrixBones.spine2) robots.matrix.spineBone = matrixBones.spine2;
+        if (matrixBones.rightHand) {
+          matrixBones.rightHand.add(thorMjolnir);
+        }
         robots.matrix.rightShoulderBone = matrixBones.rightShoulder || null;
         robots.matrix.rightArmBone = matrixBones.rightArm || null;
         robots.matrix.rightForeArmBone = matrixBones.rightForeArm || null;
@@ -966,13 +1108,16 @@ export function ThreeRobotCompanion({
         robots.matrix.leftForeArmBone = matrixBones.leftForeArm || null;
         robots.matrix.leftHandBone = matrixBones.leftHand || null;
 
-        // --- 4. SETUP ORBIT (Purple + Chrome) ---
+        // --- 4. SETUP VISION ORBIT (Synth-Emerald + Mind Stone) ---
         const modelOrbit = SkeletonUtils.clone(gltf.scene) as THREE.Group;
         modelOrbit.position.set(0, -1.6, 0);
         orbitRoot.add(modelOrbit);
         robots.orbit.mixer = new THREE.AnimationMixer(modelOrbit);
-        const orbitBones = dressRobot(modelOrbit, purpleOrbitMat, silverNovaMat);
-        if (orbitBones.head) robots.orbit.headBone = orbitBones.head;
+        const orbitBones = dressRobot(modelOrbit, visionEmeraldMat, visionChromeMat);
+        if (orbitBones.head) {
+          robots.orbit.headBone = orbitBones.head;
+          orbitBones.head.add(mindStone);
+        }
         if (orbitBones.neck) robots.orbit.neckBone = orbitBones.neck;
         if (orbitBones.spine2) robots.orbit.spineBone = orbitBones.spine2;
         robots.orbit.rightShoulderBone = orbitBones.rightShoulder || null;
@@ -984,12 +1129,12 @@ export function ThreeRobotCompanion({
         robots.orbit.leftForeArmBone = orbitBones.leftForeArm || null;
         robots.orbit.leftHandBone = orbitBones.leftHand || null;
 
-        // --- 5. SETUP CLOUD-X (White + Orange) ---
+        // --- 5. SETUP VIBRANIUM CLOUD-X (Wakandan Panther Weave) ---
         const modelCloudx = SkeletonUtils.clone(gltf.scene) as THREE.Group;
         modelCloudx.position.set(0, -1.6, 0);
         cloudxRoot.add(modelCloudx);
         robots.cloudx.mixer = new THREE.AnimationMixer(modelCloudx);
-        const cloudxBones = dressRobot(modelCloudx, whiteCloudXMat, industrialJointsMat);
+        const cloudxBones = dressRobot(modelCloudx, pantherBlackMat, vibraniumPurpleMat);
         if (cloudxBones.head) robots.cloudx.headBone = cloudxBones.head;
         if (cloudxBones.neck) robots.cloudx.neckBone = cloudxBones.neck;
         if (cloudxBones.spine2) robots.cloudx.spineBone = cloudxBones.spine2;
@@ -1002,15 +1147,17 @@ export function ThreeRobotCompanion({
         robots.cloudx.leftForeArmBone = cloudxBones.leftForeArm || null;
         robots.cloudx.leftHandBone = cloudxBones.leftHand || null;
 
-        // --- 6. SETUP NEURA (Cyan + Pearlescent) ---
+        // --- 6. SETUP DOCTOR NEURA (Mystic Sorcerer Teal + Tao Mandalas) ---
         const modelNeura = SkeletonUtils.clone(gltf.scene) as THREE.Group;
         modelNeura.position.set(0, -1.6, 0);
         neuraRoot.add(modelNeura);
         robots.neura.mixer = new THREE.AnimationMixer(modelNeura);
-        const neuraBones = dressRobot(modelNeura, cyanNeuraMat, silverNovaMat);
+        const neuraBones = dressRobot(modelNeura, mysticTealMat, mysticPurpleMat);
         if (neuraBones.head) robots.neura.headBone = neuraBones.head;
         if (neuraBones.neck) robots.neura.neckBone = neuraBones.neck;
         if (neuraBones.spine2) robots.neura.spineBone = neuraBones.spine2;
+        if (neuraBones.rightHand) neuraBones.rightHand.add(taoMandalaR);
+        if (neuraBones.leftHand) neuraBones.leftHand.add(taoMandalaL);
         robots.neura.rightShoulderBone = neuraBones.rightShoulder || null;
         robots.neura.rightArmBone = neuraBones.rightArm || null;
         robots.neura.rightForeArmBone = neuraBones.rightForeArm || null;
@@ -1020,18 +1167,23 @@ export function ThreeRobotCompanion({
         robots.neura.leftForeArmBone = neuraBones.leftForeArm || null;
         robots.neura.leftHandBone = neuraBones.leftHand || null;
 
-        // --- 7. SETUP TITAN (Imperial Obsidian + 24k Gold) ---
+        // --- 7. SETUP IRON TITAN (Mark-HB Nano-Armor + Arc Reactor) ---
         const modelTitan = SkeletonUtils.clone(gltf.scene) as THREE.Group;
         modelTitan.position.set(0, -1.6, 0);
         titanRoot.add(modelTitan);
         robots.titan.mixer = new THREE.AnimationMixer(modelTitan);
-        const titanBones = dressRobot(modelTitan, goldTitanMat, obsidianChassisMat);
+        const titanBones = dressRobot(modelTitan, ironManCrimsonMat, ironManGoldMat);
         if (titanBones.head) robots.titan.headBone = titanBones.head;
         if (titanBones.neck) robots.titan.neckBone = titanBones.neck;
-        if (titanBones.spine2) robots.titan.spineBone = titanBones.spine2;
+        if (titanBones.spine2) {
+          robots.titan.spineBone = titanBones.spine2;
+          titanBones.spine2.add(ironArcReactor);
+        }
         if (titanBones.leftShoulder) titanBones.leftShoulder.add(titanPauldronL);
         if (titanBones.rightShoulder) titanBones.rightShoulder.add(titanPauldronR);
         if (titanBones.rightForeArm) titanBones.rightForeArm.add(titanWristSlate);
+        if (titanBones.rightHand) titanBones.rightHand.add(repulsorHandR);
+        if (titanBones.leftHand) titanBones.leftHand.add(repulsorHandL);
         robots.titan.rightShoulderBone = titanBones.rightShoulder || null;
         robots.titan.rightArmBone = titanBones.rightArm || null;
         robots.titan.rightForeArmBone = titanBones.rightForeArm || null;
@@ -1187,27 +1339,34 @@ export function ThreeRobotCompanion({
         clickAuraRing.position.copy(bot.currentPos);
         clickAuraRing.position.y += 0.05;
 
-        // Custom reaction by character
+        // Custom Cyber-Avenger Signature Reaction & Audio
         if (currentAgent === "nova") {
+          soundFX.shieldHum(0.14);
           bot.animController?.triggerGreet(1.8);
           bot.proceduralLayer?.setSalute(true);
           setTimeout(() => bot.proceduralLayer?.setSalute(false), 1400);
         } else if (currentAgent === "codex") {
+          soundFX.webThwip(0.12);
           bot.animController?.triggerGreet(1.6);
           bot.proceduralLayer?.setMode("type");
           setTimeout(() => bot.proceduralLayer?.setMode("none"), 1600);
         } else if (currentAgent === "matrix") {
+          soundFX.thunderSurge(0.15);
           bot.proceduralLayer?.triggerNod();
           bot.proceduralLayer?.setGuard(true);
         } else if (currentAgent === "orbit") {
+          soundFX.laserHum(0.1);
           bot.animController?.triggerGreet(1.6);
         } else if (currentAgent === "cloudx") {
+          soundFX.hydraulicClick(0.14);
           bot.animController?.triggerGreet(1.6);
           clickJumpOffset = 0.45;
         } else if (currentAgent === "neura") {
+          soundFX.mysticHarmonics(0.12);
           bot.proceduralLayer?.setThink(true);
           setTimeout(() => bot.proceduralLayer?.setThink(false), 1500);
         } else if (currentAgent === "titan") {
+          soundFX.repulsorFire(0.16);
           bot.animController?.triggerGreet(1.8);
           bot.proceduralLayer?.triggerWristCheck();
         }
@@ -1247,6 +1406,9 @@ export function ThreeRobotCompanion({
       renderer.setSize(width, height);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
       updateScales();
+      Object.values(robots).forEach((bot) => {
+        bot.spinDirector?.setSkipSpin(mob);
+      });
     };
 
     window.addEventListener("resize", handleResize);
@@ -1265,12 +1427,14 @@ export function ThreeRobotCompanion({
     let storyTargetRun = false;
     let sceneInitialized = false;
 
+    let preferredPresenterSide = 1;
+
     const loadSceneTimeline = (sceneNum: number, agentId: string) => {
       isStoryTargetActive = false;
       const targetBot = robots[agentId] || robots.nova;
       sceneActivityDirector.loadScene(sceneNum, {
         triggerSpin: () => {
-          targetBot.spinDirector?.triggerSpin();
+          targetBot.spinDirector?.triggerSpin(targetBot.currentPos.y);
         },
         setTargetPos: (x, y, z, run) => {
           isStoryTargetActive = true;
@@ -1387,8 +1551,12 @@ export function ThreeRobotCompanion({
 
       if (beamProgress > 0) {
         beamProgress = Math.max(0, beamProgress - delta * 0.7);
-        // During beam entry, swoop smoothly into deployment position
-        ufoGroup.position.lerp(ufoCfg.targetPos, 0.08);
+        // During beam entry, swoop smoothly into deployment position (clamped to screen on mobile)
+        const targetUfoX = mobileMode
+          ? THREE.MathUtils.clamp(ufoCfg.targetPos.x * 0.55, -roamRangeX * 0.9, roamRangeX * 0.9)
+          : ufoCfg.targetPos.x;
+        _scratchV.set(targetUfoX, ufoCfg.targetPos.y, ufoCfg.targetPos.z);
+        ufoGroup.position.lerp(_scratchV, 0.08);
         ufoGroup.rotation.z = THREE.MathUtils.lerp(ufoGroup.rotation.z, 0, 0.06);
       } else {
         // After beam finishes, smooth hover in high orbital overwatch above active robot
@@ -1477,6 +1645,8 @@ export function ThreeRobotCompanion({
       // --- Neura: Synaptic neural sphere breathe & pulse waves ---
       neuraSphere.rotation.y = time * 1.5;
       neuraSphere.rotation.x = Math.sin(time * 1.2) * 0.2;
+      taoMandalaR.rotation.z += delta * 2.8;
+      taoMandalaL.rotation.z -= delta * 2.8;
       const isNeuraActive = primaryAgentId === "neura";
       const isNeuraClicked = clickReactionTimer > 0 && clickedAgentId === "neura";
       const neuralCorePulse = isNeuraClicked ? 1.6 : (isNeuraActive ? 1.0 + Math.sin(time * 3.0) * 0.2 : 1.0);
@@ -1677,7 +1847,7 @@ export function ThreeRobotCompanion({
         Object.entries(robots).forEach(([id, bot]) => {
           if (bot.mixer && bot.root.visible) {
             const [fx, fy, fz] = formationPositions[id] || [0, 0, 0];
-            bot.targetPos.set(fx * (mobileMode ? 0.7 : 1.0), fy, fz);
+            bot.targetPos.set(fx * (mobileMode ? 0.48 : 1.0), fy, fz);
             bot.currentPos.lerp(bot.targetPos, 0.08);
             bot.root.position.copy(bot.currentPos);
             bot.root.rotation.y = THREE.MathUtils.lerp(bot.root.rotation.y, 0, 0.08);
@@ -1707,12 +1877,24 @@ export function ThreeRobotCompanion({
           if (!botIsSpinning) {
             if (isStoryTargetActive && inactiveDuration > 1.2) {
               // Activity timeline overrides position target (e.g. walk_to, run_to) during initial entrance
-              bot.targetPos.copy(storyTargetOverride);
+              // Clamped to visible roam boundaries on mobile
+              if (mobileMode) {
+                bot.targetPos.set(
+                  THREE.MathUtils.clamp(storyTargetOverride.x * 0.55, -roamRangeX, roamRangeX),
+                  storyTargetOverride.y,
+                  storyTargetOverride.z
+                );
+              } else {
+                bot.targetPos.copy(storyTargetOverride);
+              }
             } else if (!isSleeping && inactiveDuration < 3.5) {
-              // Presenter companion positioning:
-              // The robot travels alongside the user to an optimal presenter vantage point,
-              // maintaining an offset so it never covers the text and has a clean line of sight to aim!
-              const offsetX = cursorX > 0 ? -1.15 : 1.15;
+              // Presenter companion positioning with deadband hysteresis:
+              // Eliminates jittering when user scrolls or moves along screen center
+              if (cursorX > 0.25) preferredPresenterSide = -1;
+              else if (cursorX < -0.25) preferredPresenterSide = 1;
+
+              const offsetDist = mobileMode ? 0.65 : 1.15;
+              const offsetX = preferredPresenterSide * offsetDist;
               const targetX = THREE.MathUtils.clamp(cursorX + offsetX, -roamRangeX, roamRangeX);
               const targetY = THREE.MathUtils.clamp(cursorY - 0.45, -roamRangeY * 0.85, -0.15);
               bot.targetPos.x = targetX;
@@ -1744,7 +1926,13 @@ export function ThreeRobotCompanion({
           // Smooth kinematic position update (responsive travel across screen)
           const moveLerpSpeed = (isStoryTargetActive && storyTargetRun) ? 0.09 : (dist > 1.2 ? 0.08 : 0.055);
           bot.currentPos.lerp(bot.targetPos, moveLerpSpeed);
-          bot.root.position.copy(bot.currentPos);
+          if (!botIsSpinning) {
+            bot.root.position.copy(bot.currentPos);
+          } else {
+            bot.root.position.x = bot.currentPos.x;
+            bot.root.position.z = bot.currentPos.z;
+            // Note: bot.root.position.y is procedurally driven by spinDirector._applyLift()
+          }
 
           // During spin: rotation is controlled by spinDirector — don't overwrite it
           if (!botIsSpinning) {
@@ -1825,13 +2013,20 @@ export function ThreeRobotCompanion({
 
       pmremGenerator.dispose();
       roomEnv.dispose();
-      silverNovaMat.dispose();
-      blueCodexMat.dispose();
-      blackMatrixMat.dispose();
-      purpleOrbitMat.dispose();
-      whiteCloudXMat.dispose();
-      cyanNeuraMat.dispose();
-      goldTitanMat.dispose();
+      captainNavyMat.dispose();
+      captainSilverMat.dispose();
+      spiderCobaltMat.dispose();
+      spiderCrimsonMat.dispose();
+      thorAsgardianMat.dispose();
+      thorSilverMat.dispose();
+      visionEmeraldMat.dispose();
+      visionChromeMat.dispose();
+      pantherBlackMat.dispose();
+      vibraniumPurpleMat.dispose();
+      mysticTealMat.dispose();
+      mysticPurpleMat.dispose();
+      ironManCrimsonMat.dispose();
+      ironManGoldMat.dispose();
       obsidianChassisMat.dispose();
       industrialJointsMat.dispose();
       cyanGlowMat.dispose();
@@ -1840,6 +2035,9 @@ export function ThreeRobotCompanion({
       violetGlowMat.dispose();
       orangeGlowMat.dispose();
       amberGlowMat.dispose();
+      redGlowMat.dispose();
+      goldGlowMat.dispose();
+      whiteGlowMat.dispose();
       ufoGlowRingMat.dispose();
       ufoThrusterMat.dispose();
       ufoDomeMat.dispose();

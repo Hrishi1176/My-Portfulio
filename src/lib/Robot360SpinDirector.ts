@@ -87,16 +87,26 @@ export class Robot360SpinDirector {
 
   // ── Public API ─────────────────────────────────────────────────────────────
 
-  /** Kick off the spin sequence. Safe to call multiple times — debounced by cooldown. */
-  triggerSpin(): void {
+  /** Kick off the spin sequence. Safe to call multiple times — debounced by cooldown.
+   * Optionally pass current baseY so the lift arc starts from the robot's live position.
+   */
+  triggerSpin(baseY?: number): void {
     if (
       this.state !== "STANDBY" ||
       this.cooldownRemaining > 0
     ) return;
 
+    if (baseY !== undefined) {
+      this.baseY = baseY;
+    }
     this.phaseElapsed = 0;
     this.accumulatedRotY = 0;
     this.state = "RISING";
+  }
+
+  /** Dynamically toggle mobile-guard spin skipping on resize/orientation change. */
+  setSkipSpin(skip: boolean): void {
+    this.skipSpin = skip;
   }
 
   /** Must be called every RAF frame while the robot is active. */
@@ -159,7 +169,13 @@ export class Robot360SpinDirector {
 
     if (t >= 1) {
       this.phaseElapsed = 0;
-      this.state = this.skipSpin ? "LANDING" : "SPINNING";
+      if (this.skipSpin) {
+        // Mobile guard: spin rotation is skipped, but trigger greet gesture cleanly
+        this.state = "LANDING";
+        this.onSpinComplete?.();
+      } else {
+        this.state = "SPINNING";
+      }
     }
   }
 

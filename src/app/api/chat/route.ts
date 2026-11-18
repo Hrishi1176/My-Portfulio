@@ -5,13 +5,13 @@ const aiService = new AIService();
 
 export async function POST(request: Request) {
   try {
-    const { message } = await request.json();
+    const { message, model } = await request.json();
 
     if (!message || typeof message !== "string") {
       return NextResponse.json({ error: "Message string is required." }, { status: 400 });
     }
 
-    const response = await aiService.generateChatReply(message);
+    const response = await aiService.generateChatReply(message, model || "auto");
 
     return NextResponse.json(response);
   } catch (error) {

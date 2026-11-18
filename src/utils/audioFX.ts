@@ -451,6 +451,128 @@ export const soundFX = {
     } catch {}
   },
 
+  // ── Cyber-Avengers Initiative Signature Audio Synthesis ──────────────────────
+
+  // Iron Titan: Repulsor Charge & High-Energy Plasma Blast
+  repulsorFire: (volume = 0.12) => {
+    try {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(320, now);
+      osc.frequency.exponentialRampToValueAtTime(2400, now + 0.1);
+      osc.frequency.exponentialRampToValueAtTime(180, now + 0.35);
+
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(volume, now + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.36);
+    } catch {}
+  },
+
+  // Captain Nova: Vibranium Energy Shield Activation & Kinetic Deflection
+  shieldHum: (volume = 0.1) => {
+    try {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(520, now);
+      osc.frequency.exponentialRampToValueAtTime(1040, now + 0.08);
+      osc.frequency.exponentialRampToValueAtTime(260, now + 0.4);
+
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(volume * 1.2, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.42);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.43);
+    } catch {}
+  },
+
+  // Thor Matrix: Thunder Surge & Crackling Lightning Arc
+  thunderSurge: (volume = 0.12) => {
+    try {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      // Sub-bass boom
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(180, now);
+      osc.frequency.exponentialRampToValueAtTime(45, now + 0.45);
+
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(volume, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.48);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.5);
+    } catch {}
+  },
+
+  // Doctor Neura: Tao Mandala Sacred Fractal Chime
+  mysticHarmonics: (volume = 0.09) => {
+    try {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      [880, 1108.73, 1318.51].forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, now + idx * 0.03);
+        osc.frequency.exponentialRampToValueAtTime(freq * 1.5, now + 0.35);
+
+        gain.gain.setValueAtTime(0, now + idx * 0.03);
+        gain.gain.linearRampToValueAtTime(volume * 0.5, now + idx * 0.03 + 0.03);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + idx * 0.03);
+        osc.stop(now + 0.46);
+      });
+    } catch {}
+  },
+
+  // Cyber Spider: Nanotech Web Thwip
+  webThwip: (volume = 0.09) => {
+    try {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "square";
+      osc.frequency.setValueAtTime(2400, now);
+      osc.frequency.exponentialRampToValueAtTime(320, now + 0.12);
+
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(volume, now + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.15);
+    } catch {}
+  },
+
   // Helper: Dispatch voice by Agent ID
   playAgentVoice: (agentId: string, volume = 0.08) => {
     switch (agentId) {
